@@ -1,0 +1,114 @@
+/* Custom styles for the burn classifier app */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+}
+
+.card-header {
+    border-radius: 15px 15px 0 0 !important;
+}
+
+.btn {
+    border-radius: 25px;
+    padding: 8px 20px;
+}
+
+.btn-primary {
+    background: linear-gradient(45deg, #007bff, #0056b3);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(45deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.progress {
+    border-radius: 10px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    border-radius: 10px;
+}
+
+#imagePreview img {
+    border: 3px dashed #dee2e6;
+    padding: 10px;
+    background-color: white;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #dee2e6;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0,123,255,0.25);
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+.classification-cards .card {
+    transition: transform 0.2s;
+}
+
+.classification-cards .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Loading animation */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Custom progress bars for burn severity */
+.bg-success {
+    background: linear-gradient(90deg, #28a745, #20c997) !important;
+}
+
+.bg-warning {
+    background: linear-gradient(90deg, #ffc107, #fd7e14) !important;
+}
+
+.bg-danger {
+    background: linear-gradient(90deg, #dc3545, #e83e8c) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
+
+/* Animation for results */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

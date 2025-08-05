@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Burn Severity Classifier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-header text-center bg-primary text-white">
+                        <h1 class="card-title mb-0">🔥 Thermal Burn Severity Classifier</h1>
+                        <p class="mb-0">Upload an image to classify burn severity</p>
+                    </div>
+                    <div class="card-body">
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        <div class="alert alert-danger" role="alert">
+                            {% for message in messages %}
+                            {{ message }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+
+                        <form action="{{ url_for('upload_file') }}" method="post"
+                            enctype="multipart/form-data">
+                            <div class="mb-4">
+                                <label for="file" class="form-label"><strong>Select Image File:</strong></label>
+                                <div class="input-group">
+                                    <input type="file" class="form-control" id="file" name="file"
+                                        accept=".png,.jpg,.jpeg,.gif,.webp" required>
+                                    <button class="btn btn-primary" type="submit" id="uploadBtn">
+                                        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                                        Classify Burn
+                                    </button>
+                                </div>
+                                <div class="form-text">
+                                    Supported formats: PNG, JPG, JPEG, GIF, WEBP (Max: 16MB)
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Image preview -->
+                        <div id="imagePreview" class="text-center mt-4 d-none">
+                            <h5>Selected Image:</h5>
+                            <img id="previewImg" src="" alt="Preview" class="img-fluid rounded shadow"
+                                style="max-height: 300px;">
+                        </div>
+
+                        <!-- Classification Info -->
+                        <div class="mt-4">
+                            <h5>Classification Categories:</h5>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card border-success">
+                                        <div class="card-body text-center">
+                                            <h6 class="card-title text-success">First Degree</h6>
+                                            <p class="card-text small">Minor burns affecting only outer layer of skin
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-warning">
+                                        <div class="card-body text-center">
+                                            <h6 class="card-title text-warning">Second Degree</h6>
+                                            <p class="card-text small">Burns affecting outer and underlying skin layers
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-danger">
+                                        <div class="card-body text-center">
+                                            <h6 class="card-title text-danger">Third Degree</h6>
+                                            <p class="card-text small">Severe burns affecting all skin layers</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Disclaimer -->
+                        <div class="alert alert-warning mt-4" role="alert">
+                            <strong>⚠️ Disclaimer:</strong> This tool is for educational/research purposes only.
+                            Always consult medical professionals for actual burn assessment and treatment.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,8 @@
+kaggle-thermal-burn-dataset/
+checkpoints/cnn-transformer/
+checkpoints/cnn-with-classification-head/
+dataset/
+dataset-v2/
+.venv/
+.venv-training/
+.vscode/

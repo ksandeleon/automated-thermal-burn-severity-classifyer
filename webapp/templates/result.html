@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification Result - Thermal Burn Classifier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card shadow">
+                    <div class="card-header text-center bg-success text-white">
+                        <h1 class="card-title mb-0">🔥 Classification Results</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Image Display -->
+                            <div class="col-md-6">
+                                <h5>Analyzed Image:</h5>
+                                <img src="{{ image_path }}" alt="Uploaded burn image"
+                                    class="img-fluid rounded shadow mb-3" style="max-height: 400px;">
+                            </div>
+
+                            <!-- Results -->
+                            <div class="col-md-6">
+                                <h5>Classification Result:</h5>
+
+                                <!-- Primary Result -->
+                                <div
+                                    class="card mb-3 {% if result.class_id == 0 %}border-success{% elif result.class_id == 1 %}border-warning{% else %}border-danger{% endif %}">
+                                    <div class="card-body text-center">
+                                        <h3
+                                            class="card-title {% if result.class_id == 0 %}text-success{% elif result.class_id == 1 %}text-warning{% else %}text-danger{% endif %}">
+                                            {{ result.predicted_class }}
+                                        </h3>
+                                        <p class="card-text">
+                                            <strong>Confidence:</strong>
+                                            {{ "%.2f"|format(result.confidence * 100) }}%
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Detailed Probabilities -->
+                                <h6>Detailed Probabilities:</h6>
+                                <div class="mb-3">
+                                    {% for class_name, probability in result.all_probabilities.items() %}
+                                    <div class="mb-2">
+                                        <div class="d-flex justify-content-between">
+                                            <span>{{ class_name }}:</span>
+                                            <span>{{ "%.2f"|format(probability * 100) }}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 10px;">
+                                            <div class="progress-bar
+                                                    {% if loop.index == 1 %}bg-success
+                                                    {% elif loop.index == 2 %}bg-warning
+                                                    {% else %}bg-danger
+                                                    {% endif %}" role="progressbar"
+                                                style="width: {{ probability * 100 }}%">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                                <!-- Additional Info -->
+                                <div class="alert alert-info" role="alert">
+                                    <h6>About {{ result.predicted_class }}:</h6>
+                                    {% if result.class_id == 0 %}
+                                    <p>First-degree burns are the mildest form, affecting only the outer layer of skin
+                                        (epidermis).
+                                        They typically cause redness and pain but heal within a few days.</p>
+                                    {% elif result.class_id == 1 %}
+                                    <p>Second-degree burns affect both the outer layer and the underlying layer of skin.
+                                        They may cause swelling, severe pain, and blistering.</p>
+                                    {% else %}
+                                    <p>Third-degree burns are the most severe, affecting all layers of skin and
+                                        potentially
+                                        underlying tissues. They require immediate medical attention.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12 text-center">
+                                <a href="{{ url_for('index') }}" class="btn btn-primary me-2">
+                                    🔄 Classify Another Image
+                                </a>
+                                <button class="btn btn-secondary" onclick="downloadResult()">
+                                    📄 Download Result
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Disclaimer -->
+                        <div class="alert alert-warning mt-4" role="alert">
+                            <strong>⚠️ Medical Disclaimer:</strong> This AI classification is for educational/research
+                            purposes only.
+                            For actual medical diagnosis and treatment, please consult qualified medical professionals
+                            immediately.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function downloadResult() {
+            const resultData = {
+                prediction: "{{ result.predicted_class }}",
+                confidence: "{{ "%.2f"|format(result.confidence * 100) }}%",
+                probabilities: {
+                    {
+                        result.all_probabilities % 20 % 7 C % 20 tojson
+                    }
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(resultData, null, 2);
+            const dataBlob = new Blob([dataStr], {
+                type: 'application/json'
+            });
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'burn_classification_result.json';
+            link.click();
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermal Burn Severity Classifier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Background with animated gradient -->
+    <div class="main-bg">
+        <div class="gradient-overlay"></div>
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5">
+        <div class="row w-100 justify-content-center">
+            <div class="col-xl-8 col-lg-10 col-md-11">
+                <!-- Main Card -->
+                <div class="main-card shadow-lg">
+                    <!-- Header Section -->
+                    <div class="card-header-custom text-center">
+                        <div class="header-icon mb-3">
+                            <i class="fas fa-fire-flame-curved"></i>
+                        </div>
+                        <h1 class="display-4 fw-bold mb-2">Thermal Burn Classifier</h1>
+                        <p class="lead mb-0">Advanced AI-powered burn severity assessment</p>
+                        <div class="header-underline"></div>
+                    </div>
+
+                    <!-- Body Section -->
+                    <div class="card-body-custom">
+                        <!-- Error Messages -->
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                        <div class="alert-custom alert-danger mb-4" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {% for message in messages %}
+                            {{ message }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+
+                        <!-- Upload Section -->
+                        <div class="upload-section mb-5">
+                            <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                                <div class="upload-area" id="uploadArea">
+                                    <div class="upload-content">
+                                        <div class="upload-icon mb-3">
+                                            <i class="fas fa-cloud-upload-alt"></i>
+                                        </div>
+                                        <h5 class="upload-title mb-2">Drop your image here</h5>
+                                        <p class="upload-subtitle mb-3">or click to browse files</p>
+                                        <input type="file" class="file-input" id="file" name="file" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+                                        <div class="file-info">
+                                            <small class="text-muted">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                Supports: PNG, JPG, JPEG, GIF, WEBP • Max size: 16MB
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="text-center mt-4">
+                                    <button type="submit" class="btn-custom btn-primary" id="uploadBtn">
+                                        <span class="btn-icon">
+                                            <i class="fas fa-brain"></i>
+                                        </span>
+                                        <span class="btn-text">Analyze Burn Severity</span>
+                                        <div class="btn-loading d-none">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                        </div>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div id="imagePreview" class="preview-section d-none mb-5">
+                            <h6 class="section-title mb-3">
+                                <i class="fas fa-image me-2"></i>
+                                Selected Image
+                            </h6>
+                            <div class="preview-container">
+                                <img id="previewImg" src="" alt="Preview" class="preview-image">
+                                <div class="preview-overlay">
+                                    <div class="preview-info">
+                                        <span id="fileName"></span>
+                                        <span id="fileSize"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Classification Info -->
+                        <div class="classification-section">
+                            <h6 class="section-title mb-4">
+                                <i class="fas fa-chart-pie me-2"></i>
+                                Burn Severity Classifications
+                            </h6>
+                            <div class="row g-4">
+                                <div class="col-md-4">
+                                    <div class="severity-card severity-1">
+                                        <div class="severity-icon">
+                                            <i class="fas fa-leaf"></i>
+                                        </div>
+                                        <div class="severity-content">
+                                            <h6 class="severity-title">First Degree</h6>
+                                            <p class="severity-desc">Superficial burns affecting only the epidermis layer</p>
+                                            <div class="severity-features">
+                                                <span class="feature">• Redness</span>
+                                                <span class="feature">• Mild swelling</span>
+                                                <span class="feature">• Dry skin</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="severity-card severity-2">
+                                        <div class="severity-icon">
+                                            <i class="fas fa-fire"></i>
+                                        </div>
+                                        <div class="severity-content">
+                                            <h6 class="severity-title">Second Degree</h6>
+                                            <p class="severity-desc">Partial-thickness burns affecting epidermis and dermis</p>
+                                            <div class="severity-features">
+                                                <span class="feature">• Blisters</span>
+                                                <span class="feature">• Severe pain</span>
+                                                <span class="feature">• Swelling</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="severity-card severity-3">
+                                        <div class="severity-icon">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <div class="severity-content">
+                                            <h6 class="severity-title">Third Degree</h6>
+                                            <p class="severity-desc">Full-thickness burns through all skin layers</p>
+                                            <div class="severity-features">
+                                                <span class="feature">• White/charred</span>
+                                                <span class="feature">• No sensation</span>
+                                                <span class="feature">• Thick eschar</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Disclaimer -->
+                        <div class="disclaimer-section mt-5">
+                            <div class="disclaimer-card">
+                                <div class="disclaimer-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="disclaimer-content">
+                                    <h6 class="disclaimer-title">Medical Disclaimer</h6>
+                                    <p class="disclaimer-text">
+                                        This AI tool is designed for educational and research purposes only.
+                                        It should not be used as a substitute for professional medical diagnosis or treatment.
+                                        Always consult qualified healthcare professionals for medical assessment and care.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

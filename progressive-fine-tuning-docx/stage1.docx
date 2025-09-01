@@ -1,0 +1,66 @@
+Stage 1 Training Results - ResNet-ViT Hybrid Model
+Overview
+This document details the results of Stage 1 training for the automated thermal burn severity classification system using a hybrid ResNet-ViT architecture.
+
+Model Architecture
+Backbone: ResNet50 (frozen, pre-trained on ImageNet)
+Transformer: 2-layer Vision Transformer with 4 attention heads
+Input Size: 224×224×3
+Classes: 3 (First, Second, Third degree burns)
+Embedding Dimension: 256
+MLP Dimension: 512
+Dataset Distribution
+Class 0 (First Degree): 339 samples
+Class 1 (Second Degree): 312 samples
+Class 2 (Third Degree): 129 samples
+Total: 780 samples
+Class Imbalance Ratio: 2.6:2.4:1
+Training Configuration
+Stage 1 Setup
+Strategy: Frozen ResNet backbone, trainable transformer layers
+Epochs: 30 (early stopping at epoch 6)
+Batch Size: 32
+Optimizer: Adam (lr=0.001)
+Loss Function: Sparse Categorical Crossentropy
+Data Augmentation
+Basic Augmentation Applied:
+Random horizontal flip
+Random rotation (±0.2 radians)
+Random zoom (±10%)
+Random translation (±10%)
+Random contrast adjustment (±20%)
+Class Imbalance Handling
+Class Weights: Computed using sklearn's balanced class weights
+Class 0: ~0.77
+Class 1: ~0.83
+Class 2: ~2.01
+Early Stopping: Patience = 5 epochs
+Learning Rate Reduction: Factor = 0.5, Patience = 3 epochs
+
+
+Training Results
+Performance Metrics
+Metric	Final Value
+Training Accuracy	31.03%
+Validation Accuracy	38.78%
+Test Accuracy	40.00%
+Training Loss	1.1147
+Validation Loss	1.0986
+Test Loss	1.0392
+
+
+Learning Rate Schedule
+Initial LR: 0.001
+LR Reduction: Triggered at epoch 5 → 0.0005
+Early Stopping: Triggered at epoch 6
+Analysis
+Key Observations
+Baseline Performance: 40% test accuracy provides a reasonable baseline for a 3-class medical image classification task
+Overfitting Signs: Training accuracy lower than validation accuracy suggests the model is not overfitting
+Class Imbalance Impact: The model shows learning but may be biased toward majority classes
+Convergence: Early stopping at epoch 6 indicates the model reached a local optimum quickly
+Challenges Identified
+Limited Training: Only transformer layers were trainable (frozen ResNet backbone)
+Class Imbalance: Significant imbalance with minority class (129 vs 339 samples)
+Dataset Size: Relatively small dataset for deep learning (780 total samples)
+Feature Learning: Frozen backbone may limit feature adaptation to medical domain

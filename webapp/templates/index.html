@@ -7,8 +7,10 @@
     <title>Thermal Burn Severity Classifier</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
@@ -55,7 +57,8 @@
 
                         <!-- Upload Section -->
                         <div class="upload-section mb-5">
-                            <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                            <form action="{{ url_for('upload_file') }}" method="post"
+                                enctype="multipart/form-data" id="uploadForm">
                                 <div class="upload-area" id="uploadArea">
                                     <div class="upload-content">
                                         <div class="upload-icon mb-3">
@@ -63,7 +66,8 @@
                                         </div>
                                         <h5 class="upload-title mb-2">Drop your image here</h5>
                                         <p class="upload-subtitle mb-3">or click to browse files</p>
-                                        <input type="file" class="file-input" id="file" name="file" accept=".png,.jpg,.jpeg,.gif,.webp" required>
+                                        <input type="file" class="file-input" id="file" name="file"
+                                            accept=".png,.jpg,.jpeg,.gif,.webp" required>
                                         <div class="file-info">
                                             <small class="text-muted">
                                                 <i class="fas fa-info-circle me-1"></i>
@@ -119,7 +123,8 @@
                                         </div>
                                         <div class="severity-content">
                                             <h6 class="severity-title">First Degree</h6>
-                                            <p class="severity-desc">Superficial burns affecting only the epidermis layer</p>
+                                            <p class="severity-desc">Superficial burns affecting only the epidermis
+                                                layer</p>
                                             <div class="severity-features">
                                                 <span class="feature">• Redness</span>
                                                 <span class="feature">• Mild swelling</span>
@@ -135,7 +140,8 @@
                                         </div>
                                         <div class="severity-content">
                                             <h6 class="severity-title">Second Degree</h6>
-                                            <p class="severity-desc">Partial-thickness burns affecting epidermis and dermis</p>
+                                            <p class="severity-desc">Partial-thickness burns affecting epidermis and
+                                                dermis</p>
                                             <div class="severity-features">
                                                 <span class="feature">• Blisters</span>
                                                 <span class="feature">• Severe pain</span>
@@ -170,11 +176,13 @@
                                     <i class="fas fa-shield-alt"></i>
                                 </div>
                                 <div class="disclaimer-content">
-                                    <h6 class="disclaimer-title">Medical Disclaimer</h6>
+                                  =  <h6 class="disclaimer-title">Medical Disclaimer</h6>
                                     <p class="disclaimer-text">
                                         This AI tool is designed for educational and research purposes only.
-                                        It should not be used as a substitute for professional medical diagnosis or treatment.
-                                        Always consult qualified healthcare professionals for medical assessment and care.
+                                        It should not be used as a substitute for professional medical diagnosis or
+                                        treatment.
+                                        Always consult qualified healthcare professionals for medical assessment and
+                                        care.
                                     </p>
                                 </div>
                             </div>
@@ -188,6 +196,70 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- Debugging Script -->
+    <script>
+        console.log('DEBUG: Index page loaded');
+
+        // Debug form submission
+        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+            console.log('DEBUG: Upload form submitted');
+            const fileInput = document.getElementById('file');
+            if (fileInput.files.length > 0) {
+                console.log('DEBUG: File selected:', fileInput.files[0].name, 'Size:', fileInput.files[0].size);
+                console.log('DEBUG: File type:', fileInput.files[0].type);
+            } else {
+                console.log('DEBUG: No file selected');
+                e.preventDefault();
+                alert('Please select a file first');
+                return false;
+            }
+        });
+
+        // Debug file input change
+        document.getElementById('file').addEventListener('change', function (e) {
+            console.log('DEBUG: File input changed');
+            if (this.files.length > 0) {
+                console.log('DEBUG: File chosen:', this.files[0].name, this.files[0].size, this.files[0].type);
+
+                // Show preview
+                const previewSection = document.getElementById('imagePreview');
+                const previewImg = document.getElementById('previewImg');
+                const fileName = document.getElementById('fileName');
+                const fileSize = document.getElementById('fileSize');
+
+                if (previewSection && previewImg) {
+                    const file = this.files[0];
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImg.src = e.target.result;
+                        previewSection.classList.remove('d-none');
+                        if (fileName) fileName.textContent = file.name;
+                        if (fileSize) fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                        console.log('DEBUG: Image preview loaded');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        // Debug page load
+        window.addEventListener('load', function () {
+            console.log('DEBUG: Window fully loaded');
+        });
+
+        // Fix: Only open file manager once when clicking upload area
+        document.getElementById('uploadArea').addEventListener('click', function (e) {
+            const fileInput = document.getElementById('file');
+            if (e.target !== fileInput) {
+                fileInput.click();
+            }
+        });
+        // Prevent double opening
+        document.getElementById('file').addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+    </script>
 </body>
 
 </html>

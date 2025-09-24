@@ -87,6 +87,22 @@
                             </div>
                         </div>
 
+                        <!-- Debug Info -->
+                        <div class="alert alert-secondary" role="alert">
+                            <strong>DEBUG:</strong><br>
+                            image_path: {{ image_path }}<br>
+                            overlay_path: {{ overlay_path }}
+                        </div>
+
+                        <!-- Grad-CAM Overlay Display -->
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h5>Grad-CAM Overlay:</h5>
+                                <img src="{{ overlay_path }}" alt="Grad-CAM overlay" class="img-fluid rounded shadow mb-3"
+                                    style="max-height: 400px;">
+                            </div>
+                        </div>
+
                         <!-- Action Buttons -->
                         <div class="row mt-4">
                             <div class="col-12 text-center">

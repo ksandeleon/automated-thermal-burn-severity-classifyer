@@ -5,10 +5,10 @@ from model_utils import get_model_instance
 import uuid
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Change this in production
+app.secret_key = 'your-secret-key-here'
 
 # Configuration
-UPLOAD_FOLDER = 'static/uploads'
+UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')  # Use webapp/static/uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 MAX_FILE_SIZE = 16 * 1024 * 1024  # 16MB max file size
 
@@ -44,20 +44,52 @@ def upload_file():
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
         try:
+            print("DEBUG: Received upload request")
+            print("DEBUG: File name:", file.filename)
+            print("DEBUG: File path:", filepath)
             file.save(filepath)
+            print("DEBUG: File saved")
 
-            # Get model instance and make prediction
+            # Get model instance and make prediction (with gradcam)
             model = get_model_instance()
-            result, error = model.predict(filepath)
+            print("DEBUG: Model instance obtained")
+            result, error = model.predict(filepath, with_gradcam=True)
+            print("DEBUG: Prediction made:", result)
+            print("DEBUG: Prediction error:", error)
 
             if error:
                 flash(f'Prediction error: {error}')
                 os.remove(filepath)  # Clean up uploaded file
                 return redirect(url_for('index'))
 
+            # Save Grad-CAM overlay image
+            gradcam_overlay = result.get('gradcam_overlay')
+
+            overlay_filename = 'overlay_' + filename
+            overlay_path = os.path.join(app.config['UPLOAD_FOLDER'], overlay_filename)
+            print("DEBUG: Overlay path:", overlay_path)
+            print("DEBUG: gradcam_overlay type:", type(gradcam_overlay))
+            print("DEBUG: gradcam_overlay is None:", gradcam_overlay is None)
+
+            if gradcam_overlay is not None:
+                import cv2
+                print("DEBUG: Attempting to save overlay...")
+                success = cv2.imwrite(overlay_path, gradcam_overlay)
+                print("DEBUG: cv2.imwrite success:", success)
+                print("DEBUG: Overlay file exists after save:", os.path.exists(overlay_path))
+            else:
+                print("DEBUG: No gradcam_overlay to save")
+
+            # Final file existence check
+            print("DEBUG: Final check - Image exists:", os.path.exists(filepath))
+            print("DEBUG: Final check - Overlay exists:", os.path.exists(overlay_path))
+            print("DEBUG: Image path for template:", url_for('static', filename=f'uploads/{filename}'))
+            print("DEBUG: Overlay path for template:", url_for('static', filename=f'uploads/{overlay_filename}'))
+
             return render_template('result.html',
                                  result=result,
-                                 image_path=url_for('static', filename=f'uploads/{filename}'))
+                                 image_path=url_for('static', filename=f'uploads/{filename}'),
+                                 overlay_path=url_for('static', filename=f'uploads/{overlay_filename}'))
 
         except Exception as e:
             flash(f'Error processing file: {str(e)}')
@@ -103,6 +135,21 @@ def api_predict():
         if os.path.exists(filepath):
             os.remove(filepath)
         return jsonify({'error': str(e)}), 500
+
+@app.route('/debug/files')
+def debug_files():
+    """Debug route to check uploaded files"""
+    upload_dir = app.config['UPLOAD_FOLDER']
+    files = []
+    if os.path.exists(upload_dir):
+        for f in os.listdir(upload_dir):
+            file_path = os.path.join(upload_dir, f)
+            files.append({
+                'name': f,
+                'exists': os.path.exists(file_path),
+                'size': os.path.getsize(file_path) if os.path.exists(file_path) else 0
+            })
+    return jsonify({'upload_folder': upload_dir, 'files': files})
 
 @app.errorhandler(413)
 def too_large(e):

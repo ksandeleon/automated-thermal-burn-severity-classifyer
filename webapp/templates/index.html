@@ -62,11 +62,12 @@
                                     enctype="multipart/form-data" id="uploadForm">
                                     <div class="upload-area" id="uploadArea">
                                         <div class="upload-content" id="uploadContent">
-                                            <div class="upload-icon mb-3">
+                                            <div class="upload-icon mb-3" id="uploadIcon">
                                                 <i class="fas fa-cloud-upload-alt"></i>
                                             </div>
-                                            <h5 class="upload-title mb-2">Drop your image here</h5>
-                                            <p class="upload-subtitle mb-3">or click to browse files</p>
+                                            <h5 class="upload-title mb-2" id="uploadTitle">Drop your image here</h5>
+                                            <p class="upload-subtitle mb-3" id="uploadSubtitle">or click to browse files
+                                            </p>
                                             <input type="file" class="file-input" id="file" name="file"
                                                 accept=".png,.jpg,.jpeg,.gif,.webp" required>
                                             <div class="file-info">
@@ -104,7 +105,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="d-flex justify-content-center gap-3 mt-4">
+                                        <div class="d-flex justify-content-center gap-3 mt-4" id="previewBtnGroup">
                                             <button type="button" class="btn-custom btn-secondary" id="retryBtn">
                                                 <span class="btn-icon"><i class="fas fa-rotate-right"></i></span>
                                                 <span class="btn-text">Choose Another Image</span>
@@ -313,7 +314,36 @@
         document.getElementById('file').addEventListener('click', function (e) {
             e.stopPropagation();
         });
+
+        // Mobile-friendly upload caption
+        function updateUploadCaptionsForMobile() {
+            const isMobile = window.matchMedia("(max-width: 600px)").matches;
+            const uploadTitle = document.getElementById('uploadTitle');
+            const uploadSubtitle = document.getElementById('uploadSubtitle');
+            const uploadIcon = document.getElementById('uploadIcon');
+            if (isMobile) {
+                if (uploadTitle) uploadTitle.textContent = "Tap to select or take a photo";
+                if (uploadSubtitle) uploadSubtitle.textContent = "Camera and gallery supported";
+                if (uploadIcon) uploadIcon.innerHTML = '<i class="fas fa-camera"></i>';
+            } else {
+                if (uploadTitle) uploadTitle.textContent = "Drop your image here";
+                if (uploadSubtitle) uploadSubtitle.textContent = "or click to browse files";
+                if (uploadIcon) uploadIcon.innerHTML = '<i class="fas fa-cloud-upload-alt"></i>';
+            }
+        }
+        window.addEventListener('load', updateUploadCaptionsForMobile);
+        window.addEventListener('resize', updateUploadCaptionsForMobile);
     </script>
+
+    <style>
+        @media (max-width: 600px) {
+            #previewBtnGroup {
+                flex-direction: column !important;
+                gap: 1rem !important;
+                align-items: stretch !important;
+            }
+        }
+    </style>
 </body>
 
 </html>

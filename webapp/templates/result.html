@@ -16,9 +16,14 @@
             <div class="col-md-10">
                 <div class="card shadow">
                     <div class="card-header text-center bg-success text-white">
-                        <h1 class="card-title mb-0">🔥 Classification Results</h1>
+                        <h1 class="card-title mb-0">Classification Results</h1>
                     </div>
                     <div class="card-body">
+                        <!-- Debug Toggle -->
+                        <div class="mb-3 text-end">
+                            <label class="form-check-label me-2" for="debugToggle">Debug Mode</label>
+                            <input type="checkbox" id="debugToggle" class="form-check-input">
+                        </div>
                         <div class="row">
                             <!-- Image Display -->
                             <div class="col-md-6">
@@ -87,15 +92,19 @@
                             </div>
                         </div>
 
-                        <!-- Debug Info -->
-                        <div class="alert alert-secondary" role="alert">
+                        <!-- Debug Info (hidden by default) -->
+                        <div class="alert alert-secondary mt-3" id="debugInfo" style="display:none;" role="alert">
                             <strong>DEBUG:</strong><br>
                             image_path: {{ image_path }}<br>
-                            overlay_path: {{ overlay_path }}
+                            overlay_path: {{ overlay_path }}<br>
+                            Model Prediction: {{ result.predicted_class }}<br>
+                            Confidence: {{ "%.2f"|format(result.confidence * 100) }}%<br>
+                            Probabilities: {{ result.all_probabilities }}<br>
+                            <!-- Add more debug info here if needed -->
                         </div>
 
-                        <!-- Grad-CAM Overlay Display -->
-                        <div class="row mb-4">
+                        <!-- Grad-CAM Overlay (hidden by default) -->
+                        <div class="row mb-4" id="gradcamSection" style="display:none;">
                             <div class="col-md-6">
                                 <h5>Grad-CAM Overlay:</h5>
                                 <img src="{{ overlay_path }}" alt="Grad-CAM overlay" class="img-fluid rounded shadow mb-3"
@@ -106,12 +115,9 @@
                         <!-- Action Buttons -->
                         <div class="row mt-4">
                             <div class="col-12 text-center">
-                                <a href="{{ url_for('index') }}" class="btn btn-primary me-2">
+                                <a href="{{ url_for('index') }}" class="btn btn-primary">
                                     🔄 Classify Another Image
                                 </a>
-                                <button class="btn btn-secondary" onclick="downloadResult()">
-                                    📄 Download Result
-                                </button>
                             </div>
                         </div>
 
@@ -130,28 +136,17 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function downloadResult() {
-            const resultData = {
-                prediction: "{{ result.predicted_class }}",
-                confidence: "{{ "%.2f"|format(result.confidence * 100) }}%",
-                probabilities: {
-                    {
-                        result.all_probabilities % 20 % 7 C % 20 tojson
-                    }
-                },
-                timestamp: new Date().toISOString()
-            };
-
-            const dataStr = JSON.stringify(resultData, null, 2);
-            const dataBlob = new Blob([dataStr], {
-                type: 'application/json'
-            });
-
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(dataBlob);
-            link.download = 'burn_classification_result.json';
-            link.click();
-        }
+        document.getElementById('debugToggle').addEventListener('change', function () {
+            const debugInfo = document.getElementById('debugInfo');
+            const gradcamSection = document.getElementById('gradcamSection');
+            if (this.checked) {
+                debugInfo.style.display = '';
+                gradcamSection.style.display = '';
+            } else {
+                debugInfo.style.display = 'none';
+                gradcamSection.style.display = 'none';
+            }
+        });
     </script>
 </body>
 

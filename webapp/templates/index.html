@@ -55,62 +55,77 @@
                         {% endif %}
                         {% endwith %}
 
-                        <!-- Upload Section -->
-                        <div class="upload-section mb-5">
-                            <form action="{{ url_for('upload_file') }}" method="post"
-                                enctype="multipart/form-data" id="uploadForm">
-                                <div class="upload-area" id="uploadArea">
-                                    <div class="upload-content">
-                                        <div class="upload-icon mb-3">
-                                            <i class="fas fa-cloud-upload-alt"></i>
-                                        </div>
-                                        <h5 class="upload-title mb-2">Drop your image here</h5>
-                                        <p class="upload-subtitle mb-3">or click to browse files</p>
-                                        <input type="file" class="file-input" id="file" name="file"
-                                            accept=".png,.jpg,.jpeg,.gif,.webp" required>
-                                        <div class="file-info">
-                                            <small class="text-muted">
-                                                <i class="fas fa-info-circle me-1"></i>
-                                                Supports: PNG, JPG, JPEG, GIF, WEBP • Max size: 16MB
-                                            </small>
+                        <!-- Upload & Preview Section -->
+                        <div id="uploadPreviewContainer" class="mb-5">
+                            <div class="upload-section" id="uploadSection">
+                                <form action="{{ url_for('upload_file') }}" method="post"
+                                    enctype="multipart/form-data" id="uploadForm">
+                                    <div class="upload-area" id="uploadArea">
+                                        <div class="upload-content">
+                                            <div class="upload-icon mb-3">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                            </div>
+                                            <h5 class="upload-title mb-2">Drop your image here</h5>
+                                            <p class="upload-subtitle mb-3">or click to browse files</p>
+                                            <input type="file" class="file-input" id="file" name="file"
+                                                accept=".png,.jpg,.jpeg,.gif,.webp" required>
+                                            <div class="file-info">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-info-circle me-1"></i>
+                                                    Supports: PNG, JPG, JPEG, GIF, WEBP • Max size: 16MB
+                                                </small>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-
-                                <!-- Submit Button -->
-                                <div class="text-center mt-4">
-                                    <button type="submit" class="btn-custom btn-primary" id="uploadBtn">
-                                        <span class="btn-icon">
-                                            <i class="fas fa-brain"></i>
-                                        </span>
-                                        <span class="btn-text">Analyze Burn Severity</span>
-                                        <div class="btn-loading d-none">
-                                            <i class="fas fa-spinner fa-spin"></i>
-                                        </div>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Image Preview -->
-                        <div id="imagePreview" class="preview-section d-none mb-5">
-                            <h6 class="section-title mb-3">
-                                <i class="fas fa-image me-2"></i>
-                                Selected Image
-                            </h6>
-                            <div class="preview-container">
-                                <img id="previewImg" src="" alt="Preview" class="preview-image">
-                                <div class="preview-overlay">
-                                    <div class="preview-info">
-                                        <span id="fileName"></span>
-                                        <span id="fileSize"></span>
+                                    <div class="text-center mt-4" id="uploadBtnContainer">
+                                        <button type="submit" class="btn-custom btn-primary" id="uploadBtn">
+                                            <span class="btn-icon">
+                                                <i class="fas fa-brain"></i>
+                                            </span>
+                                            <span class="btn-text">Analyze Burn Severity</span>
+                                            <div class="btn-loading d-none">
+                                                <i class="fas fa-spinner fa-spin"></i>
+                                            </div>
+                                        </button>
                                     </div>
-                                </div>
+
+                                    <!-- Image Preview (hidden until file selected) -->
+                                    <div id="imagePreviewSection" class="preview-section d-none text-center">
+                                        <h6 class="section-title mb-3">
+                                            <i class="fas fa-image me-2"></i>
+                                            Selected Image
+                                        </h6>
+                                        <div class="preview-container mx-auto" style="max-width:400px;">
+                                            <img id="previewImg" src="" alt="Preview" class="preview-image">
+                                            <div class="preview-overlay">
+                                                <div class="preview-info">
+                                                    <span id="fileName"></span>
+                                                    <span id="fileSize"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-center gap-3 mt-4">
+                                            <button type="button" class="btn-custom btn-secondary" id="retryBtn">
+                                                <span class="btn-icon"><i class="fas fa-rotate-right"></i></span>
+                                                <span class="btn-text">Choose Another Image</span>
+                                            </button>
+                                            <button type="submit" class="btn-custom btn-primary" id="uploadBtnPreview">
+                                                <span class="btn-icon">
+                                                    <i class="fas fa-brain"></i>
+                                                </span>
+                                                <span class="btn-text">Analyze Burn Severity</span>
+                                                <div class="btn-loading d-none">
+                                                    <i class="fas fa-spinner fa-spin"></i>
+                                                </div>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
                         </div>
 
                         <!-- Classification Info -->
-                        <div class="classification-section">
+                        <section class="classification-section">
                             <h6 class="section-title mb-4">
                                 <i class="fas fa-chart-pie me-2"></i>
                                 Burn Severity Classifications
@@ -167,16 +182,16 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </section>
 
                         <!-- Disclaimer -->
-                        <div class="disclaimer-section mt-5">
+                        <section class="disclaimer-section mt-5">
                             <div class="disclaimer-card">
                                 <div class="disclaimer-icon">
                                     <i class="fas fa-shield-alt"></i>
                                 </div>
                                 <div class="disclaimer-content">
-                                  =  <h6 class="disclaimer-title">Medical Disclaimer</h6>
+                                    <h6 class="disclaimer-title">Medical Disclaimer</h6>
                                     <p class="disclaimer-text">
                                         This AI tool is designed for educational and research purposes only.
                                         It should not be used as a substitute for professional medical diagnosis or
@@ -186,7 +201,7 @@
                                     </p>
                                 </div>
                             </div>
-                        </div>
+                        </section>
                     </div>
                 </div>
             </div>
@@ -216,32 +231,48 @@
             }
         });
 
-        // Debug file input change
-        document.getElementById('file').addEventListener('change', function (e) {
-            console.log('DEBUG: File input changed');
-            if (this.files.length > 0) {
-                console.log('DEBUG: File chosen:', this.files[0].name, this.files[0].size, this.files[0].type);
+        const fileInput = document.getElementById('file');
+        const uploadSection = document.getElementById('uploadSection');
+        const imagePreviewSection = document.getElementById('imagePreviewSection');
+        const previewImg = document.getElementById('previewImg');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const retryBtn = document.getElementById('retryBtn');
+        const uploadBtnPreview = document.getElementById('uploadBtnPreview');
 
-                // Show preview
-                const previewSection = document.getElementById('imagePreview');
-                const previewImg = document.getElementById('previewImg');
-                const fileName = document.getElementById('fileName');
-                const fileSize = document.getElementById('fileSize');
+        function showPreviewUI(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                previewImg.src = e.target.result;
+                if (fileName) fileName.textContent = file.name;
+                if (fileSize) fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                imagePreviewSection.classList.remove('d-none');
+                document.getElementById('uploadBtnContainer').classList.add('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
 
-                if (previewSection && previewImg) {
-                    const file = this.files[0];
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        previewImg.src = e.target.result;
-                        previewSection.classList.remove('d-none');
-                        if (fileName) fileName.textContent = file.name;
-                        if (fileSize) fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-                        console.log('DEBUG: Image preview loaded');
-                    };
-                    reader.readAsDataURL(file);
+        if (fileInput) {
+            fileInput.addEventListener('change', function (e) {
+                if (this.files.length > 0) {
+                    showPreviewUI(this.files[0]);
                 }
-            }
-        });
+            });
+        }
+
+        if (retryBtn) {
+            retryBtn.addEventListener('click', function () {
+                fileInput.value = '';
+                fileName.textContent = '';
+                fileSize.textContent = '';
+                previewImg.src = '';
+                imagePreviewSection.classList.add('d-none');
+                document.getElementById('uploadBtnContainer').classList.remove('d-none');
+                // Show the upload card again
+                uploadSection.classList.remove('d-none');
+                fileInput.click();
+            });
+        }
 
         // Debug page load
         window.addEventListener('load', function () {

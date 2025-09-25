@@ -4,90 +4,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classification Result - Thermal Burn Classifier</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Classification Result - Skin Burn Classifier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .debug-switch:checked {
+            background-color: var(--accent-1) !important;
+            border-color: var(--accent-2) !important;
+            box-shadow: 0 0 0 0.2rem rgba(165, 182, 141, 0.25);
+        }
+
+        .debug-switch {
+            background-color: var(--secondary-bg);
+            border-color: var(--accent-1);
+            transition: background 0.3s, border 0.3s;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="card shadow">
-                    <div class="card-header text-center bg-success text-white">
-                        <h1 class="card-title mb-0">Classification Results</h1>
-                    </div>
-                    <div class="card-body">
-                        <!-- Debug Toggle -->
-                        <div class="mb-3 text-end">
-                            <label class="form-check-label me-2" for="debugToggle">Debug Mode</label>
-                            <input type="checkbox" id="debugToggle" class="form-check-input">
+    <!-- Background with animated gradient -->
+    <div class="main-bg">
+        <div class="gradient-overlay"></div>
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-5">
+        <div class="row w-100 justify-content-center">
+            <div class="col-xl-8 col-lg-10 col-md-11">
+                <div class="main-card shadow-lg">
+                    <!-- Header Section -->
+                    <div class="card-header-custom text-center">
+                        <div class="header-icon mb-3">
+                            <i class="fas fa-fire-flame-curved"></i>
                         </div>
-                        <div class="row">
+                        <h1 class="display-4 fw-bold mb-2">Classification Results</h1>
+                        <p class="lead mb-0">AI-Powered Skin Burn Severity Analysis</p>
+                        <div class="header-underline"></div>
+                    </div>
+                    <!-- Body Section -->
+                    <div class="card-body-custom">
+                        <!-- Debug Toggle -->
+                        <div class="mb-4 d-flex justify-content-end align-items-center gap-2" style="min-width:220px;">
+                            <span class="fw-semibold text-dark d-flex align-items-center gap-2"
+                                style="font-size:1.05rem;">
+                                <i class="fas fa-bug text-secondary"></i> Debug Mode
+                            </span>
+                            <div class="form-switch d-flex align-items-center">
+                                <input type="checkbox" id="debugToggle" class="form-check-input debug-switch"
+                                    style="width:2.5em;height:1.5em;cursor:pointer;vertical-align:middle;">
+                            </div>
+                        </div>
+                        <div class="row g-4">
                             <!-- Image Display -->
                             <div class="col-md-6">
-                                <h5>Analyzed Image:</h5>
-                                <img src="{{ image_path }}" alt="Uploaded burn image"
-                                    class="img-fluid rounded shadow mb-3" style="max-height: 400px;">
+                                <h5 class="section-title mb-3">
+                                    <i class="fas fa-image me-2"></i>Analyzed Image
+                                </h5>
+                                <div class="preview-container mx-auto" style="max-width:400px;">
+                                    <img src="{{ image_path }}" alt="Uploaded burn image" class="preview-image">
+                                </div>
                             </div>
-
                             <!-- Results -->
                             <div class="col-md-6">
-                                <h5>Classification Result:</h5>
-
-                                <!-- Primary Result -->
-                                <div
-                                    class="card mb-3 {% if result.class_id == 0 %}border-success{% elif result.class_id == 1 %}border-warning{% else %}border-danger{% endif %}">
-                                    <div class="card-body text-center">
-                                        <h3
-                                            class="card-title {% if result.class_id == 0 %}text-success{% elif result.class_id == 1 %}text-warning{% else %}text-danger{% endif %}">
+                                <h5 class="section-title mb-3">
+                                    <i class="fas fa-brain me-2"></i>Classification Result
+                                </h5>
+                                <div class="result-card card mb-4 p-3 border-0 shadow-sm">
+                                    <div class="text-center mb-3">
+                                        <h2
+                                            class="fw-bold mb-2 result-title d-flex align-items-center justify-content-center gap-2 {% if result.class_id == 0 %}text-success{% elif result.class_id == 1 %}text-warning{% else %}text-danger{% endif %}">
+                                            {% if result.class_id == 0 %}<i class="fas fa-leaf text-success"></i>
+                                            {% elif result.class_id == 1 %}<i class="fas fa-fire text-warning"></i>
+                                            {% else %}<i class="fas fa-exclamation-triangle text-danger"></i>
+                                            {% endif %}
                                             {{ result.predicted_class }}
-                                        </h3>
-                                        <p class="card-text">
-                                            <strong>Confidence:</strong>
-                                            {{ "%.2f"|format(result.confidence * 100) }}%
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <!-- Detailed Probabilities -->
-                                <h6>Detailed Probabilities:</h6>
-                                <div class="mb-3">
-                                    {% for class_name, probability in result.all_probabilities.items() %}
-                                    <div class="mb-2">
-                                        <div class="d-flex justify-content-between">
-                                            <span>{{ class_name }}:</span>
-                                            <span>{{ "%.2f"|format(probability * 100) }}%</span>
+                                        </h2>
+                                        <div class="confidence-box mx-auto mb-2 p-2 rounded-3 bg-light border">
+                                            <span class="fw-semibold text-dark">Confidence:</span>
+                                            <span
+                                                class="fs-5 fw-bold ms-2">{{ "%.2f"|format(result.confidence * 100) }}%</span>
                                         </div>
-                                        <div class="progress" style="height: 10px;">
-                                            <div class="progress-bar
+                                    </div>
+                                    <h6 class="mb-2">Detailed Probabilities:</h6>
+                                    <div class="mb-3">
+                                        {% for class_name, probability in result.all_probabilities.items() %}
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-semibold">
+                                                    {% if loop.index == 1 %}<i
+                                                        class="fas fa-leaf text-success me-1"></i>{% endif %}
+                                                    {% if loop.index == 2 %}<i
+                                                        class="fas fa-fire text-warning me-1"></i>{% endif %}
+                                                    {% if loop.index == 3 %}<i
+                                                        class="fas fa-exclamation-triangle text-danger me-1"></i>{% endif %}
+                                                    {{ class_name }}:
+                                                </span>
+                                                <span
+                                                    class="fw-bold">{{ "%.2f"|format(probability * 100) }}%</span>
+                                            </div>
+                                            <div class="progress custom-progress"
+                                                style="height: 12px; background: #f3f3f3; border-radius: 8px;">
+                                                <div class="progress-bar
                                                     {% if loop.index == 1 %}bg-success
                                                     {% elif loop.index == 2 %}bg-warning
                                                     {% else %}bg-danger
                                                     {% endif %}" role="progressbar"
-                                                style="width: {{ probability * 100 }}%">
+                                                    style="width: {{ probability * 100 }}%; border-radius: 8px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1);">
+                                                </div>
                                             </div>
                                         </div>
+                                        {% endfor %}
                                     </div>
-                                    {% endfor %}
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Additional Info -->
-                                <div class="alert alert-info" role="alert">
-                                    <h6>About {{ result.predicted_class }}:</h6>
-                                    {% if result.class_id == 0 %}
-                                    <p>First-degree burns are the mildest form, affecting only the outer layer of skin
-                                        (epidermis).
-                                        They typically cause redness and pain but heal within a few days.</p>
-                                    {% elif result.class_id == 1 %}
-                                    <p>Second-degree burns affect both the outer layer and the underlying layer of skin.
-                                        They may cause swelling, severe pain, and blistering.</p>
-                                    {% else %}
-                                    <p>Third-degree burns are the most severe, affecting all layers of skin and
-                                        potentially
-                                        underlying tissues. They require immediate medical attention.</p>
-                                    {% endif %}
+                        <!-- Grad-CAM Overlay (hidden by default) -->
+                        <div class="row mb-4" id="gradcamSection" style="display:none;">
+                            <div class="col-md-6">
+                                <h5 class="section-title mb-3">
+                                    <i class="fas fa-layer-group me-2"></i>Grad-CAM Overlay
+                                </h5>
+                                <div class="preview-container mx-auto" style="max-width:400px;">
+                                    <img src="{{ overlay_path }}" alt="Grad-CAM overlay" class="preview-image">
                                 </div>
                             </div>
                         </div>
@@ -100,41 +148,148 @@
                             Model Prediction: {{ result.predicted_class }}<br>
                             Confidence: {{ "%.2f"|format(result.confidence * 100) }}%<br>
                             Probabilities: {{ result.all_probabilities }}<br>
-                            <!-- Add more debug info here if needed -->
                         </div>
 
-                        <!-- Grad-CAM Overlay (hidden by default) -->
-                        <div class="row mb-4" id="gradcamSection" style="display:none;">
-                            <div class="col-md-6">
-                                <h5>Grad-CAM Overlay:</h5>
-                                <img src="{{ overlay_path }}" alt="Grad-CAM overlay" class="img-fluid rounded shadow mb-3"
-                                    style="max-height: 400px;">
+                        <!-- Primary Classification Results Section -->
+                        <section class="mt-4">
+                            <div class="info-card p-4 rounded-4 shadow-sm mb-4"
+                                style="background: linear-gradient(135deg, #eafaf1 0%, #e3f6fd 100%);">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="info-icon me-3">
+                                        {% if result.class_id == 0 %}<i class="fas fa-leaf text-success fa-lg"></i>
+                                        {% elif result.class_id == 1 %}<i class="fas fa-fire text-warning fa-lg"></i>
+                                        {% else %}<i class="fas fa-exclamation-triangle text-danger fa-lg"></i>
+                                        {% endif %}
+                                    </span>
+                                    <h5 class="fw-bold mb-0 text-dark">Primary Classification Results</h5>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Severity Details:</strong>
+                                    {% if result.class_id == 0 %}
+                                    <p class="mb-2">First-degree burns are the mildest form, affecting only the outer
+                                        layer
+                                        of skin (epidermis). They typically cause redness and pain but heal within a few
+                                        days.</p>
+                                    {% elif result.class_id == 1 %}
+                                    <p class="mb-2">Second-degree burns affect both the outer layer and the underlying
+                                        layer
+                                        of skin. They may cause swelling, severe pain, and blistering.</p>
+                                    {% else %}
+                                    <p class="mb-2">Third-degree burns are the most severe, affecting all layers of skin
+                                        and
+                                        potentially underlying tissues. They require immediate medical attention.</p>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Precautions:</strong>
+                                    {% if result.class_id == 0 %}
+                                    <ul class="mb-2">
+                                        <li>Avoid further sun or heat exposure.</li>
+                                        <li>Keep the area clean and dry.</li>
+                                        <li>Use soothing lotions or cool compresses.</li>
+                                    </ul>
+                                    {% elif result.class_id == 1 %}
+                                    <ul class="mb-2">
+                                        <li>Do not break blisters.</li>
+                                        <li>Apply sterile, non-stick bandages.</li>
+                                        <li>Monitor for signs of infection.</li>
+                                    </ul>
+                                    {% else %}
+                                    <ul class="mb-2">
+                                        <li>Cover the burn with a clean, dry cloth.</li>
+                                        <li>Do not apply ointments or ice.</li>
+                                        <li>Seek emergency medical care immediately.</li>
+                                    </ul>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <strong>Decision Support:</strong>
+                                    {% if result.class_id == 0 %}
+                                    <p>If pain or redness worsens, or if the burn covers a large area, consult a
+                                        healthcare
+                                        provider.</p>
+                                    {% elif result.class_id == 1 %}
+                                    <p>If the burn is larger than 3 inches, on the face/hands/genitals, or if signs of
+                                        infection appear, seek medical attention.</p>
+                                    {% else %}
+                                    <p>Third-degree burns always require professional medical evaluation and treatment.
+                                    </p>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
+                        </section>
+                        <!-- Emergency and Medical Guidance Section -->
+                        <section class="mb-4">
+                            <div class="info-card p-4 rounded-4 shadow-sm"
+                                style="background: linear-gradient(135deg, #fffbe6 0%, #ffeaea 100%);">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="info-icon me-3"><i
+                                            class="fas fa-ambulance text-danger fa-lg"></i></span>
+                                    <h5 class="fw-bold mb-0 text-dark">Emergency & Medical Guidance</h5>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Emergency Assessment Indicators:</strong>
+                                    <ul class="mb-2">
+                                        <li>Burns covering large areas or critical locations (face, hands, feet,
+                                            genitals).</li>
+                                        <li>Signs of shock (pale, clammy skin, rapid pulse).</li>
+                                        <li>Difficulty breathing or burns to airway.</li>
+                                    </ul>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>First Aid Instructions:</strong>
+                                    <ul class="mb-2">
+                                        <li>Remove the person from the source of the burn.</li>
+                                        <li>Cool the burn with running water (not ice) for 10-20 minutes.</li>
+                                        <li>Cover with a clean, non-stick bandage.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <strong>When to See a Healthcare Provider:</strong>
+                                    <ul>
+                                        <li>If the burn is deep, large, or on sensitive areas.</li>
+                                        <li>If there are signs of infection (pus, increased pain, redness).</li>
+                                        <li>If healing does not progress or if in doubt, seek medical advice.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
 
                         <!-- Action Buttons -->
                         <div class="row mt-4">
                             <div class="col-12 text-center">
-                                <a href="{{ url_for('index') }}" class="btn btn-primary">
-                                    🔄 Classify Another Image
+                                <a href="{{ url_for('index') }}" class="btn-custom btn-primary">
+                                    <span class="btn-icon"><i class="fas fa-rotate-right"></i></span>
+                                    <span class="btn-text">Classify Another Image</span>
                                 </a>
                             </div>
                         </div>
 
                         <!-- Disclaimer -->
-                        <div class="alert alert-warning mt-4" role="alert">
-                            <strong>⚠️ Medical Disclaimer:</strong> This AI classification is for educational/research
-                            purposes only.
-                            For actual medical diagnosis and treatment, please consult qualified medical professionals
-                            immediately.
-                        </div>
+                        <section class="disclaimer-section mt-5">
+                            <div class="disclaimer-card">
+                                <div class="disclaimer-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="disclaimer-content">
+                                    <h6 class="disclaimer-title">Medical Disclaimer</h6>
+                                    <p class="disclaimer-text">
+                                        This AI tool is designed for educational and research purposes only. It should
+                                        not be used as a substitute for professional medical diagnosis or treatment.
+                                        Always consult qualified healthcare professionals for medical assessment and
+                                        care.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
         document.getElementById('debugToggle').addEventListener('change', function () {
             const debugInfo = document.getElementById('debugInfo');

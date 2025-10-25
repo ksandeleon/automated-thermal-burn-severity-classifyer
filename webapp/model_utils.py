@@ -7,7 +7,13 @@ import matplotlib.pyplot as plt
 class BurnClassifier:
     def __init__(self, model_path=None):
         self.model = None
-        self.class_names = ['First Degree Burn', 'Second Degree Burn', 'Third Degree Burn']
+        self.class_names = [
+            'First Degree Burn',
+            'Second Degree Burn',
+            'Third Degree Burn',
+            'Fourth Degree Burn',
+            'No Burn/Normal Skin'
+        ]
         self.img_size = (224, 224)
 
         if model_path and os.path.exists(model_path):
@@ -145,7 +151,7 @@ def get_model_instance():
     """Get a singleton instance of the burn classifier"""
     if not hasattr(get_model_instance, 'instance'):
 
-        model_path = os.path.join(os.path.dirname(__file__), '..', 'checkpoints', 'PROPESI', 'hybrid_resnet_transformer_finetunedtransformerlayers.h5')
+        model_path = os.path.join(os.path.dirname(__file__), '..', 'real-checkpoints', 'finalfinetuning.h5')
         print(f"Initializing model with file: {model_path}")
         get_model_instance.instance = BurnClassifier(model_path)
     return get_model_instance.instance

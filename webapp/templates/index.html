@@ -11,6 +11,187 @@
         rel="stylesheet">
     <link rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Mobile-specific styles integrated -->
+    <style>
+        /* Mobile-specific tap/hold styles */
+        .mobile-upload-container {
+            position: relative;
+            display: none;
+        }
+
+        .mobile-upload-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .mobile-upload-icon i {
+            font-size: 3.5rem;
+            color: var(--white);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        /* Progress ring for hold animation */
+        .progress-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid var(--white);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            animation: none;
+        }
+
+        .progress-ring.active {
+            opacity: 1;
+            animation: spin 1.5s linear infinite;
+        }
+
+        <blade keyframes|%20spin%20%7B>0% {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        100% {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+        }
+
+        /* Hold progress indicator */
+        .hold-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg,
+                    transparent 0deg,
+                    rgba(255, 255, 255, 0.3) 0deg,
+                    transparent 0deg);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .hold-progress.active {
+            opacity: 1;
+        }
+
+        /* Mobile instructions */
+        .mobile-instructions {
+            display: none;
+            text-align: center;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .mobile-instructions.show {
+            display: block;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .instruction-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+        }
+
+        /* Haptic feedback simulation */
+        .mobile-upload-icon.tap-feedback {
+            transform: scale(0.95);
+        }
+
+        .mobile-upload-icon.hold-feedback {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(165, 182, 141, 0.6);
+        }
+
+        /* Responsive display logic */
+        <blade media|%20(min-width%3A%20769px)%20%7B>.mobile-upload-container {
+            display: none !important;
+        }
+
+        .desktop-upload-container {
+            display: block;
+        }
+        }
+
+        <blade media|%20(max-width%3A%20768px)%20%7B>.mobile-upload-container {
+            display: block !important;
+        }
+
+        .desktop-upload-container {
+            display: none;
+        }
+        }
+
+        <blade media|%20(max-width%3A%20576px)%20%7B>.mobile-upload-icon {
+            width: 100px;
+            height: 100px;
+        }
+
+        .mobile-upload-icon i {
+            font-size: 2.5rem;
+        }
+
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+        }
+
+        #previewBtnGroup {
+            flex-direction: column !important;
+            gap: 1rem !important;
+            align-items: stretch !important;
+        }
+        }
+
+        <blade keyframes|%20fadeInUp%20%7B>from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        }
+    </style>
 </head>
 
 <body>
@@ -60,7 +241,32 @@
                             <div class="upload-section" id="uploadSection">
                                 <form action="{{ url_for('upload_file') }}" method="post"
                                     enctype="multipart/form-data" id="uploadForm">
-                                    <div class="upload-area" id="uploadArea">
+
+                                    <!-- Mobile Upload Interface -->
+                                    <div class="mobile-upload-container" id="mobileUploadContainer">
+                                        <div class="mobile-upload-icon" id="mobileUploadIcon">
+                                            <div class="progress-ring" id="progressRing"></div>
+                                            <div class="hold-progress" id="holdProgress"></div>
+                                            <i class="fas fa-camera" id="mobileUploadIconSymbol"></i>
+                                        </div>
+                                        <div class="mobile-instructions" id="mobileInstructions">
+                                            <div class="instruction-item">
+                                                <div class="instruction-icon"><i class="fas fa-hand-pointer"></i></div>
+                                                <span>Tap to select from gallery</span>
+                                            </div>
+                                            <div class="instruction-item">
+                                                <div class="instruction-icon"><i class="fas fa-stopwatch"></i></div>
+                                                <span>Hold for 1.5s to open camera</span>
+                                            </div>
+                                        </div>
+                                        <input type="file" id="mobileFileInput" accept=".png,.jpg,.jpeg,.gif,.webp"
+                                            style="display: none;">
+                                        <input type="file" id="mobileCameraInput" accept=".png,.jpg,.jpeg,.gif,.webp"
+                                            capture="camera" style="display: none;">
+                                    </div>
+
+                                    <!-- Desktop Upload Interface -->
+                                    <div class="upload-area desktop-upload-container" id="uploadArea">
                                         <div class="upload-content" id="uploadContent">
                                             <div class="upload-icon mb-3" id="uploadIcon">
                                                 <i class="fas fa-cloud-upload-alt"></i>
@@ -336,12 +542,11 @@
     </script>
 
     <style>
-        @media (max-width: 600px) {
-            #previewBtnGroup {
-                flex-direction: column !important;
-                gap: 1rem !important;
-                align-items: stretch !important;
-            }
+        <blade media|%20(max-width%3A%20600px)%20%7B>#previewBtnGroup {
+            flex-direction: column !important;
+            gap: 1rem !important;
+            align-items: stretch !important;
+        }
         }
     </style>
 </body>

@@ -1,4 +1,4 @@
-// Enhanced JavaScript for Professional Burn Classifier
+// Enhanced JavaScript for Professional Burn Classifier with Mobile Support
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('file');
     const imagePreview = document.getElementById('imagePreview');
@@ -9,8 +9,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileName = document.getElementById('fileName');
     const fileSize = document.getElementById('fileSize');
 
-    // Enhanced file input handling with drag & drop
-    if (fileInput && uploadArea) {
+    // Mobile detection utility
+    const isMobile = () => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               window.matchMedia("(max-width: 768px)").matches;
+    };
+
+    console.log('DEBUG: Device type:', isMobile() ? 'Mobile' : 'Desktop');
+
+    // Mobile-specific functionality
+    if (isMobile()) {
+        setupMobileUpload();
+    }
+
+    // Enhanced file input handling with drag & drop (desktop)
+    if (fileInput && uploadArea && !isMobile()) {
         // Prevent default drag behaviors
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, preventDefaults, false);
@@ -343,3 +356,227 @@ document.addEventListener('DOMContentLoaded', function() {
     const animateElements = document.querySelectorAll('.severity-card, .disclaimer-card');
     animateElements.forEach(el => observer.observe(el));
 });
+
+// Mobile upload functionality
+function setupMobileUpload() {
+    const mobileUploadIcon = document.getElementById('mobileUploadIcon');
+    const mobileFileInput = document.getElementById('mobileFileInput');
+    const mobileCameraInput = document.getElementById('mobileCameraInput');
+    const progressRing = document.getElementById('progressRing');
+    const holdProgress = document.getElementById('holdProgress');
+    const mobileInstructions = document.getElementById('mobileInstructions');
+    const iconSymbol = document.getElementById('mobileUploadIconSymbol');
+
+    let holdTimer = null;
+    let holdStartTime = 0;
+    let isHolding = false;
+    const HOLD_DURATION = 1500; // 1.5 seconds
+
+    console.log('DEBUG: Setting up mobile upload functionality');
+
+    // Show instructions on mobile
+    setTimeout(() => {
+        if (mobileInstructions) {
+            mobileInstructions.classList.add('show');
+        }
+    }, 1000);
+
+    // Hide instructions after 5 seconds
+    setTimeout(() => {
+        if (mobileInstructions) {
+            mobileInstructions.classList.remove('show');
+        }
+    }, 6000);
+
+    if (mobileUploadIcon && mobileFileInput && mobileCameraInput) {
+
+        // Touch start - begin hold detection
+        mobileUploadIcon.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            holdStartTime = Date.now();
+            isHolding = true;
+
+            // Haptic feedback (if supported)
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+
+            // Visual feedback
+            this.classList.add('tap-feedback');
+
+            // Start hold timer
+            holdTimer = setTimeout(() => {
+                if (isHolding) {
+                    triggerCamera();
+                }
+            }, HOLD_DURATION);
+
+            // Start progress animation
+            progressRing.classList.add('active');
+            animateHoldProgress();
+        });
+
+        // Touch end - handle tap or cancel hold
+        mobileUploadIcon.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            const holdDuration = Date.now() - holdStartTime;
+            isHolding = false;
+
+            // Clear animations
+            this.classList.remove('tap-feedback', 'hold-feedback');
+            progressRing.classList.remove('active');
+            holdProgress.classList.remove('active');
+            resetHoldProgress();
+
+            // Clear timer
+            if (holdTimer) {
+                clearTimeout(holdTimer);
+                holdTimer = null;
+            }
+
+            // If it was a quick tap (less than hold duration), trigger file selection
+            if (holdDuration < HOLD_DURATION) {
+                triggerFileSelection();
+            }
+        });
+
+        // Touch cancel - cancel hold
+        mobileUploadIcon.addEventListener('touchcancel', function(e) {
+            isHolding = false;
+            this.classList.remove('tap-feedback', 'hold-feedback');
+            progressRing.classList.remove('active');
+            holdProgress.classList.remove('active');
+            resetHoldProgress();
+
+            if (holdTimer) {
+                clearTimeout(holdTimer);
+                holdTimer = null;
+            }
+        });
+
+        // Mouse events for desktop testing
+        mobileUploadIcon.addEventListener('mousedown', function(e) {
+            if (!isMobile()) return;
+
+            holdStartTime = Date.now();
+            isHolding = true;
+            this.classList.add('tap-feedback');
+
+            holdTimer = setTimeout(() => {
+                if (isHolding) {
+                    triggerCamera();
+                }
+            }, HOLD_DURATION);
+
+            progressRing.classList.add('active');
+            animateHoldProgress();
+        });
+
+        mobileUploadIcon.addEventListener('mouseup', function(e) {
+            if (!isMobile()) return;
+
+            const holdDuration = Date.now() - holdStartTime;
+            isHolding = false;
+
+            this.classList.remove('tap-feedback', 'hold-feedback');
+            progressRing.classList.remove('active');
+            holdProgress.classList.remove('active');
+            resetHoldProgress();
+
+            if (holdTimer) {
+                clearTimeout(holdTimer);
+                holdTimer = null;
+            }
+
+            if (holdDuration < HOLD_DURATION) {
+                triggerFileSelection();
+            }
+        });
+
+        // File input change handlers
+        mobileFileInput.addEventListener('change', handleMobileFileSelection);
+        mobileCameraInput.addEventListener('change', handleMobileFileSelection);
+    }
+
+    function triggerFileSelection() {
+        console.log('DEBUG: Triggering file selection');
+        iconSymbol.className = 'fas fa-folder-open';
+        mobileFileInput.click();
+
+        // Reset icon after delay
+        setTimeout(() => {
+            iconSymbol.className = 'fas fa-camera';
+        }, 2000);
+    }
+
+    function triggerCamera() {
+        console.log('DEBUG: Triggering camera');
+
+        // Stronger haptic feedback for camera
+        if (navigator.vibrate) {
+            navigator.vibrate([100, 50, 100]);
+        }
+
+        // Visual feedback
+        mobileUploadIcon.classList.add('hold-feedback');
+        iconSymbol.className = 'fas fa-camera-retro';
+
+        // Trigger camera input
+        mobileCameraInput.click();
+
+        setTimeout(() => {
+            mobileUploadIcon.classList.remove('hold-feedback');
+            iconSymbol.className = 'fas fa-camera';
+        }, 2000);
+    }
+
+    function animateHoldProgress() {
+        if (!isHolding) return;
+
+        holdProgress.classList.add('active');
+
+        const startTime = Date.now();
+        const animate = () => {
+            if (!isHolding) return;
+
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / HOLD_DURATION, 1);
+            const degrees = progress * 360;
+
+            holdProgress.style.background = `conic-gradient(
+                from 0deg,
+                rgba(255, 255, 255, 0.6) 0deg,
+                transparent ${degrees}deg
+            )`;
+
+            if (progress < 1 && isHolding) {
+                requestAnimationFrame(animate);
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+
+    function resetHoldProgress() {
+        holdProgress.style.background = 'conic-gradient(from 0deg, transparent 0deg, transparent 0deg)';
+    }
+
+    function handleMobileFileSelection(e) {
+        console.log('DEBUG: Mobile file selected');
+        const file = e.target.files[0];
+        if (file) {
+            // Sync the file to the main form input
+            const mainFileInput = document.getElementById('file');
+            if (mainFileInput) {
+                // Create a new FileList
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                mainFileInput.files = dt.files;
+
+                // Trigger change event to show preview
+                const changeEvent = new Event('change', { bubbles: true });
+                mainFileInput.dispatchEvent(changeEvent);
+            }
+        }
+    }
+}

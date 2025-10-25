@@ -4,7 +4,6 @@ from PIL import Image
 import os
 import matplotlib.pyplot as plt
 
-
 class BurnClassifier:
     def __init__(self, model_path=None):
         self.model = None
@@ -146,7 +145,7 @@ def get_model_instance():
     """Get a singleton instance of the burn classifier"""
     if not hasattr(get_model_instance, 'instance'):
 
-        model_path = os.path.join(os.path.dirname(__file__), '..', 'PROPESI', 'hybrid_resnet_transformer_finetuned150layers.h5')
+        model_path = os.path.join(os.path.dirname(__file__), '..', 'checkpoints', 'PROPESI', 'hybrid_resnet_transformer_finetunedtransformerlayers.h5')
         print(f"Initializing model with file: {model_path}")
         get_model_instance.instance = BurnClassifier(model_path)
     return get_model_instance.instance

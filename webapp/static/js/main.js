@@ -1,4 +1,4 @@
-// Enhanced JavaScript for Professional Burn Classifier with Mobile Support
+// Enhanced JavaScript for Professional Burn Classifier with Camera Support
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('file');
     const imagePreview = document.getElementById('imagePreview');
@@ -9,21 +9,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileName = document.getElementById('fileName');
     const fileSize = document.getElementById('fileSize');
 
-    // Mobile detection utility
-    const isMobile = () => {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-               window.matchMedia("(max-width: 768px)").matches;
-    };
+    console.log('DEBUG: Main upload functionality initialized');
+    console.log('DEBUG: Preview elements found:', {
+        previewImg: !!previewImg,
+        fileName: !!fileName,
+        fileSize: !!fileSize,
+        imagePreviewSection: !!document.getElementById('imagePreviewSection')
+    });
 
-    console.log('DEBUG: Device type:', isMobile() ? 'Mobile' : 'Desktop');
+    // Initialize camera manager
+    window.cameraManager = new CameraManager();
 
-    // Mobile-specific functionality
-    if (isMobile()) {
-        setupMobileUpload();
-    }
-
-    // Enhanced file input handling with drag & drop (desktop)
-    if (fileInput && uploadArea && !isMobile()) {
+    // Enhanced file input handling with drag & drop
+    if (fileInput && uploadArea) {
         // Prevent default drag behaviors
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             uploadArea.addEventListener(eventName, preventDefaults, false);
@@ -85,6 +83,74 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Add visual feedback when image is selected
+    function showImageSelectedFeedback() {
+        console.log('DEBUG: showImageSelectedFeedback called');
+
+        // Create a success notification
+        showNotification('Image selected successfully! Review below and click "Analyze" when ready.', 'success');
+
+        // Add a subtle pulse animation to the preview section
+        const previewSection = document.getElementById('imagePreviewSection');
+        if (previewSection) {
+            console.log('DEBUG: Adding pulse animation to preview section');
+            previewSection.style.animation = 'none';
+            setTimeout(() => {
+                previewSection.style.animation = 'slideInPreview 0.6s ease-out forwards';
+            }, 10);
+        } else {
+            console.error('DEBUG: Preview section not found for animation');
+        }
+    }
+
+    // Enhanced file validation with user feedback
+    function validateFileWithFeedback(file) {
+        // File size validation (16MB limit)
+        if (file.size > 16 * 1024 * 1024) {
+            showAlert('File is too large. Maximum size is 16MB. Please choose a smaller image.', 'error');
+            return false;
+        }
+
+        // File type validation
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            showAlert('Invalid file type. Please select PNG, JPG, JPEG, GIF, or WEBP files only.', 'error');
+            return false;
+        }
+
+        // Additional validation for image dimensions
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = function() {
+                // Check minimum dimensions
+                if (this.width < 50 || this.height < 50) {
+                    showAlert('Image is too small. Please select an image at least 50x50 pixels.', 'error');
+                    resolve(false);
+                    return;
+                }
+
+                // Check maximum dimensions
+                if (this.width > 4000 || this.height > 4000) {
+                    showAlert('Image is too large. Please select an image smaller than 4000x4000 pixels.', 'error');
+                    resolve(false);
+                    return;
+                }
+
+                resolve(true);
+            };
+            img.onerror = function() {
+                showAlert('Invalid image file. Please select a valid image.', 'error');
+                resolve(false);
+            };
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
     function validateFile(file) {
         // File size validation (16MB limit)
         if (file.size > 16 * 1024 * 1024) {
@@ -103,18 +169,105 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showPreview(file) {
+        console.log('DEBUG: showPreview called with file:', file);
+
         const reader = new FileReader();
         reader.onload = function(e) {
-            previewImg.src = e.target.result;
-            if (fileName) fileName.textContent = file.name;
-            if (fileSize) fileSize.textContent = formatFileSize(file.size);
+            const img = new Image();
+            img.onload = function() {
+                console.log('DEBUG: Image loaded, dimensions:', this.width, 'x', this.height);
 
-            // Show preview with animation
-            imagePreview.classList.remove('d-none');
-            setTimeout(() => {
-                imagePreview.classList.add('fade-in');
-            }, 100);
+                // Update preview image
+                const previewImg = document.getElementById('previewImg');
+                if (previewImg) {
+                    previewImg.src = e.target.result;
+                    console.log('DEBUG: Preview image updated');
+                } else {
+                    console.error('DEBUG: previewImg element not found');
+                }
+
+                // Update metadata
+                const fileName = document.getElementById('fileName');
+                const fileSize = document.getElementById('fileSize');
+                const imageDimensions = document.getElementById('imageDimensions');
+
+                if (fileName) {
+                    fileName.textContent = file.name;
+                    console.log('DEBUG: File name updated:', file.name);
+                }
+                if (fileSize) {
+                    fileSize.textContent = formatFileSize(file.size);
+                    console.log('DEBUG: File size updated:', formatFileSize(file.size));
+                }
+                if (imageDimensions) {
+                    imageDimensions.textContent = `${this.width} x ${this.height}`;
+                    console.log('DEBUG: Dimensions updated:', `${this.width} x ${this.height}`);
+                }
+
+                // Handle UI element visibility
+                const cameraSection = document.getElementById('cameraSection');
+                const uploadBtnContainer = document.getElementById('uploadBtnContainer');
+                const previewUploadContainer = document.getElementById('previewUploadContainer');
+                const imagePreviewSection = document.getElementById('imagePreviewSection');
+
+                console.log('DEBUG: UI elements found:', {
+                    cameraSection: !!cameraSection,
+                    uploadBtnContainer: !!uploadBtnContainer,
+                    previewUploadContainer: !!previewUploadContainer,
+                    imagePreviewSection: !!imagePreviewSection
+                });
+
+                // Hide camera section
+                if (cameraSection) {
+                    cameraSection.style.display = 'none';
+                    console.log('DEBUG: Camera section hidden');
+                }
+
+                // Hide main upload button
+                if (uploadBtnContainer) {
+                    uploadBtnContainer.classList.add('d-none');
+                    console.log('DEBUG: Upload button container hidden');
+                }
+
+                // Show preview upload button
+                if (previewUploadContainer) {
+                    previewUploadContainer.classList.remove('d-none');
+                    console.log('DEBUG: Preview upload container shown');
+                }
+
+                // Show preview section with animation
+                if (imagePreviewSection) {
+                    console.log('DEBUG: Showing preview section');
+                    imagePreviewSection.classList.remove('d-none');
+
+                    // Force reflow to ensure the element is visible before animation
+                    imagePreviewSection.offsetHeight;
+
+                    setTimeout(() => {
+                        imagePreviewSection.classList.add('fade-in');
+                        console.log('DEBUG: Fade-in animation applied');
+
+                        // Show success feedback
+                        showImageSelectedFeedback();
+                    }, 100);
+                } else {
+                    console.error('DEBUG: imagePreviewSection element not found');
+                }
+            };
+
+            img.onerror = function() {
+                console.error('DEBUG: Error loading image');
+                showAlert('Error loading image. Please try a different file.', 'error');
+            };
+
+            img.src = e.target.result;
         };
+
+        reader.onerror = function() {
+            console.error('DEBUG: Error reading file');
+            showAlert('Error reading file. Please try again.', 'error');
+        };
+
         reader.readAsDataURL(file);
     }
 
@@ -127,7 +280,37 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Enhanced form submission with better UX
-    if (form && uploadBtn) {
+    if (form) {
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadBtnPreview = document.getElementById('uploadBtnPreview');
+
+        // Handle main upload button
+        if (uploadBtn) {
+            uploadBtn.addEventListener('click', function(e) {
+                const file = fileInput.files[0];
+                if (!file) {
+                    e.preventDefault();
+                    showAlert('Please select a file first.', 'error');
+                    return;
+                }
+                handleFormSubmission(e, uploadBtn);
+            });
+        }
+
+        // Handle preview upload button
+        if (uploadBtnPreview) {
+            uploadBtnPreview.addEventListener('click', function(e) {
+                const file = fileInput.files[0];
+                if (!file) {
+                    e.preventDefault();
+                    showAlert('Please select a file first.', 'error');
+                    return;
+                }
+                handleFormSubmission(e, uploadBtnPreview);
+            });
+        }
+
+        // Handle form submission
         form.addEventListener('submit', function(e) {
             const file = fileInput.files[0];
             if (!file) {
@@ -142,6 +325,27 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add form loading class
             form.classList.add('loading');
         });
+    }
+
+    function handleFormSubmission(e, button) {
+        // Show enhanced loading state for the specific button
+        showLoadingStateForButton(button);
+
+        // Add form loading class
+        form.classList.add('loading');
+    }
+
+    function showLoadingStateForButton(button) {
+        if (button) {
+            button.classList.add('loading');
+            const btnText = button.querySelector('.btn-text');
+            const btnLoading = button.querySelector('.btn-loading');
+
+            if (btnText) btnText.style.opacity = '0';
+            if (btnLoading) btnLoading.classList.remove('d-none');
+
+            button.disabled = true;
+        }
     }
 
     function showLoadingState() {
@@ -247,6 +451,598 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadArea.setAttribute('role', 'button');
         uploadArea.setAttribute('aria-label', 'Click or drag to upload image file');
     }
+
+    // Enhanced preview functionality
+    const closePreviewBtn = document.getElementById('closePreviewBtn');
+    const retryBtn = document.getElementById('retryBtn');
+
+    // Close preview handler
+    if (closePreviewBtn) {
+        closePreviewBtn.addEventListener('click', function() {
+            hidePreview();
+        });
+    }
+
+    // Enhanced retry functionality
+    if (retryBtn) {
+        retryBtn.addEventListener('click', function() {
+            hidePreview();
+            // Reset file input
+            if (fileInput) {
+                fileInput.value = '';
+            }
+            // Reset other file inputs
+            const galleryInput = document.getElementById('galleryInput');
+            const cameraInput = document.getElementById('cameraInput');
+            if (galleryInput) galleryInput.value = '';
+            if (cameraInput) cameraInput.value = '';
+
+            // Show camera section again
+            const cameraSection = document.getElementById('cameraSection');
+            if (cameraSection) {
+                cameraSection.style.display = 'block';
+            }
+        });
+    }
+
+    // Function to hide preview and show camera section
+    function hidePreview() {
+        const imagePreview = document.getElementById('imagePreviewSection');
+        const cameraSection = document.getElementById('cameraSection');
+        const uploadBtnContainer = document.getElementById('uploadBtnContainer');
+        const previewUploadContainer = document.getElementById('previewUploadContainer');
+
+        console.log('DEBUG: Hiding preview section');
+
+        if (imagePreview) {
+            imagePreview.classList.add('d-none');
+            imagePreview.classList.remove('fade-in');
+            console.log('DEBUG: Preview section hidden');
+        }
+
+        if (cameraSection) {
+            cameraSection.style.display = 'block';
+            console.log('DEBUG: Camera section shown');
+        }
+
+        if (uploadBtnContainer) {
+            uploadBtnContainer.classList.remove('d-none');
+            console.log('DEBUG: Upload button container shown');
+        }
+
+        if (previewUploadContainer) {
+            previewUploadContainer.classList.add('d-none');
+            console.log('DEBUG: Preview upload container hidden');
+        }
+
+        // Clear preview data
+        const previewImg = document.getElementById('previewImg');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const imageDimensions = document.getElementById('imageDimensions');
+
+        if (previewImg) previewImg.src = '';
+        if (fileName) fileName.textContent = 'No file selected';
+        if (fileSize) fileSize.textContent = '0 MB';
+        if (imageDimensions) imageDimensions.textContent = '-- x --';
+
+        console.log('DEBUG: Preview data cleared');
+    }
+
+    // Debug: Test preview functionality
+    console.log('DEBUG: Preview elements check');
+    console.log('previewImg:', document.getElementById('previewImg'));
+    console.log('fileName:', document.getElementById('fileName'));
+    console.log('fileSize:', document.getElementById('fileSize'));
+    console.log('imagePreviewSection:', document.getElementById('imagePreviewSection'));
+
+    // Add debugging to showPreview function
+    window.showPreviewDebug = function(file) {
+        console.log('DEBUG: showPreview called with file:', file);
+        showPreview(file);
+    };
+
+    // Test function to manually trigger preview (for debugging)
+    window.testPreview = function() {
+        console.log('Testing preview functionality...');
+        const testFile = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' });
+
+        // Create a simple test image data URL
+        const canvas = document.createElement('canvas');
+        canvas.width = 300;
+        canvas.height = 200;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ff6b6b';
+        ctx.fillRect(0, 0, 300, 200);
+        ctx.fillStyle = 'white';
+        ctx.font = '20px Arial';
+        ctx.fillText('TEST IMAGE', 80, 110);
+
+        const testDataUrl = canvas.toDataURL('image/jpeg');
+
+        // Update preview elements directly
+        const previewImg = document.getElementById('previewImg');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const imageDimensions = document.getElementById('imageDimensions');
+        const imagePreviewSection = document.getElementById('imagePreviewSection');
+        const cameraSection = document.getElementById('cameraSection');
+        const uploadBtnContainer = document.getElementById('uploadBtnContainer');
+        const previewUploadContainer = document.getElementById('previewUploadContainer');
+
+        if (previewImg) previewImg.src = testDataUrl;
+        if (fileName) fileName.textContent = 'test-image.jpg';
+        if (fileSize) fileSize.textContent = '50 KB';
+        if (imageDimensions) imageDimensions.textContent = '300 x 200';
+
+        if (cameraSection) cameraSection.style.display = 'none';
+        if (uploadBtnContainer) uploadBtnContainer.classList.add('d-none');
+        if (previewUploadContainer) previewUploadContainer.classList.remove('d-none');
+
+        if (imagePreviewSection) {
+            imagePreviewSection.classList.remove('d-none');
+            setTimeout(() => {
+                imagePreviewSection.classList.add('fade-in');
+            }, 100);
+        }
+
+        console.log('Test preview should now be visible');
+    };
+
+    // Enhanced clipboard functionality
+    function copyToClipboard(text) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(function() {
+                showNotification('Copied to clipboard!', 'success');
+            }).catch(function(err) {
+                console.error('Failed to copy: ', err);
+                fallbackCopyToClipboard(text);
+            });
+        } else {
+            fallbackCopyToClipboard(text);
+        }
+    }
+
+    function fallbackCopyToClipboard(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.top = '0';
+        textArea.style.left = '0';
+        textArea.style.position = 'fixed';
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+            document.execCommand('copy');
+            showNotification('Copied to clipboard!', 'success');
+        } catch (err) {
+            console.error('Fallback: Unable to copy', err);
+            showNotification('Unable to copy to clipboard', 'error');
+        }
+
+        document.body.removeChild(textArea);
+    }
+
+    // Enhanced notification system
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `position-fixed top-0 end-0 m-3 p-3 rounded-3 shadow-lg`;
+        notification.style.zIndex = '9999';
+        notification.style.minWidth = '300px';
+        notification.style.transform = 'translateX(100%)';
+        notification.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+
+        // Style based on type
+        if (type === 'success') {
+            notification.style.background = 'linear-gradient(135deg, var(--accent-1), var(--accent-2))';
+            notification.style.color = 'white';
+            notification.innerHTML = `<i class="fas fa-check-circle me-2"></i>${message}`;
+        } else if (type === 'error') {
+            notification.style.background = 'linear-gradient(135deg, #dc3545, #e83e8c)';
+            notification.style.color = 'white';
+            notification.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${message}`;
+        } else {
+            notification.style.background = 'linear-gradient(135deg, var(--primary-bg), var(--secondary-bg))';
+            notification.style.color = 'var(--text-dark)';
+            notification.innerHTML = `<i class="fas fa-info-circle me-2"></i>${message}`;
+        }
+
+        document.body.appendChild(notification);
+
+        // Trigger animation
+        requestAnimationFrame(() => {
+            notification.style.transform = 'translateX(0)';
+        });
+
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Performance optimization: Lazy load heavy animations
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements that should animate when in view
+    document.addEventListener('DOMContentLoaded', function() {
+        const animateElements = document.querySelectorAll('.severity-card, .disclaimer-card');
+        animateElements.forEach(el => observer.observe(el));
+    });
+
+    // Enhanced Camera and Upload Functionality
+    class CameraManager {
+        constructor() {
+            this.stream = null;
+            this.currentCamera = 'user'; // 'user' for front camera, 'environment' for back camera
+            this.isInitialized = false;
+            this.initializeElements();
+            this.bindEvents();
+        }
+
+        initializeElements() {
+            // Camera elements
+            this.cameraChoiceContainer = document.getElementById('cameraChoiceContainer');
+            this.cameraInterface = document.getElementById('cameraInterface');
+            this.cameraError = document.getElementById('cameraError');
+            this.cameraVideo = document.getElementById('cameraVideo');
+            this.cameraCanvas = document.getElementById('cameraCanvas');
+
+            // Choice buttons
+            this.galleryChoice = document.getElementById('galleryChoice');
+            this.cameraChoice = document.getElementById('cameraChoice');
+
+            // Camera controls
+            this.captureBtn = document.getElementById('captureBtn');
+            this.cancelCameraBtn = document.getElementById('cancelCameraBtn');
+            this.switchCameraBtn = document.getElementById('switchCameraBtn');
+            this.tryAgainBtn = document.getElementById('tryAgainBtn');
+
+            // File inputs
+            this.galleryInput = document.getElementById('galleryInput');
+            this.cameraInput = document.getElementById('cameraInput');
+            this.mainFileInput = document.getElementById('file');
+
+            // Error elements
+            this.cameraErrorMessage = document.getElementById('cameraErrorMessage');
+        }
+
+        bindEvents() {
+            // Choice buttons
+            if (this.galleryChoice) {
+                this.galleryChoice.addEventListener('click', () => this.openGallery());
+            }
+
+            if (this.cameraChoice) {
+                this.cameraChoice.addEventListener('click', () => this.openCamera());
+            }
+
+            // Camera controls
+            if (this.captureBtn) {
+                this.captureBtn.addEventListener('click', () => this.capturePhoto());
+            }
+
+            if (this.cancelCameraBtn) {
+                this.cancelCameraBtn.addEventListener('click', () => this.closeCamera());
+            }
+
+            if (this.switchCameraBtn) {
+                this.switchCameraBtn.addEventListener('click', () => this.switchCamera());
+            }
+
+            if (this.tryAgainBtn) {
+                this.tryAgainBtn.addEventListener('click', () => this.retryCamera());
+            }
+
+            // File input handlers
+            if (this.galleryInput) {
+                this.galleryInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files));
+            }
+
+            if (this.cameraInput) {
+                this.cameraInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files));
+            }
+        }
+
+        openGallery() {
+            console.log('Opening gallery...');
+            if (this.galleryInput) {
+                this.galleryInput.click();
+            }
+        }
+
+        async openCamera() {
+            console.log('Opening camera...');
+            this.hideError();
+
+            // Check if camera is supported
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                this.showError('Camera is not supported on this device or browser.');
+                return;
+            }
+
+            try {
+                this.showCameraLoading();
+
+                const constraints = {
+                    video: {
+                        facingMode: this.currentCamera,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+                this.cameraVideo.srcObject = this.stream;
+
+                await new Promise((resolve) => {
+                    this.cameraVideo.onloadedmetadata = resolve;
+                });
+
+                this.showCameraInterface();
+                console.log('Camera opened successfully');
+
+            } catch (error) {
+                console.error('Error opening camera:', error);
+                this.handleCameraError(error);
+            }
+        }
+
+        showCameraLoading() {
+            this.cameraChoiceContainer.classList.add('d-none');
+            this.cameraInterface.classList.remove('d-none');
+            this.cameraInterface.innerHTML = `
+                <div class="camera-loading">
+                    <i class="fas fa-spinner fa-spin me-2"></i>
+                    <span>Opening camera...</span>
+                </div>
+            `;
+        }
+
+        showCameraInterface() {
+            this.cameraInterface.innerHTML = `
+                <div class="camera-container">
+                    <video id="cameraVideo" autoplay muted playsinline></video>
+                    <canvas id="cameraCanvas" style="display: none;"></canvas>
+                    <div class="camera-overlay">
+                        <div class="camera-grid">
+                            <div class="grid-line"></div>
+                            <div class="grid-line"></div>
+                            <div class="grid-line"></div>
+                            <div class="grid-line"></div>
+                        </div>
+                        <div class="camera-controls">
+                            <button type="button" class="camera-btn cancel-btn" id="cancelCameraBtn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                            <button type="button" class="camera-btn capture-btn" id="captureBtn">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                            <button type="button" class="camera-btn switch-btn" id="switchCameraBtn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Re-initialize elements and events
+            this.cameraVideo = document.getElementById('cameraVideo');
+            this.cameraCanvas = document.getElementById('cameraCanvas');
+            this.captureBtn = document.getElementById('captureBtn');
+            this.cancelCameraBtn = document.getElementById('cancelCameraBtn');
+            this.switchCameraBtn = document.getElementById('switchCameraBtn');
+
+            // Re-bind events
+            this.captureBtn.addEventListener('click', () => this.capturePhoto());
+            this.cancelCameraBtn.addEventListener('click', () => this.closeCamera());
+            this.switchCameraBtn.addEventListener('click', () => this.switchCamera());
+
+            // Set video source
+            if (this.stream) {
+                this.cameraVideo.srcObject = this.stream;
+            }
+
+            this.cameraInterface.classList.add('fade-in');
+        }
+
+        async switchCamera() {
+            this.currentCamera = this.currentCamera === 'user' ? 'environment' : 'user';
+
+            if (this.stream) {
+                this.stream.getTracks().forEach(track => track.stop());
+            }
+
+            await this.openCamera();
+        }
+
+        capturePhoto() {
+            if (!this.cameraVideo || !this.stream) {
+                this.showError('Camera not available for capture.');
+                return;
+            }
+
+            try {
+                // Create canvas if it doesn't exist
+                if (!this.cameraCanvas) {
+                    this.cameraCanvas = document.createElement('canvas');
+                }
+
+                const canvas = this.cameraCanvas;
+                const video = this.cameraVideo;
+
+                // Set canvas dimensions to match video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                // Draw video frame to canvas
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Convert canvas to blob
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        // Create a file from the blob
+                        const file = new File([blob], `camera-capture-${Date.now()}.jpg`, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        });
+
+                        // Handle the captured file
+                        this.handleFileSelection([file]);
+                        this.closeCamera();
+                    }
+                }, 'image/jpeg', 0.9);
+
+            } catch (error) {
+                console.error('Error capturing photo:', error);
+                this.showError('Failed to capture photo. Please try again.');
+            }
+        }
+
+        closeCamera() {
+            if (this.stream) {
+                this.stream.getTracks().forEach(track => track.stop());
+                this.stream = null;
+            }
+
+            this.cameraInterface.classList.add('d-none');
+            this.cameraChoiceContainer.classList.remove('d-none');
+            this.hideError();
+        }
+
+        retryCamera() {
+            this.hideError();
+            this.openCamera();
+        }
+
+        handleCameraError(error) {
+            let errorMessage = 'Unable to access camera. ';
+
+            switch (error.name) {
+                case 'NotFoundError':
+                    errorMessage += 'No camera found on this device.';
+                    break;
+                case 'NotAllowedError':
+                    errorMessage += 'Camera access was denied. Please allow camera permissions and try again.';
+                    break;
+                case 'NotSupportedError':
+                    errorMessage += 'Camera is not supported on this device.';
+                    break;
+                case 'OverconstrainedError':
+                    errorMessage += 'Camera constraints could not be satisfied.';
+                    break;
+                default:
+                    errorMessage += 'Please check your camera settings and try again.';
+            }
+
+            this.showError(errorMessage);
+        }
+
+        showError(message) {
+            this.cameraInterface.classList.add('d-none');
+            this.cameraChoiceContainer.classList.add('d-none');
+
+            if (this.cameraErrorMessage) {
+                this.cameraErrorMessage.textContent = message;
+            }
+
+            this.cameraError.classList.remove('d-none');
+            this.cameraError.classList.add('fade-in');
+        }
+
+        hideError() {
+            this.cameraError.classList.add('d-none');
+            this.cameraError.classList.remove('fade-in');
+            this.cameraChoiceContainer.classList.remove('d-none');
+        }    handleFileSelection(files) {
+            if (files && files.length > 0) {
+                const file = files[0];
+
+                // Validate file
+                if (this.validateFile(file)) {
+                    // Set the main file input
+                    const dt = new DataTransfer();
+                    dt.items.add(file);
+                    this.mainFileInput.files = dt.files;
+
+                    // Use the existing showPreview function
+                    showPreview(file);
+
+                    console.log('File selected:', file.name, 'Size:', file.size);
+                }
+            }
+        }
+
+        validateFile(file) {
+            // File size validation (16MB limit)
+            if (file.size > 16 * 1024 * 1024) {
+                this.showAlert('File is too large. Maximum size is 16MB.', 'error');
+                return false;
+            }
+
+            // File type validation
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                this.showAlert('Invalid file type. Please select PNG, JPG, JPEG, GIF, or WEBP files.', 'error');
+                return false;
+            }
+
+            return true;
+        }
+
+        showAlert(message, type = 'info') {
+            // Create or update alert
+            let alertElement = document.querySelector('.camera-alert');
+            if (!alertElement) {
+                alertElement = document.createElement('div');
+                alertElement.className = 'alert camera-alert';
+                const cameraSection = document.getElementById('cameraSection');
+                if (cameraSection) {
+                    cameraSection.insertBefore(alertElement, cameraSection.firstChild);
+                }
+            }
+
+            alertElement.className = `alert camera-alert alert-${type === 'error' ? 'danger' : 'info'}`;
+            alertElement.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                ${message}
+            `;
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (alertElement && alertElement.parentNode) {
+                    alertElement.remove();
+                }
+            }, 5000);
+        }
+    }
+
+    // Initialize camera manager when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize camera manager
+        window.cameraManager = new CameraManager();
+
+        // ...existing code...
+    });
 });
 
 // Utility functions
@@ -357,226 +1153,358 @@ document.addEventListener('DOMContentLoaded', function() {
     animateElements.forEach(el => observer.observe(el));
 });
 
-// Mobile upload functionality
-function setupMobileUpload() {
-    const mobileUploadIcon = document.getElementById('mobileUploadIcon');
-    const mobileFileInput = document.getElementById('mobileFileInput');
-    const mobileCameraInput = document.getElementById('mobileCameraInput');
-    const progressRing = document.getElementById('progressRing');
-    const holdProgress = document.getElementById('holdProgress');
-    const mobileInstructions = document.getElementById('mobileInstructions');
-    const iconSymbol = document.getElementById('mobileUploadIconSymbol');
+// Enhanced Camera and Upload Functionality
+class CameraManager {
+    constructor() {
+        this.stream = null;
+        this.currentCamera = 'user'; // 'user' for front camera, 'environment' for back camera
+        this.isInitialized = false;
+        this.initializeElements();
+        this.bindEvents();
+    }
 
-    let holdTimer = null;
-    let holdStartTime = 0;
-    let isHolding = false;
-    const HOLD_DURATION = 1500; // 1.5 seconds
+    initializeElements() {
+        // Camera elements
+        this.cameraChoiceContainer = document.getElementById('cameraChoiceContainer');
+        this.cameraInterface = document.getElementById('cameraInterface');
+        this.cameraError = document.getElementById('cameraError');
+        this.cameraVideo = document.getElementById('cameraVideo');
+        this.cameraCanvas = document.getElementById('cameraCanvas');
 
-    console.log('DEBUG: Setting up mobile upload functionality');
+        // Choice buttons
+        this.galleryChoice = document.getElementById('galleryChoice');
+        this.cameraChoice = document.getElementById('cameraChoice');
 
-    // Show instructions on mobile
-    setTimeout(() => {
-        if (mobileInstructions) {
-            mobileInstructions.classList.add('show');
+        // Camera controls
+        this.captureBtn = document.getElementById('captureBtn');
+        this.cancelCameraBtn = document.getElementById('cancelCameraBtn');
+        this.switchCameraBtn = document.getElementById('switchCameraBtn');
+        this.tryAgainBtn = document.getElementById('tryAgainBtn');
+
+        // File inputs
+        this.galleryInput = document.getElementById('galleryInput');
+        this.cameraInput = document.getElementById('cameraInput');
+        this.mainFileInput = document.getElementById('file');
+
+        // Error elements
+        this.cameraErrorMessage = document.getElementById('cameraErrorMessage');
+    }
+
+    bindEvents() {
+        // Choice buttons
+        if (this.galleryChoice) {
+            this.galleryChoice.addEventListener('click', () => this.openGallery());
         }
-    }, 1000);
 
-    // Hide instructions after 5 seconds
-    setTimeout(() => {
-        if (mobileInstructions) {
-            mobileInstructions.classList.remove('show');
+        if (this.cameraChoice) {
+            this.cameraChoice.addEventListener('click', () => this.openCamera());
         }
-    }, 6000);
 
-    if (mobileUploadIcon && mobileFileInput && mobileCameraInput) {
+        // Camera controls
+        if (this.captureBtn) {
+            this.captureBtn.addEventListener('click', () => this.capturePhoto());
+        }
 
-        // Touch start - begin hold detection
-        mobileUploadIcon.addEventListener('touchstart', function(e) {
-            e.preventDefault();
-            holdStartTime = Date.now();
-            isHolding = true;
+        if (this.cancelCameraBtn) {
+            this.cancelCameraBtn.addEventListener('click', () => this.closeCamera());
+        }
 
-            // Haptic feedback (if supported)
-            if (navigator.vibrate) {
-                navigator.vibrate(50);
-            }
+        if (this.switchCameraBtn) {
+            this.switchCameraBtn.addEventListener('click', () => this.switchCamera());
+        }
 
-            // Visual feedback
-            this.classList.add('tap-feedback');
+        if (this.tryAgainBtn) {
+            this.tryAgainBtn.addEventListener('click', () => this.retryCamera());
+        }
 
-            // Start hold timer
-            holdTimer = setTimeout(() => {
-                if (isHolding) {
-                    triggerCamera();
+        // File input handlers
+        if (this.galleryInput) {
+            this.galleryInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files));
+        }
+
+        if (this.cameraInput) {
+            this.cameraInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files));
+        }
+    }
+
+    openGallery() {
+        console.log('Opening gallery...');
+        if (this.galleryInput) {
+            this.galleryInput.click();
+        }
+    }
+
+    async openCamera() {
+        console.log('Opening camera...');
+        this.hideError();
+
+        // Check if camera is supported
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            this.showError('Camera is not supported on this device or browser.');
+            return;
+        }
+
+        try {
+            this.showCameraLoading();
+
+            const constraints = {
+                video: {
+                    facingMode: this.currentCamera,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
                 }
-            }, HOLD_DURATION);
+            };
 
-            // Start progress animation
-            progressRing.classList.add('active');
-            animateHoldProgress();
-        });
+            this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+            this.cameraVideo.srcObject = this.stream;
 
-        // Touch end - handle tap or cancel hold
-        mobileUploadIcon.addEventListener('touchend', function(e) {
-            e.preventDefault();
-            const holdDuration = Date.now() - holdStartTime;
-            isHolding = false;
+            await new Promise((resolve) => {
+                this.cameraVideo.onloadedmetadata = resolve;
+            });
 
-            // Clear animations
-            this.classList.remove('tap-feedback', 'hold-feedback');
-            progressRing.classList.remove('active');
-            holdProgress.classList.remove('active');
-            resetHoldProgress();
+            this.showCameraInterface();
+            console.log('Camera opened successfully');
 
-            // Clear timer
-            if (holdTimer) {
-                clearTimeout(holdTimer);
-                holdTimer = null;
-            }
-
-            // If it was a quick tap (less than hold duration), trigger file selection
-            if (holdDuration < HOLD_DURATION) {
-                triggerFileSelection();
-            }
-        });
-
-        // Touch cancel - cancel hold
-        mobileUploadIcon.addEventListener('touchcancel', function(e) {
-            isHolding = false;
-            this.classList.remove('tap-feedback', 'hold-feedback');
-            progressRing.classList.remove('active');
-            holdProgress.classList.remove('active');
-            resetHoldProgress();
-
-            if (holdTimer) {
-                clearTimeout(holdTimer);
-                holdTimer = null;
-            }
-        });
-
-        // Mouse events for desktop testing
-        mobileUploadIcon.addEventListener('mousedown', function(e) {
-            if (!isMobile()) return;
-
-            holdStartTime = Date.now();
-            isHolding = true;
-            this.classList.add('tap-feedback');
-
-            holdTimer = setTimeout(() => {
-                if (isHolding) {
-                    triggerCamera();
-                }
-            }, HOLD_DURATION);
-
-            progressRing.classList.add('active');
-            animateHoldProgress();
-        });
-
-        mobileUploadIcon.addEventListener('mouseup', function(e) {
-            if (!isMobile()) return;
-
-            const holdDuration = Date.now() - holdStartTime;
-            isHolding = false;
-
-            this.classList.remove('tap-feedback', 'hold-feedback');
-            progressRing.classList.remove('active');
-            holdProgress.classList.remove('active');
-            resetHoldProgress();
-
-            if (holdTimer) {
-                clearTimeout(holdTimer);
-                holdTimer = null;
-            }
-
-            if (holdDuration < HOLD_DURATION) {
-                triggerFileSelection();
-            }
-        });
-
-        // File input change handlers
-        mobileFileInput.addEventListener('change', handleMobileFileSelection);
-        mobileCameraInput.addEventListener('change', handleMobileFileSelection);
+        } catch (error) {
+            console.error('Error opening camera:', error);
+            this.handleCameraError(error);
+        }
     }
 
-    function triggerFileSelection() {
-        console.log('DEBUG: Triggering file selection');
-        iconSymbol.className = 'fas fa-folder-open';
-        mobileFileInput.click();
-
-        // Reset icon after delay
-        setTimeout(() => {
-            iconSymbol.className = 'fas fa-camera';
-        }, 2000);
+    showCameraLoading() {
+        this.cameraChoiceContainer.classList.add('d-none');
+        this.cameraInterface.classList.remove('d-none');
+        this.cameraInterface.innerHTML = `
+            <div class="camera-loading">
+                <i class="fas fa-spinner fa-spin me-2"></i>
+                <span>Opening camera...</span>
+            </div>
+        `;
     }
 
-    function triggerCamera() {
-        console.log('DEBUG: Triggering camera');
+    showCameraInterface() {
+        this.cameraInterface.innerHTML = `
+            <div class="camera-container">
+                <video id="cameraVideo" autoplay muted playsinline></video>
+                <canvas id="cameraCanvas" style="display: none;"></canvas>
+                <div class="camera-overlay">
+                    <div class="camera-grid">
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
+                        <div class="grid-line"></div>
+                    </div>
+                    <div class="camera-controls">
+                        <button type="button" class="camera-btn cancel-btn" id="cancelCameraBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <button type="button" class="camera-btn capture-btn" id="captureBtn">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <button type="button" class="camera-btn switch-btn" id="switchCameraBtn">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
 
-        // Stronger haptic feedback for camera
-        if (navigator.vibrate) {
-            navigator.vibrate([100, 50, 100]);
+        // Re-initialize elements and events
+        this.cameraVideo = document.getElementById('cameraVideo');
+        this.cameraCanvas = document.getElementById('cameraCanvas');
+        this.captureBtn = document.getElementById('captureBtn');
+        this.cancelCameraBtn = document.getElementById('cancelCameraBtn');
+        this.switchCameraBtn = document.getElementById('switchCameraBtn');
+
+        // Re-bind events
+        this.captureBtn.addEventListener('click', () => this.capturePhoto());
+        this.cancelCameraBtn.addEventListener('click', () => this.closeCamera());
+        this.switchCameraBtn.addEventListener('click', () => this.switchCamera());
+
+        // Set video source
+        if (this.stream) {
+            this.cameraVideo.srcObject = this.stream;
         }
 
-        // Visual feedback
-        mobileUploadIcon.classList.add('hold-feedback');
-        iconSymbol.className = 'fas fa-camera-retro';
-
-        // Trigger camera input
-        mobileCameraInput.click();
-
-        setTimeout(() => {
-            mobileUploadIcon.classList.remove('hold-feedback');
-            iconSymbol.className = 'fas fa-camera';
-        }, 2000);
+        this.cameraInterface.classList.add('fade-in');
     }
 
-    function animateHoldProgress() {
-        if (!isHolding) return;
+    async switchCamera() {
+        this.currentCamera = this.currentCamera === 'user' ? 'environment' : 'user';
 
-        holdProgress.classList.add('active');
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+        }
 
-        const startTime = Date.now();
-        const animate = () => {
-            if (!isHolding) return;
+        await this.openCamera();
+    }
 
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / HOLD_DURATION, 1);
-            const degrees = progress * 360;
+    capturePhoto() {
+        if (!this.cameraVideo || !this.stream) {
+            this.showError('Camera not available for capture.');
+            return;
+        }
 
-            holdProgress.style.background = `conic-gradient(
-                from 0deg,
-                rgba(255, 255, 255, 0.6) 0deg,
-                transparent ${degrees}deg
-            )`;
-
-            if (progress < 1 && isHolding) {
-                requestAnimationFrame(animate);
+        try {
+            // Create canvas if it doesn't exist
+            if (!this.cameraCanvas) {
+                this.cameraCanvas = document.createElement('canvas');
             }
-        };
 
-        requestAnimationFrame(animate);
+            const canvas = this.cameraCanvas;
+            const video = this.cameraVideo;
+
+            // Set canvas dimensions to match video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Draw video frame to canvas
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas to blob
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    // Create a file from the blob
+                    const file = new File([blob], `camera-capture-${Date.now()}.jpg`, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+
+                    // Handle the captured file
+                    this.handleFileSelection([file]);
+                    this.closeCamera();
+                }
+            }, 'image/jpeg', 0.9);
+
+        } catch (error) {
+            console.error('Error capturing photo:', error);
+            this.showError('Failed to capture photo. Please try again.');
+        }
     }
 
-    function resetHoldProgress() {
-        holdProgress.style.background = 'conic-gradient(from 0deg, transparent 0deg, transparent 0deg)';
+    closeCamera() {
+        if (this.stream) {
+            this.stream.getTracks().forEach(track => track.stop());
+            this.stream = null;
+        }
+
+        this.cameraInterface.classList.add('d-none');
+        this.cameraChoiceContainer.classList.remove('d-none');
+        this.hideError();
     }
 
-    function handleMobileFileSelection(e) {
-        console.log('DEBUG: Mobile file selected');
-        const file = e.target.files[0];
-        if (file) {
-            // Sync the file to the main form input
-            const mainFileInput = document.getElementById('file');
-            if (mainFileInput) {
-                // Create a new FileList
+    retryCamera() {
+        this.hideError();
+        this.openCamera();
+    }
+
+    handleCameraError(error) {
+        let errorMessage = 'Unable to access camera. ';
+
+        switch (error.name) {
+            case 'NotFoundError':
+                errorMessage += 'No camera found on this device.';
+                break;
+            case 'NotAllowedError':
+                errorMessage += 'Camera access was denied. Please allow camera permissions and try again.';
+                break;
+            case 'NotSupportedError':
+                errorMessage += 'Camera is not supported on this device.';
+                break;
+            case 'OverconstrainedError':
+                errorMessage += 'Camera constraints could not be satisfied.';
+                break;
+            default:
+                errorMessage += 'Please check your camera settings and try again.';
+        }
+
+        this.showError(errorMessage);
+    }
+
+    showError(message) {
+        this.cameraInterface.classList.add('d-none');
+        this.cameraChoiceContainer.classList.add('d-none');
+
+        if (this.cameraErrorMessage) {
+            this.cameraErrorMessage.textContent = message;
+        }
+
+        this.cameraError.classList.remove('d-none');
+        this.cameraError.classList.add('fade-in');
+    }
+
+    hideError() {
+        this.cameraError.classList.add('d-none');
+        this.cameraError.classList.remove('fade-in');
+        this.cameraChoiceContainer.classList.remove('d-none');
+    }    handleFileSelection(files) {
+        if (files && files.length > 0) {
+            const file = files[0];
+
+            // Validate file
+            if (this.validateFile(file)) {
+                // Set the main file input
                 const dt = new DataTransfer();
                 dt.items.add(file);
-                mainFileInput.files = dt.files;
+                this.mainFileInput.files = dt.files;
 
-                // Trigger change event to show preview
-                const changeEvent = new Event('change', { bubbles: true });
-                mainFileInput.dispatchEvent(changeEvent);
+                // Use the existing showPreview function
+                showPreview(file);
+
+                console.log('File selected:', file.name, 'Size:', file.size);
             }
         }
     }
+
+    validateFile(file) {
+        // File size validation (16MB limit)
+        if (file.size > 16 * 1024 * 1024) {
+            this.showAlert('File is too large. Maximum size is 16MB.', 'error');
+            return false;
+        }
+
+        // File type validation
+        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+            this.showAlert('Invalid file type. Please select PNG, JPG, JPEG, GIF, or WEBP files.', 'error');
+            return false;
+        }
+
+        return true;
+    }
+
+    showAlert(message, type = 'info') {
+        // Create or update alert
+        let alertElement = document.querySelector('.camera-alert');
+        if (!alertElement) {
+            alertElement = document.createElement('div');
+            alertElement.className = 'alert camera-alert';
+            const cameraSection = document.getElementById('cameraSection');
+            if (cameraSection) {
+                cameraSection.insertBefore(alertElement, cameraSection.firstChild);
+            }
+        }
+
+        alertElement.className = `alert camera-alert alert-${type === 'error' ? 'danger' : 'info'}`;
+        alertElement.innerHTML = `
+            <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+            ${message}
+        `;
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            if (alertElement && alertElement.parentNode) {
+                alertElement.remove();
+            }
+        }, 5000);
+    }
 }
+
+// Initialize camera manager when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize camera manager
+    window.cameraManager = new CameraManager();
+
+    // ...existing code...
+});

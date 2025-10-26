@@ -236,37 +236,169 @@
                         {% endif %}
                         {% endwith %}
 
-                        <!-- Upload & Preview Section -->
-                        <div id="uploadPreviewContainer" class="mb-5">
+                        <!-- Camera & Upload Section -->
+                        <div id="cameraUploadContainer" class="mb-5">
+                            <!-- Camera Section -->
+                            <div class="camera-section" id="cameraSection">
+                                <h6 class="section-title mb-4 text-center">
+                                    <i class="fas fa-camera me-2"></i>
+                                    Capture or Select Image
+                                </h6>
+
+                                <!-- Camera Choice Interface -->
+                                <div class="camera-choice-container" id="cameraChoiceContainer">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="choice-card" id="galleryChoice">
+                                                <div class="choice-icon">
+                                                    <i class="fas fa-images"></i>
+                                                </div>
+                                                <div class="choice-content">
+                                                    <h6 class="choice-title">Select from Gallery</h6>
+                                                    <p class="choice-desc">Choose an existing photo</p>
+                                                </div>
+                                                <div class="choice-indicator">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="choice-card" id="cameraChoice">
+                                                <div class="choice-icon camera-icon">
+                                                    <i class="fas fa-camera"></i>
+                                                </div>
+                                                <div class="choice-content">
+                                                    <h6 class="choice-title">Take Photo</h6>
+                                                    <p class="choice-desc">Use camera to capture</p>
+                                                </div>
+                                                <div class="choice-indicator">
+                                                    <i class="fas fa-chevron-right"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Camera Error States -->
+                                <div class="camera-error d-none" id="cameraError">
+                                    <div class="error-card">
+                                        <div class="error-icon">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <div class="error-content">
+                                            <h6 class="error-title">Camera Access Error</h6>
+                                            <p class="error-message" id="cameraErrorMessage">
+                                                Unable to access camera. Please check permissions or try selecting from
+                                                gallery.
+                                            </p>
+                                            <button type="button" class="btn-custom btn-secondary btn-sm"
+                                                id="tryAgainBtn">
+                                                <i class="fas fa-redo me-2"></i>Try Again
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Camera Interface (when camera is active) -->
+                                <div class="camera-interface d-none" id="cameraInterface">
+                                    <div class="camera-container">
+                                        <video id="cameraVideo" autoplay muted playsinline></video>
+                                        <canvas id="cameraCanvas" style="display: none;"></canvas>
+                                        <div class="camera-overlay">
+                                            <div class="camera-grid">
+                                                <div class="grid-line"></div>
+                                                <div class="grid-line"></div>
+                                                <div class="grid-line"></div>
+                                                <div class="grid-line"></div>
+                                            </div>
+                                            <div class="camera-controls">
+                                                <button type="button" class="camera-btn cancel-btn"
+                                                    id="cancelCameraBtn">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                                <button type="button" class="camera-btn capture-btn" id="captureBtn">
+                                                    <i class="fas fa-camera"></i>
+                                                </button>
+                                                <button type="button" class="camera-btn switch-btn"
+                                                    id="switchCameraBtn">
+                                                    <i class="fas fa-sync-alt"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Enhanced Image Preview Section - Between camera section and upload -->
+                            <div id="imagePreviewSection" class="preview-section d-none mb-4">
+                                <!-- Status Message -->
+                                <div class="text-center mb-3">
+                                    <div class="status-card">
+                                        <div class="status-icon">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div class="status-text">
+                                            <strong>Image Ready for Analysis</strong>
+                                            <p class="mb-0">Review your image below and click "Analyze Burn Severity" to
+                                                proceed</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Preview Card -->
+                                <div class="preview-card">
+                                    <div class="preview-header">
+                                        <div class="preview-title">
+                                            <i class="fas fa-image"></i>
+                                            <span>Selected Image</span>
+                                        </div>
+                                        <button type="button" class="preview-close-btn" id="closePreviewBtn">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="preview-image-container">
+                                        <img id="previewImg" src="" alt="Preview" class="preview-image">
+                                        <div class="preview-metadata">
+                                            <div class="metadata-item">
+                                                <i class="fas fa-file-alt"></i>
+                                                <span id="fileName">No file selected</span>
+                                            </div>
+                                            <div class="metadata-item">
+                                                <i class="fas fa-weight-hanging"></i>
+                                                <span id="fileSize">0 MB</span>
+                                            </div>
+                                            <div class="metadata-item">
+                                                <i class="fas fa-expand-arrows-alt"></i>
+                                                <span id="imageDimensions">-- x --</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="preview-actions">
+                                        <button type="button" class="btn-custom btn-secondary" id="retryBtn">
+                                            <span class="btn-icon"><i class="fas fa-rotate-right"></i></span>
+                                            <span class="btn-text">Choose Another</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Upload & Preview Section -->
                             <div class="upload-section" id="uploadSection">
                                 <form action="{{ url_for('upload_file') }}" method="post"
                                     enctype="multipart/form-data" id="uploadForm">
 
-                                    <!-- Mobile Upload Interface -->
-                                    <div class="mobile-upload-container" id="mobileUploadContainer">
-                                        <div class="mobile-upload-icon" id="mobileUploadIcon">
-                                            <div class="progress-ring" id="progressRing"></div>
-                                            <div class="hold-progress" id="holdProgress"></div>
-                                            <i class="fas fa-camera" id="mobileUploadIconSymbol"></i>
-                                        </div>
-                                        <div class="mobile-instructions" id="mobileInstructions">
-                                            <div class="instruction-item">
-                                                <div class="instruction-icon"><i class="fas fa-hand-pointer"></i></div>
-                                                <span>Tap to select from gallery</span>
-                                            </div>
-                                            <div class="instruction-item">
-                                                <div class="instruction-icon"><i class="fas fa-stopwatch"></i></div>
-                                                <span>Hold for 1.5s to open camera</span>
-                                            </div>
-                                        </div>
-                                        <input type="file" id="mobileFileInput" accept=".png,.jpg,.jpeg,.gif,.webp"
-                                            style="display: none;">
-                                        <input type="file" id="mobileCameraInput" accept=".png,.jpg,.jpeg,.gif,.webp"
-                                            capture="camera" style="display: none;">
-                                    </div>
+                                    <!-- Hidden file inputs for different methods -->
+                                    <input type="file" id="galleryInput" accept=".png,.jpg,.jpeg,.gif,.webp"
+                                        style="display: none;">
+                                    <input type="file" id="cameraInput" accept=".png,.jpg,.jpeg,.gif,.webp"
+                                        capture="camera" style="display: none;">
+                                    <input type="file" id="file" name="file" accept=".png,.jpg,.jpeg,.gif,.webp"
+                                        style="display: none;">
 
-                                    <!-- Desktop Upload Interface -->
-                                    <div class="upload-area desktop-upload-container" id="uploadArea">
+                                    <!-- Desktop Upload Interface (fallback/alternative) -->
+                                    <div class="upload-area desktop-upload-fallback d-none" id="uploadArea">
                                         <div class="upload-content" id="uploadContent">
                                             <div class="upload-icon mb-3" id="uploadIcon">
                                                 <i class="fas fa-cloud-upload-alt"></i>
@@ -274,8 +406,6 @@
                                             <h5 class="upload-title mb-2" id="uploadTitle">Drop your image here</h5>
                                             <p class="upload-subtitle mb-3" id="uploadSubtitle">or click to browse files
                                             </p>
-                                            <input type="file" class="file-input" id="file" name="file"
-                                                accept=".png,.jpg,.jpeg,.gif,.webp" required>
                                             <div class="file-info">
                                                 <small class="text-muted">
                                                     <i class="fas fa-info-circle me-1"></i>
@@ -284,6 +414,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <!-- Main Upload/Analyze Button Container -->
                                     <div class="text-center mt-4" id="uploadBtnContainer">
                                         <button type="submit" class="btn-custom btn-primary" id="uploadBtn">
                                             <span class="btn-icon">
@@ -296,36 +427,18 @@
                                         </button>
                                     </div>
 
-                                    <!-- Image Preview (hidden until file selected) -->
-                                    <div id="imagePreviewSection" class="preview-section d-none text-center">
-                                        <h6 class="section-title mb-3">
-                                            <i class="fas fa-image me-2"></i>
-                                            Selected Image
-                                        </h6>
-                                        <div class="preview-container mx-auto" style="max-width:400px;">
-                                            <img id="previewImg" src="" alt="Preview" class="preview-image">
-                                            <div class="preview-overlay">
-                                                <div class="preview-info">
-                                                    <span id="fileName"></span>
-                                                    <span id="fileSize"></span>
-                                                </div>
+                                    <!-- Preview Upload Button (shown when image is selected) -->
+                                    <div class="text-center mt-3 d-none" id="previewUploadContainer">
+                                        <button type="submit" class="btn-custom btn-primary btn-lg"
+                                            id="uploadBtnPreview">
+                                            <span class="btn-icon">
+                                                <i class="fas fa-brain"></i>
+                                            </span>
+                                            <span class="btn-text">Analyze Burn Severity</span>
+                                            <div class="btn-loading d-none">
+                                                <i class="fas fa-spinner fa-spin"></i>
                                             </div>
-                                        </div>
-                                        <div class="d-flex justify-content-center gap-3 mt-4" id="previewBtnGroup">
-                                            <button type="button" class="btn-custom btn-secondary" id="retryBtn">
-                                                <span class="btn-icon"><i class="fas fa-rotate-right"></i></span>
-                                                <span class="btn-text">Choose Another Image</span>
-                                            </button>
-                                            <button type="submit" class="btn-custom btn-primary" id="uploadBtnPreview">
-                                                <span class="btn-icon">
-                                                    <i class="fas fa-brain"></i>
-                                                </span>
-                                                <span class="btn-text">Analyze Burn Severity</span>
-                                                <div class="btn-loading d-none">
-                                                    <i class="fas fa-spinner fa-spin"></i>
-                                                </div>
-                                            </button>
-                                        </div>
+                                        </button>
                                     </div>
                                 </form>
                             </div>
@@ -419,133 +532,15 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-    <!-- Debugging Script -->
-    <script>
-        console.log('DEBUG: Index page loaded');
-
-        // Debug form submission
-        document.getElementById('uploadForm').addEventListener('submit', function (e) {
-            console.log('DEBUG: Upload form submitted');
-            const fileInput = document.getElementById('file');
-            if (fileInput.files.length > 0) {
-                console.log('DEBUG: File selected:', fileInput.files[0].name, 'Size:', fileInput.files[0].size);
-                console.log('DEBUG: File type:', fileInput.files[0].type);
-            } else {
-                console.log('DEBUG: No file selected');
-                e.preventDefault();
-                alert('Please select a file first');
-                return false;
-            }
-        });
-
-        const fileInput = document.getElementById('file');
-        const uploadSection = document.getElementById('uploadSection');
-        const uploadContent = document.getElementById('uploadContent');
-        const uploadBtnContainer = document.getElementById('uploadBtnContainer');
-        const imagePreviewSection = document.getElementById('imagePreviewSection');
-        const previewImg = document.getElementById('previewImg');
-        const fileName = document.getElementById('fileName');
-        const fileSize = document.getElementById('fileSize');
-        const retryBtn = document.getElementById('retryBtn');
-        const uploadBtnPreview = document.getElementById('uploadBtnPreview');
-        const uploadArea = document.getElementById('uploadArea');
-
-        function showPreviewUI(file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                previewImg.src = e.target.result;
-                if (fileName) fileName.textContent = file.name;
-                if (fileSize) fileSize.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
-                imagePreviewSection.classList.remove('d-none');
-                uploadArea.classList.add('d-none'); // Hide the whole upload area
-                uploadBtnContainer.classList.add('d-none'); // Hide main upload button
-            };
-            reader.readAsDataURL(file);
-        }
-
-        if (fileInput) {
-            fileInput.addEventListener('change', function (e) {
-                if (this.files.length > 0) {
-                    showPreviewUI(this.files[0]);
-                }
-            });
-        }
-
-        // Drag & drop support
-        if (uploadArea) {
-            uploadArea.addEventListener('dragover', function (e) {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-            uploadArea.addEventListener('dragleave', function (e) {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-            });
-            uploadArea.addEventListener('drop', function (e) {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-                    fileInput.files = e.dataTransfer.files;
-                    showPreviewUI(e.dataTransfer.files[0]);
-                }
-            });
-        }
-
-        if (retryBtn) {
-            retryBtn.addEventListener('click', function () {
-                fileInput.value = '';
-                fileName.textContent = '';
-                fileSize.textContent = '';
-                previewImg.src = '';
-                imagePreviewSection.classList.add('d-none');
-                uploadArea.classList.remove('d-none'); // Show upload area again
-                uploadBtnContainer.classList.remove('d-none'); // Show main upload button again
-                fileInput.click();
-            });
-        }
-
-        // Debug page load
-        window.addEventListener('load', function () {
-            console.log('DEBUG: Window fully loaded');
-        });
-
-        // Fix: Only open file manager once when clicking upload area
-        document.getElementById('uploadArea').addEventListener('click', function (e) {
-            const fileInput = document.getElementById('file');
-            if (e.target !== fileInput) {
-                fileInput.click();
-            }
-        });
-        // Prevent double opening
-        document.getElementById('file').addEventListener('click', function (e) {
-            e.stopPropagation();
-        });
-
-        // Mobile-friendly upload caption
-        function updateUploadCaptionsForMobile() {
-            const isMobile = window.matchMedia("(max-width: 600px)").matches;
-            const uploadTitle = document.getElementById('uploadTitle');
-            const uploadSubtitle = document.getElementById('uploadSubtitle');
-            const uploadIcon = document.getElementById('uploadIcon');
-            if (isMobile) {
-                if (uploadTitle) uploadTitle.textContent = "Tap to select or take a photo";
-                if (uploadSubtitle) uploadSubtitle.textContent = "Camera and gallery supported";
-                if (uploadIcon) uploadIcon.innerHTML = '<i class="fas fa-camera"></i>';
-            } else {
-                if (uploadTitle) uploadTitle.textContent = "Drop your image here";
-                if (uploadSubtitle) uploadSubtitle.textContent = "or click to browse files";
-                if (uploadIcon) uploadIcon.innerHTML = '<i class="fas fa-cloud-upload-alt"></i>';
-            }
-        }
-        window.addEventListener('load', updateUploadCaptionsForMobile);
-        window.addEventListener('resize', updateUploadCaptionsForMobile);
-    </script>
-
     <style>
-        <blade media|%20(max-width%3A%20600px)%20%7B>#previewBtnGroup {
+        <blade media|%20(max-width%3A%20600px)%20%7B>.preview-actions {
             flex-direction: column !important;
             gap: 1rem !important;
             align-items: stretch !important;
+        }
+
+        .preview-actions .btn-custom {
+            width: 100% !important;
         }
         }
     </style>

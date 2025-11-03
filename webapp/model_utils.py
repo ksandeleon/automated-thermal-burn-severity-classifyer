@@ -46,9 +46,9 @@ class BurnClassifier:
             img = img.convert('RGB')  # Ensure RGB format
             img = img.resize(self.img_size)  # Resize to model input size
 
-            # Convert to numpy array and normalize
+            # Convert to numpy array - KEEP IN [0, 255] RANGE to match training!
             img_array = np.array(img)
-            img_array = img_array.astype('float32') / 255.0  # Normalize to [0,1]
+            img_array = img_array.astype('float32')  # Convert to float32 but keep [0, 255] range
             img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
 
             return img_array

@@ -1,0 +1,933 @@
+/* ===================================
+   INDEX.HTML SPECIFIC STYLES
+   Mobile-First Responsive Design
+   =================================== */
+
+/* ===================================
+   MOBILE-FIRST BASE STYLES
+   Default styles for mobile devices
+   =================================== */
+
+/* Core Layout - Mobile First */
+body {
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.container-fluid {
+    max-width: 100%;
+    overflow-x: hidden;
+    padding: 0.5rem;
+}
+
+.main-card {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+/* Touch scrolling optimization */
+.card-body-custom {
+    -webkit-overflow-scrolling: touch;
+    padding: 1.5rem 1rem;
+}
+
+/* Typography - Mobile Base */
+h1, h2, h3, h4, h5, h6 {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Ensure images scale properly */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Form inputs - Touch friendly */
+input[type="file"] {
+    font-size: 16px; /* Prevent zoom on iOS */
+}
+
+/* ===================================
+   MOBILE UPLOAD CONTAINER - MOBILE FIRST
+   =================================== */
+
+/* Mobile-specific tap/hold styles - Default for mobile */
+.mobile-upload-container {
+    position: relative;
+    display: block;
+    padding: 1rem 0;
+}
+
+.mobile-upload-icon {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.mobile-upload-icon i {
+    font-size: 2.5rem;
+    color: var(--white);
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+/* Progress ring for hold animation - Mobile optimized */
+.progress-ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top: 3px solid var(--white);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    animation: none;
+}
+
+.progress-ring.active {
+    opacity: 1;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Hold progress indicator */
+.hold-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg,
+            transparent 0deg,
+            rgba(255, 255, 255, 0.3) 0deg,
+            transparent 0deg);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.hold-progress.active {
+    opacity: 1;
+}
+
+/* Mobile instructions */
+.mobile-instructions {
+    display: none;
+    text-align: center;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+}
+
+.mobile-instructions.show {
+    display: block;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.instruction-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--text-light);
+}
+
+.instruction-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.7rem;
+}
+
+/* Haptic feedback simulation */
+.mobile-upload-icon.tap-feedback {
+    transform: scale(0.95);
+}
+
+.mobile-upload-icon.hold-feedback {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(165, 182, 141, 0.6);
+}
+
+/* ===================================
+   IMAGE PREVIEW SECTION - MOBILE FIRST
+   =================================== */
+
+/* Image Preview Styles - Mobile Base */
+.preview-section {
+    margin-top: 1.5rem;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.status-card {
+    background: linear-gradient(135deg, rgba(165, 182, 141, 0.1), rgba(149, 178, 159, 0.1));
+    padding: 1rem;
+    border-radius: 12px;
+    border: 2px solid rgba(165, 182, 141, 0.3);
+}
+
+.status-icon {
+    display: inline-block;
+    font-size: 1.5rem;
+    color: #a5b68d;
+    margin-bottom: 0.5rem;
+}
+
+.status-text {
+    margin-top: 0.5rem;
+}
+
+.status-text strong {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-dark);
+}
+
+.status-text p {
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.preview-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preview-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #fff;
+}
+
+.preview-close-btn {
+    background: rgba(220, 53, 69, 0.2);
+    border: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    color: #dc3545;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+.preview-close-btn:active {
+    background: rgba(220, 53, 69, 0.4);
+    transform: scale(0.95);
+}
+
+.preview-image-container {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.preview-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.preview-metadata {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.metadata-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+}
+
+.metadata-item i {
+    color: #a5b68d;
+    min-width: 16px;
+}
+
+.preview-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+    margin-top: 1rem;
+}
+
+.preview-actions .btn-custom {
+    width: 100%;
+}
+
+@keyframes slideInPreview {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===================================
+   HEADER STYLES - MOBILE FIRST
+   =================================== */
+
+/* Mobile base header styles */
+.card-header-custom {
+    padding: 1.5rem 1rem;
+}
+
+.header-icon {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0.75rem;
+}
+
+.header-icon i {
+    font-size: 1.5rem;
+}
+
+.card-header-custom h1 {
+    font-size: 1.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.card-header-custom .lead {
+    font-size: 0.9rem;
+}
+
+/* ===================================
+   BUTTONS - MOBILE FIRST
+   =================================== */
+
+.btn-custom {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
+    white-space: normal;
+    word-wrap: break-word;
+    min-height: 48px;
+    min-width: 48px;
+    touch-action: manipulation;
+}
+
+/* ===================================
+   SEVERITY CARDS - MOBILE FIRST
+   =================================== */
+
+.severity-card {
+    padding: 1.5rem 1rem;
+    margin-bottom: 1rem;
+}
+
+.severity-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+}
+
+.severity-title {
+    font-size: 1rem;
+}
+
+.severity-desc {
+    font-size: 0.875rem;
+}
+
+.severity-features {
+    font-size: 0.85rem;
+}
+
+/* ===================================
+   CAMERA SECTION - MOBILE FIRST
+   =================================== */
+
+.choice-card {
+    padding: 1rem;
+    min-height: 100px;
+    touch-action: manipulation;
+}
+
+.choice-icon {
+    width: 50px;
+    height: 50px;
+}
+
+.choice-icon i {
+    font-size: 1.25rem;
+}
+
+.choice-title {
+    font-size: 1rem;
+}
+
+.choice-desc {
+    font-size: 0.85rem;
+}
+
+/* ===================================
+   DISCLAIMER - MOBILE FIRST
+   =================================== */
+
+.disclaimer-card {
+    padding: 1.5rem;
+    flex-direction: column;
+    text-align: center;
+}
+
+.disclaimer-icon {
+    width: 40px;
+    height: 40px;
+    margin: 0 auto 1rem;
+}
+
+.disclaimer-title {
+    font-size: 1rem;
+}
+
+.disclaimer-text {
+    font-size: 0.875rem;
+}
+
+/* ===================================
+   TABLET BREAKPOINT - 576px and up
+   =================================== */
+
+@media (min-width: 576px) {
+    body {
+        font-size: 16px;
+    }
+
+    .container-fluid {
+        padding: 1rem;
+    }
+
+    .card-body-custom {
+        padding: 2rem 1.5rem;
+    }
+
+    .card-header-custom {
+        padding: 2rem 1.5rem;
+    }
+
+    .header-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .header-icon i {
+        font-size: 2rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 2rem;
+    }
+
+    .card-header-custom .lead {
+        font-size: 1rem;
+    }
+
+    .mobile-upload-icon {
+        width: 120px;
+        height: 120px;
+    }
+
+    .mobile-upload-icon i {
+        font-size: 3rem;
+    }
+
+    .progress-ring {
+        width: 140px;
+        height: 140px;
+    }
+
+    .preview-image {
+        max-height: 350px;
+    }
+
+    .preview-metadata {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .status-icon {
+        font-size: 1.75rem;
+    }
+
+    .status-text strong {
+        font-size: 1.05rem;
+    }
+
+    .status-text p {
+        font-size: 0.9rem;
+    }
+
+    .btn-custom {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+    }
+
+    .severity-card {
+        padding: 1.75rem 1.25rem;
+    }
+
+    .severity-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 1.35rem;
+    }
+
+    .choice-card {
+        padding: 1.25rem;
+    }
+
+    .choice-icon {
+        width: 55px;
+        height: 55px;
+    }
+
+    .choice-icon i {
+        font-size: 1.35rem;
+    }
+}
+
+/* ===================================
+   DESKTOP BREAKPOINT - 769px and up
+   =================================== */
+
+@media (min-width: 769px) {
+    /* Hide mobile elements on desktop */
+    .mobile-upload-container {
+        display: none !important;
+    }
+
+    .desktop-upload-container {
+        display: block;
+    }
+
+    .container-fluid {
+        padding: 1.5rem;
+    }
+
+    .card-body-custom {
+        padding: 2.5rem 2rem;
+    }
+
+    .card-header-custom {
+        padding: 2.5rem 2rem;
+    }
+
+    .header-icon {
+        width: 70px;
+        height: 70px;
+    }
+
+    .header-icon i {
+        font-size: 2.5rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 2.5rem;
+    }
+
+    .card-header-custom .lead {
+        font-size: 1.1rem;
+    }
+
+    .preview-card {
+        padding: 1.5rem;
+    }
+
+    .preview-image {
+        max-height: 400px;
+    }
+
+    .preview-actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .preview-actions .btn-custom {
+        width: auto;
+    }
+
+    .preview-close-btn:hover {
+        background: rgba(220, 53, 69, 0.4);
+        transform: scale(1.1);
+    }
+
+    .status-card {
+        padding: 1.5rem;
+    }
+
+    .status-icon {
+        font-size: 2rem;
+    }
+
+    .status-text strong {
+        font-size: 1.1rem;
+    }
+
+    .status-text p {
+        font-size: 0.95rem;
+    }
+
+    .metadata-item {
+        font-size: 0.9rem;
+    }
+
+    .btn-custom {
+        padding: 1rem 2.5rem;
+        font-size: 1.05rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .severity-card {
+        padding: 2rem 1.5rem;
+        margin-bottom: 0;
+    }
+
+    .severity-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    .severity-title {
+        font-size: 1.1rem;
+    }
+
+    .severity-desc {
+        font-size: 0.9rem;
+    }
+
+    .severity-features {
+        font-size: 0.875rem;
+    }
+
+    .disclaimer-card {
+        flex-direction: row;
+        text-align: left;
+        padding: 2rem;
+    }
+
+    .disclaimer-icon {
+        width: 50px;
+        height: 50px;
+        margin: 0 1.5rem 0 0;
+    }
+
+    .disclaimer-title {
+        font-size: 1.1rem;
+    }
+
+    .disclaimer-text {
+        font-size: 0.95rem;
+    }
+
+    .choice-card {
+        padding: 1.5rem;
+    }
+
+    .choice-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .choice-icon i {
+        font-size: 1.5rem;
+    }
+
+    .choice-title {
+        font-size: 1.1rem;
+    }
+
+    .choice-desc {
+        font-size: 0.9rem;
+    }
+}
+
+/* ===================================
+   LARGE DESKTOP - 1200px and up
+   =================================== */
+
+@media (min-width: 1200px) {
+    .container-fluid {
+        padding: 2rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 2.75rem;
+    }
+
+    .card-header-custom .lead {
+        font-size: 1.15rem;
+    }
+
+    .preview-image {
+        max-height: 500px;
+    }
+}
+
+/* ===================================
+   UTILITY CLASSES & ANIMATIONS
+   =================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ===================================
+   LANDSCAPE MODE OPTIMIZATIONS
+   =================================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+    .card-header-custom {
+        padding: 0.75rem 1rem;
+    }
+
+    .header-icon {
+        width: 35px;
+        height: 35px;
+        margin-bottom: 0.25rem;
+    }
+
+    .header-icon i {
+        font-size: 1rem;
+    }
+
+    .card-header-custom h1 {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .card-header-custom .lead {
+        font-size: 0.8rem;
+    }
+
+    .header-underline {
+        margin-top: 0.25rem;
+    }
+
+    .preview-image {
+        max-height: 180px;
+    }
+
+    .mobile-upload-icon {
+        width: 70px;
+        height: 70px;
+    }
+
+    .mobile-upload-icon i {
+        font-size: 1.75rem;
+    }
+
+    .card-body-custom {
+        padding: 1rem;
+    }
+
+    .severity-card {
+        padding: 1rem;
+    }
+
+    .btn-custom {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+    }
+}
+
+/* ===================================
+   TOUCH DEVICE OPTIMIZATIONS
+   =================================== */
+
+@media (hover: none) and (pointer: coarse) {
+    /* Ensure all interactive elements are touch-friendly */
+    .btn-custom,
+    .choice-card,
+    .preview-close-btn,
+    button,
+    a {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .choice-card {
+        min-height: 100px;
+    }
+
+    /* Remove hover effects on touch devices */
+    .choice-card:hover::before,
+    .main-card:hover,
+    .severity-card:hover {
+        transform: none;
+        opacity: inherit;
+    }
+
+    /* Add active states for better feedback */
+    .btn-custom:active {
+        transform: scale(0.97);
+    }
+
+    .choice-card:active {
+        transform: scale(0.98);
+    }
+}
+
+/* ===================================
+   GRID & LAYOUT IMPROVEMENTS
+   =================================== */
+
+/* Severity cards responsive grid */
+.classification-section .row {
+    gap: 0;
+}
+
+@media (min-width: 768px) {
+    .classification-section .row {
+        gap: 1rem;
+    }
+}
+
+.classification-section .col-md-4 {
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .classification-section .col-md-4 {
+        margin-bottom: 0;
+    }
+}
+
+/* ===================================
+   ACCESSIBILITY & SPECIAL MODES
+   =================================== */
+
+/* Print Styles */
+@media print {
+    .mobile-upload-container,
+    .desktop-upload-container,
+    .preview-close-btn,
+    .preview-actions {
+        display: none !important;
+    }
+
+    .preview-section {
+        page-break-inside: avoid;
+    }
+
+    .severity-card {
+        page-break-inside: avoid;
+    }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+    .preview-card,
+    .status-card,
+    .severity-card {
+        border: 2px solid currentColor;
+    }
+
+    .btn-custom {
+        border: 2px solid var(--white);
+    }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .mobile-upload-icon,
+    .choice-card,
+    .severity-card {
+        transition: none;
+    }
+}
+
+/* Dark Mode Support (if implemented in future) */
+@media (prefers-color-scheme: dark) {
+    /* Add dark mode styles if needed */
+}

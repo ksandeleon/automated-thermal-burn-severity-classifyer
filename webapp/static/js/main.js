@@ -1,6 +1,7 @@
 // Enhanced JavaScript for Professional Burn Classifier with Camera Support
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('file');
+    const galleryInput = document.getElementById('galleryInput');
     const imagePreview = document.getElementById('imagePreview');
     const previewImg = document.getElementById('previewImg');
     const uploadBtn = document.getElementById('uploadBtn');
@@ -8,14 +9,137 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('uploadForm');
     const fileName = document.getElementById('fileName');
     const fileSize = document.getElementById('fileSize');
+    const imageDimensions = document.getElementById('imageDimensions');
+    const imagePreviewSection = document.getElementById('imagePreviewSection');
+    const galleryChoice = document.getElementById('galleryChoice');
+    const closePreviewBtn = document.getElementById('closePreviewBtn');
+    const retryBtn = document.getElementById('retryBtn');
 
     console.log('DEBUG: Main upload functionality initialized');
     console.log('DEBUG: Preview elements found:', {
         previewImg: !!previewImg,
         fileName: !!fileName,
         fileSize: !!fileSize,
-        imagePreviewSection: !!document.getElementById('imagePreviewSection')
+        imagePreviewSection: !!imagePreviewSection,
+        imageDimensions: !!imageDimensions
     });
+
+    // Gallery Choice Handler - THIS IS THE KEY FEATURE
+    if (galleryChoice && galleryInput) {
+        galleryChoice.addEventListener('click', function() {
+            console.log('DEBUG: Gallery choice clicked');
+            galleryInput.click();
+        });
+    }
+
+    // Handle gallery input change
+    if (galleryInput) {
+        galleryInput.addEventListener('change', function(e) {
+            console.log('DEBUG: Gallery input changed');
+            const file = e.target.files[0];
+            if (file) {
+                // Validate file first
+                if (!validateFile(file)) {
+                    console.error('DEBUG: File validation failed');
+                    galleryInput.value = ''; // Clear the input
+                    return;
+                }
+
+                // Transfer to main file input using DataTransfer
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+
+                console.log('DEBUG: File transferred to main input:', fileInput.files[0] ? fileInput.files[0].name : 'NONE');
+
+                // Show preview (don't call handleFiles as it will overwrite fileInput.files)
+                window.showPreview(file);
+            }
+        });
+    }
+
+    // Close preview button
+    if (closePreviewBtn) {
+        closePreviewBtn.addEventListener('click', function(e) {
+            console.log('DEBUG: Close preview button clicked');
+            e.preventDefault(); // Prevent any default behavior
+            hidePreview();
+        });
+    }
+
+    // Retry button - Choose another image
+    if (retryBtn) {
+        retryBtn.addEventListener('click', function() {
+            console.log('DEBUG: Retry button clicked - choosing another image');
+            hidePreview();
+            // Small delay to ensure UI is restored before opening file picker
+            setTimeout(() => {
+                if (galleryInput) {
+                    galleryInput.click();
+                }
+            }, 100);
+        });
+    }
+
+    // Make hidePreview accessible globally
+    window.hidePreview = function() {
+        console.log('DEBUG: hidePreview called - restoring UI elements');
+
+        // Get fresh references to elements
+        const imagePreviewSection = document.getElementById('imagePreviewSection');
+        const cameraSection = document.getElementById('cameraSection');
+        const uploadBtnContainer = document.getElementById('uploadBtnContainer');
+        const previewUploadContainer = document.getElementById('previewUploadContainer');
+        const fileInput = document.getElementById('file');
+        const galleryInput = document.getElementById('galleryInput');
+        const previewImg = document.getElementById('previewImg');
+
+        // Hide preview section
+        if (imagePreviewSection) {
+            imagePreviewSection.classList.add('d-none');
+            imagePreviewSection.classList.remove('fade-in');
+            console.log('DEBUG: Preview section hidden');
+        }
+
+        // Show camera section again
+        if (cameraSection) {
+            cameraSection.style.display = '';
+            console.log('DEBUG: Camera section restored');
+        }
+
+        // Show main upload button container
+        if (uploadBtnContainer) {
+            uploadBtnContainer.classList.remove('d-none');
+            console.log('DEBUG: Upload button container restored');
+        }
+
+        // Hide preview upload button container
+        if (previewUploadContainer) {
+            previewUploadContainer.classList.add('d-none');
+            console.log('DEBUG: Preview upload container hidden');
+        }
+
+        // Clear file inputs
+        if (fileInput) {
+            fileInput.value = '';
+            console.log('DEBUG: File input cleared');
+        }
+        if (galleryInput) {
+            galleryInput.value = '';
+            console.log('DEBUG: Gallery input cleared');
+        }
+
+        // Clear preview image
+        if (previewImg) {
+            previewImg.src = '';
+            console.log('DEBUG: Preview image cleared');
+        }
+
+        console.log('DEBUG: hidePreview complete - UI restored');
+    };
+
+    // Create local reference to the global function
+    const hidePreview = window.hidePreview;
 
     // Initialize camera manager
     window.cameraManager = new CameraManager();
@@ -76,8 +200,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Validate file
             if (validateFile(file)) {
-                fileInput.files = files; // Set the file input
-                showPreview(file);
+                // Use DataTransfer to properly set the file input
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+
+                console.log('DEBUG: File set in handleFiles:', fileInput.files[0] ? fileInput.files[0].name : 'NONE');
+
+                window.showPreview(file);
                 showUploadAnimation();
             }
         }
@@ -168,7 +298,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return true;
     }
 
-    function showPreview(file) {
+    // Make showPreview globally accessible
+    window.showPreview = function(file) {
         console.log('DEBUG: showPreview called with file:', file);
 
         const reader = new FileReader();
@@ -248,7 +379,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.log('DEBUG: Fade-in animation applied');
 
                         // Show success feedback
-                        showImageSelectedFeedback();
+                        if (typeof showImageSelectedFeedback === 'function') {
+                            showImageSelectedFeedback();
+                        }
                     }, 100);
                 } else {
                     console.error('DEBUG: imagePreviewSection element not found');
@@ -257,7 +390,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
             img.onerror = function() {
                 console.error('DEBUG: Error loading image');
-                showAlert('Error loading image. Please try a different file.', 'error');
+                if (typeof showAlert === 'function') {
+                    showAlert('Error loading image. Please try a different file.', 'error');
+                }
             };
 
             img.src = e.target.result;
@@ -265,7 +400,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         reader.onerror = function() {
             console.error('DEBUG: Error reading file');
-            showAlert('Error reading file. Please try again.', 'error');
+            if (typeof showAlert === 'function') {
+                showAlert('Error reading file. Please try again.', 'error');
+            }
         };
 
         reader.readAsDataURL(file);
@@ -284,55 +421,50 @@ document.addEventListener('DOMContentLoaded', function() {
         const uploadBtn = document.getElementById('uploadBtn');
         const uploadBtnPreview = document.getElementById('uploadBtnPreview');
 
-        // Handle main upload button
-        if (uploadBtn) {
-            uploadBtn.addEventListener('click', function(e) {
-                const file = fileInput.files[0];
-                if (!file) {
-                    e.preventDefault();
-                    showAlert('Please select a file first.', 'error');
-                    return;
-                }
-                handleFormSubmission(e, uploadBtn);
-            });
-        }
+        console.log('DEBUG: Form submit handlers initialized', {
+            form: !!form,
+            uploadBtn: !!uploadBtn,
+            uploadBtnPreview: !!uploadBtnPreview,
+            fileInput: !!fileInput
+        });
 
-        // Handle preview upload button
-        if (uploadBtnPreview) {
-            uploadBtnPreview.addEventListener('click', function(e) {
-                const file = fileInput.files[0];
-                if (!file) {
-                    e.preventDefault();
-                    showAlert('Please select a file first.', 'error');
-                    return;
-                }
-                handleFormSubmission(e, uploadBtnPreview);
-            });
-        }
-
-        // Handle form submission
+        // Handle form submission - This is the main handler
         form.addEventListener('submit', function(e) {
+            console.log('DEBUG: Form submit event triggered');
             const file = fileInput.files[0];
+
+            console.log('DEBUG: File in input:', file ? file.name : 'NO FILE');
+
             if (!file) {
                 e.preventDefault();
+                console.error('DEBUG: No file selected, preventing submission');
                 showAlert('Please select a file first.', 'error');
-                return;
+                return false;
             }
 
+            // Validate file before submission
+            if (!validateFile(file)) {
+                e.preventDefault();
+                console.error('DEBUG: File validation failed');
+                return false;
+            }
+
+            console.log('DEBUG: File validated, allowing form submission');
+
             // Show enhanced loading state
-            showLoadingState();
+            const submitButton = e.submitter || uploadBtn;
+            if (submitButton) {
+                showLoadingStateForButton(submitButton);
+            } else {
+                showLoadingState();
+            }
 
             // Add form loading class
             form.classList.add('loading');
+
+            console.log('DEBUG: Form submitting with file:', file.name);
+            // Don't prevent default - let the form submit naturally
         });
-    }
-
-    function handleFormSubmission(e, button) {
-        // Show enhanced loading state for the specific button
-        showLoadingStateForButton(button);
-
-        // Add form loading class
-        form.classList.add('loading');
     }
 
     function showLoadingStateForButton(button) {
@@ -452,41 +584,11 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadArea.setAttribute('aria-label', 'Click or drag to upload image file');
     }
 
-    // Enhanced preview functionality
-    const closePreviewBtn = document.getElementById('closePreviewBtn');
-    const retryBtn = document.getElementById('retryBtn');
+    // Enhanced preview functionality - handlers already declared at top
+    // Close preview and retry handlers are defined at the beginning of DOMContentLoaded
 
-    // Close preview handler
-    if (closePreviewBtn) {
-        closePreviewBtn.addEventListener('click', function() {
-            hidePreview();
-        });
-    }
-
-    // Enhanced retry functionality
-    if (retryBtn) {
-        retryBtn.addEventListener('click', function() {
-            hidePreview();
-            // Reset file input
-            if (fileInput) {
-                fileInput.value = '';
-            }
-            // Reset other file inputs
-            const galleryInput = document.getElementById('galleryInput');
-            const cameraInput = document.getElementById('cameraInput');
-            if (galleryInput) galleryInput.value = '';
-            if (cameraInput) cameraInput.value = '';
-
-            // Show camera section again
-            const cameraSection = document.getElementById('cameraSection');
-            if (cameraSection) {
-                cameraSection.style.display = 'block';
-            }
-        });
-    }
-
-    // Function to hide preview and show camera section
-    function hidePreview() {
+    // Function to hide preview and show camera section (duplicate, already exists at top)
+    function hidePreviewDuplicate() {
         const imagePreview = document.getElementById('imagePreviewSection');
         const cameraSection = document.getElementById('cameraSection');
         const uploadBtnContainer = document.getElementById('uploadBtnContainer');
@@ -501,7 +603,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         if (cameraSection) {
-            cameraSection.style.display = 'block';
+            cameraSection.style.display = '';
             console.log('DEBUG: Camera section shown');
         }
 
@@ -686,362 +788,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('DOMContentLoaded', function() {
         const animateElements = document.querySelectorAll('.severity-card, .disclaimer-card');
         animateElements.forEach(el => observer.observe(el));
-    });
-
-    // Enhanced Camera and Upload Functionality
-    class CameraManager {
-        constructor() {
-            this.stream = null;
-            this.currentCamera = 'user'; // 'user' for front camera, 'environment' for back camera
-            this.isInitialized = false;
-            this.initializeElements();
-            this.bindEvents();
-        }
-
-        initializeElements() {
-            // Camera elements
-            this.cameraChoiceContainer = document.getElementById('cameraChoiceContainer');
-            this.cameraInterface = document.getElementById('cameraInterface');
-            this.cameraError = document.getElementById('cameraError');
-            this.cameraVideo = document.getElementById('cameraVideo');
-            this.cameraCanvas = document.getElementById('cameraCanvas');
-
-            // Choice buttons
-            this.galleryChoice = document.getElementById('galleryChoice');
-            this.cameraChoice = document.getElementById('cameraChoice');
-
-            // Camera controls
-            this.captureBtn = document.getElementById('captureBtn');
-            this.cancelCameraBtn = document.getElementById('cancelCameraBtn');
-            this.switchCameraBtn = document.getElementById('switchCameraBtn');
-            this.tryAgainBtn = document.getElementById('tryAgainBtn');
-
-            // File inputs
-            this.galleryInput = document.getElementById('galleryInput');
-            this.cameraInput = document.getElementById('cameraInput');
-            this.mainFileInput = document.getElementById('file');
-
-            // Error elements
-            this.cameraErrorMessage = document.getElementById('cameraErrorMessage');
-        }
-
-        bindEvents() {
-            // Choice buttons
-            if (this.galleryChoice) {
-                this.galleryChoice.addEventListener('click', () => this.openGallery());
-            }
-
-            if (this.cameraChoice) {
-                this.cameraChoice.addEventListener('click', () => this.openCamera());
-            }
-
-            // Camera controls
-            if (this.captureBtn) {
-                this.captureBtn.addEventListener('click', () => this.capturePhoto());
-            }
-
-            if (this.cancelCameraBtn) {
-                this.cancelCameraBtn.addEventListener('click', () => this.closeCamera());
-            }
-
-            if (this.switchCameraBtn) {
-                this.switchCameraBtn.addEventListener('click', () => this.switchCamera());
-            }
-
-            if (this.tryAgainBtn) {
-                this.tryAgainBtn.addEventListener('click', () => this.retryCamera());
-            }
-
-            // File input handlers
-            if (this.galleryInput) {
-                this.galleryInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files));
-            }
-
-            if (this.cameraInput) {
-                this.cameraInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files));
-            }
-        }
-
-        openGallery() {
-            console.log('Opening gallery...');
-            if (this.galleryInput) {
-                this.galleryInput.click();
-            }
-        }
-
-        async openCamera() {
-            console.log('Opening camera...');
-            this.hideError();
-
-            // Check if camera is supported
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                this.showError('Camera is not supported on this device or browser.');
-                return;
-            }
-
-            try {
-                this.showCameraLoading();
-
-                const constraints = {
-                    video: {
-                        facingMode: this.currentCamera,
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }
-                };
-
-                this.stream = await navigator.mediaDevices.getUserMedia(constraints);
-                this.cameraVideo.srcObject = this.stream;
-
-                await new Promise((resolve) => {
-                    this.cameraVideo.onloadedmetadata = resolve;
-                });
-
-                this.showCameraInterface();
-                console.log('Camera opened successfully');
-
-            } catch (error) {
-                console.error('Error opening camera:', error);
-                this.handleCameraError(error);
-            }
-        }
-
-        showCameraLoading() {
-            this.cameraChoiceContainer.classList.add('d-none');
-            this.cameraInterface.classList.remove('d-none');
-            this.cameraInterface.innerHTML = `
-                <div class="camera-loading">
-                    <i class="fas fa-spinner fa-spin me-2"></i>
-                    <span>Opening camera...</span>
-                </div>
-            `;
-        }
-
-        showCameraInterface() {
-            this.cameraInterface.innerHTML = `
-                <div class="camera-container">
-                    <video id="cameraVideo" autoplay muted playsinline></video>
-                    <canvas id="cameraCanvas" style="display: none;"></canvas>
-                    <div class="camera-overlay">
-                        <div class="camera-grid">
-                            <div class="grid-line"></div>
-                            <div class="grid-line"></div>
-                            <div class="grid-line"></div>
-                            <div class="grid-line"></div>
-                        </div>
-                        <div class="camera-controls">
-                            <button type="button" class="camera-btn cancel-btn" id="cancelCameraBtn">
-                                <i class="fas fa-times"></i>
-                            </button>
-                            <button type="button" class="camera-btn capture-btn" id="captureBtn">
-                                <i class="fas fa-camera"></i>
-                            </button>
-                            <button type="button" class="camera-btn switch-btn" id="switchCameraBtn">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            // Re-initialize elements and events
-            this.cameraVideo = document.getElementById('cameraVideo');
-            this.cameraCanvas = document.getElementById('cameraCanvas');
-            this.captureBtn = document.getElementById('captureBtn');
-            this.cancelCameraBtn = document.getElementById('cancelCameraBtn');
-            this.switchCameraBtn = document.getElementById('switchCameraBtn');
-
-            // Re-bind events
-            this.captureBtn.addEventListener('click', () => this.capturePhoto());
-            this.cancelCameraBtn.addEventListener('click', () => this.closeCamera());
-            this.switchCameraBtn.addEventListener('click', () => this.switchCamera());
-
-            // Set video source
-            if (this.stream) {
-                this.cameraVideo.srcObject = this.stream;
-            }
-
-            this.cameraInterface.classList.add('fade-in');
-        }
-
-        async switchCamera() {
-            this.currentCamera = this.currentCamera === 'user' ? 'environment' : 'user';
-
-            if (this.stream) {
-                this.stream.getTracks().forEach(track => track.stop());
-            }
-
-            await this.openCamera();
-        }
-
-        capturePhoto() {
-            if (!this.cameraVideo || !this.stream) {
-                this.showError('Camera not available for capture.');
-                return;
-            }
-
-            try {
-                // Create canvas if it doesn't exist
-                if (!this.cameraCanvas) {
-                    this.cameraCanvas = document.createElement('canvas');
-                }
-
-                const canvas = this.cameraCanvas;
-                const video = this.cameraVideo;
-
-                // Set canvas dimensions to match video
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-
-                // Draw video frame to canvas
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                // Convert canvas to blob
-                canvas.toBlob((blob) => {
-                    if (blob) {
-                        // Create a file from the blob
-                        const file = new File([blob], `camera-capture-${Date.now()}.jpg`, {
-                            type: 'image/jpeg',
-                            lastModified: Date.now()
-                        });
-
-                        // Handle the captured file
-                        this.handleFileSelection([file]);
-                        this.closeCamera();
-                    }
-                }, 'image/jpeg', 0.9);
-
-            } catch (error) {
-                console.error('Error capturing photo:', error);
-                this.showError('Failed to capture photo. Please try again.');
-            }
-        }
-
-        closeCamera() {
-            if (this.stream) {
-                this.stream.getTracks().forEach(track => track.stop());
-                this.stream = null;
-            }
-
-            this.cameraInterface.classList.add('d-none');
-            this.cameraChoiceContainer.classList.remove('d-none');
-            this.hideError();
-        }
-
-        retryCamera() {
-            this.hideError();
-            this.openCamera();
-        }
-
-        handleCameraError(error) {
-            let errorMessage = 'Unable to access camera. ';
-
-            switch (error.name) {
-                case 'NotFoundError':
-                    errorMessage += 'No camera found on this device.';
-                    break;
-                case 'NotAllowedError':
-                    errorMessage += 'Camera access was denied. Please allow camera permissions and try again.';
-                    break;
-                case 'NotSupportedError':
-                    errorMessage += 'Camera is not supported on this device.';
-                    break;
-                case 'OverconstrainedError':
-                    errorMessage += 'Camera constraints could not be satisfied.';
-                    break;
-                default:
-                    errorMessage += 'Please check your camera settings and try again.';
-            }
-
-            this.showError(errorMessage);
-        }
-
-        showError(message) {
-            this.cameraInterface.classList.add('d-none');
-            this.cameraChoiceContainer.classList.add('d-none');
-
-            if (this.cameraErrorMessage) {
-                this.cameraErrorMessage.textContent = message;
-            }
-
-            this.cameraError.classList.remove('d-none');
-            this.cameraError.classList.add('fade-in');
-        }
-
-        hideError() {
-            this.cameraError.classList.add('d-none');
-            this.cameraError.classList.remove('fade-in');
-            this.cameraChoiceContainer.classList.remove('d-none');
-        }    handleFileSelection(files) {
-            if (files && files.length > 0) {
-                const file = files[0];
-
-                // Validate file
-                if (this.validateFile(file)) {
-                    // Set the main file input
-                    const dt = new DataTransfer();
-                    dt.items.add(file);
-                    this.mainFileInput.files = dt.files;
-
-                    // Use the existing showPreview function
-                    showPreview(file);
-
-                    console.log('File selected:', file.name, 'Size:', file.size);
-                }
-            }
-        }
-
-        validateFile(file) {
-            // File size validation (16MB limit)
-            if (file.size > 16 * 1024 * 1024) {
-                this.showAlert('File is too large. Maximum size is 16MB.', 'error');
-                return false;
-            }
-
-            // File type validation
-            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
-            if (!allowedTypes.includes(file.type)) {
-                this.showAlert('Invalid file type. Please select PNG, JPG, JPEG, GIF, or WEBP files.', 'error');
-                return false;
-            }
-
-            return true;
-        }
-
-        showAlert(message, type = 'info') {
-            // Create or update alert
-            let alertElement = document.querySelector('.camera-alert');
-            if (!alertElement) {
-                alertElement = document.createElement('div');
-                alertElement.className = 'alert camera-alert';
-                const cameraSection = document.getElementById('cameraSection');
-                if (cameraSection) {
-                    cameraSection.insertBefore(alertElement, cameraSection.firstChild);
-                }
-            }
-
-            alertElement.className = `alert camera-alert alert-${type === 'error' ? 'danger' : 'info'}`;
-            alertElement.innerHTML = `
-                <i class="fas fa-${type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
-                ${message}
-            `;
-
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                if (alertElement && alertElement.parentNode) {
-                    alertElement.remove();
-                }
-            }, 5000);
-        }
-    }
-
-    // Initialize camera manager when DOM is ready
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize camera manager
-        window.cameraManager = new CameraManager();
-
-        // ...existing code...
     });
 });
 
@@ -1438,22 +1184,53 @@ class CameraManager {
         this.cameraError.classList.add('d-none');
         this.cameraError.classList.remove('fade-in');
         this.cameraChoiceContainer.classList.remove('d-none');
-    }    handleFileSelection(files) {
+    }
+
+    handleFileSelection(files) {
+        console.log('DEBUG: CameraManager.handleFileSelection called with files:', files);
+
         if (files && files.length > 0) {
             const file = files[0];
+            console.log('DEBUG: File selected:', file.name, 'Size:', file.size);
 
             // Validate file
             if (this.validateFile(file)) {
-                // Set the main file input
+                // Set the main file input using DataTransfer
                 const dt = new DataTransfer();
                 dt.items.add(file);
                 this.mainFileInput.files = dt.files;
 
-                // Use the existing showPreview function
-                showPreview(file);
+                console.log('DEBUG: File set to main input, verifying:',
+                    this.mainFileInput.files[0] ? this.mainFileInput.files[0].name : 'NONE');
 
-                console.log('File selected:', file.name, 'Size:', file.size);
+                // Use the existing showPreview function - access it from window scope
+                if (typeof window.showPreview === 'function') {
+                    window.showPreview(file);
+                    console.log('DEBUG: showPreview called successfully');
+                } else if (typeof showPreview === 'function') {
+                    showPreview(file);
+                    console.log('DEBUG: showPreview (local) called successfully');
+                } else {
+                    console.error('DEBUG: showPreview function not found in scope');
+                    // Fallback: manually trigger preview
+                    this.triggerPreview(file);
+                }
+
+                console.log('DEBUG: File selection complete:', file.name);
+            } else {
+                console.error('DEBUG: File validation failed for:', file.name);
             }
+        } else {
+            console.error('DEBUG: No files provided to handleFileSelection');
+        }
+    }
+
+    triggerPreview(file) {
+        // Fallback method to trigger preview manually
+        const event = new Event('change', { bubbles: true });
+        const fileInput = document.getElementById('file');
+        if (fileInput) {
+            fileInput.dispatchEvent(event);
         }
     }
 

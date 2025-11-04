@@ -692,6 +692,10 @@ body {
     background: linear-gradient(90deg, #dc3545, #e83e8c);
 }
 
+.severity-4::before {
+    background: linear-gradient(90deg, #6c2c91, #4a0e4e);
+}
+
 .severity-icon {
     width: 60px;
     height: 60px;
@@ -715,6 +719,11 @@ body {
 
 .severity-3 .severity-icon {
     background: linear-gradient(135deg, #dc3545, #e83e8c);
+    color: var(--white);
+}
+
+.severity-4 .severity-icon {
+    background: linear-gradient(135deg, #6c2c91, #4a0e4e);
     color: var(--white);
 }
 

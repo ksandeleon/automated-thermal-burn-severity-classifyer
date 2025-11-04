@@ -986,14 +986,15 @@ class CameraManager {
 
         // Check if camera is supported
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            this.showError('Camera is not supported on this device or browser.');
+            this.showError('Camera is not supported on this device or browser. Please use the gallery option instead.', true);
             return;
         }
 
         try {
             this.showCameraLoading();
 
-            const constraints = {
+            // Try with more flexible constraints first
+            let constraints = {
                 video: {
                     facingMode: this.currentCamera,
                     width: { ideal: 1280 },
@@ -1001,7 +1002,30 @@ class CameraManager {
                 }
             };
 
-            this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+            try {
+                this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+            } catch (initialError) {
+                console.log('First camera attempt failed, trying with basic constraints...', initialError);
+
+                // Fallback to basic constraints without facingMode
+                constraints = {
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (secondError) {
+                    console.log('Second camera attempt failed, trying with minimal constraints...', secondError);
+
+                    // Last resort: just request any video
+                    constraints = { video: true };
+                    this.stream = await navigator.mediaDevices.getUserMedia(constraints);
+                }
+            }
+
             this.cameraVideo.srcObject = this.stream;
 
             await new Promise((resolve) => {
@@ -1147,33 +1171,64 @@ class CameraManager {
 
     handleCameraError(error) {
         let errorMessage = 'Unable to access camera. ';
+        let showGalleryOption = false;
 
         switch (error.name) {
             case 'NotFoundError':
-                errorMessage += 'No camera found on this device.';
+                errorMessage += 'No camera found on this device. Please use the gallery option instead.';
+                showGalleryOption = true;
                 break;
             case 'NotAllowedError':
-                errorMessage += 'Camera access was denied. Please allow camera permissions and try again.';
+                errorMessage += 'Camera access was denied. Please allow camera permissions in your browser settings and try again, or use the gallery option.';
+                showGalleryOption = true;
                 break;
             case 'NotSupportedError':
-                errorMessage += 'Camera is not supported on this device.';
+                errorMessage += 'Camera is not supported on this device. Please use the gallery option instead.';
+                showGalleryOption = true;
                 break;
             case 'OverconstrainedError':
-                errorMessage += 'Camera constraints could not be satisfied.';
+                errorMessage += 'Camera constraints could not be satisfied. Try using the gallery option.';
+                showGalleryOption = true;
                 break;
             default:
-                errorMessage += 'Please check your camera settings and try again.';
+                errorMessage += 'Please check your camera settings and try again, or use the gallery option.';
+                showGalleryOption = true;
         }
 
-        this.showError(errorMessage);
+        this.showError(errorMessage, showGalleryOption);
     }
 
-    showError(message) {
+    showError(message, showGalleryOption = false) {
         this.cameraInterface.classList.add('d-none');
         this.cameraChoiceContainer.classList.add('d-none');
 
         if (this.cameraErrorMessage) {
             this.cameraErrorMessage.textContent = message;
+        }
+
+        // Add a gallery button to the error card if needed
+        const errorCard = this.cameraError.querySelector('.error-card');
+        if (errorCard && showGalleryOption) {
+            // Remove existing gallery button if any
+            const existingGalleryBtn = errorCard.querySelector('#useGalleryBtn');
+            if (existingGalleryBtn) {
+                existingGalleryBtn.remove();
+            }
+
+            // Add gallery button
+            const errorContent = errorCard.querySelector('.error-content');
+            if (errorContent) {
+                const galleryBtn = document.createElement('button');
+                galleryBtn.type = 'button';
+                galleryBtn.id = 'useGalleryBtn';
+                galleryBtn.className = 'btn-custom btn-primary btn-sm ms-2';
+                galleryBtn.innerHTML = '<i class="fas fa-images me-2"></i>Use Gallery Instead';
+                galleryBtn.addEventListener('click', () => {
+                    this.hideError();
+                    this.openGallery();
+                });
+                errorContent.appendChild(galleryBtn);
+            }
         }
 
         this.cameraError.classList.remove('d-none');

@@ -15,6 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const closePreviewBtn = document.getElementById('closePreviewBtn');
     const retryBtn = document.getElementById('retryBtn');
 
+    // Track the source of the current image ('gallery' or 'camera')
+    let imageSource = null;
+
     console.log('DEBUG: Main upload functionality initialized');
     console.log('DEBUG: Preview elements found:', {
         previewImg: !!previewImg,
@@ -52,8 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 console.log('DEBUG: File transferred to main input:', fileInput.files[0] ? fileInput.files[0].name : 'NONE');
 
-                // Show preview (don't call handleFiles as it will overwrite fileInput.files)
-                window.showPreview(file);
+                // Show preview with 'gallery' source
+                window.showPreview(file, 'gallery');
             }
         });
     }
@@ -67,19 +70,65 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Retry button - Choose another image
+    // Retry button - Choose another image (context-aware)
     if (retryBtn) {
         retryBtn.addEventListener('click', function() {
-            console.log('DEBUG: Retry button clicked - choosing another image');
+            console.log('DEBUG: Retry button clicked - source was:', imageSource);
             hidePreview();
-            // Small delay to ensure UI is restored before opening file picker
+
+            // Small delay to ensure UI is restored
             setTimeout(() => {
-                if (galleryInput) {
-                    galleryInput.click();
+                // If image came from camera, reopen camera; otherwise open gallery
+                if (imageSource === 'camera') {
+                    console.log('DEBUG: Reopening camera for recapture');
+                    if (window.cameraManager) {
+                        window.cameraManager.openCamera();
+                    }
+                } else {
+                    console.log('DEBUG: Opening gallery for new selection');
+                    if (galleryInput) {
+                        galleryInput.click();
+                    }
                 }
             }, 100);
         });
     }
+
+    // Function to update retry button appearance based on source
+    window.updateRetryButton = function(source) {
+        console.log('DEBUG: updateRetryButton called with source:', source);
+
+        if (retryBtn) {
+            const btnIcon = retryBtn.querySelector('.btn-icon i');
+            const btnText = retryBtn.querySelector('.btn-text');
+
+            console.log('DEBUG: Button elements found:', { btnIcon: !!btnIcon, btnText: !!btnText });
+
+            if (source === 'camera') {
+                if (btnIcon) {
+                    btnIcon.className = 'fas fa-camera';
+                    console.log('DEBUG: Icon changed to camera');
+                }
+                if (btnText) {
+                    btnText.textContent = 'Retake Photo';
+                    console.log('DEBUG: Text changed to "Retake Photo"');
+                }
+                console.log('DEBUG: Retry button updated for camera recapture');
+            } else {
+                if (btnIcon) {
+                    btnIcon.className = 'fas fa-rotate-right';
+                    console.log('DEBUG: Icon changed to rotate-right');
+                }
+                if (btnText) {
+                    btnText.textContent = 'Choose Another';
+                    console.log('DEBUG: Text changed to "Choose Another"');
+                }
+                console.log('DEBUG: Retry button updated for gallery selection');
+            }
+        } else {
+            console.error('DEBUG: retryBtn element not found!');
+        }
+    };
 
     // Make hidePreview accessible globally
     window.hidePreview = function() {
@@ -207,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 console.log('DEBUG: File set in handleFiles:', fileInput.files[0] ? fileInput.files[0].name : 'NONE');
 
-                window.showPreview(file);
+                window.showPreview(file, 'gallery');
                 showUploadAnimation();
             }
         }
@@ -299,8 +348,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Make showPreview globally accessible
-    window.showPreview = function(file) {
-        console.log('DEBUG: showPreview called with file:', file);
+    window.showPreview = function(file, source = 'gallery') {
+        console.log('DEBUG: ============================================');
+        console.log('DEBUG: showPreview called');
+        console.log('DEBUG: File:', file ? file.name : 'null');
+        console.log('DEBUG: Source:', source);
+        console.log('DEBUG: ============================================');
+
+        // Track the image source
+        imageSource = source;
+        console.log('DEBUG: imageSource variable set to:', imageSource);
 
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -377,6 +434,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(() => {
                         imagePreviewSection.classList.add('fade-in');
                         console.log('DEBUG: Fade-in animation applied');
+
+                        // Update retry button based on source
+                        if (typeof window.updateRetryButton === 'function') {
+                            window.updateRetryButton(source);
+                        }
 
                         // Show success feedback
                         if (typeof showImageSelectedFeedback === 'function') {
@@ -965,11 +1027,11 @@ class CameraManager {
 
         // File input handlers
         if (this.galleryInput) {
-            this.galleryInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files));
+            this.galleryInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files, 'gallery'));
         }
 
         if (this.cameraInput) {
-            this.cameraInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files));
+            this.cameraInput.addEventListener('change', (e) => this.handleFileSelection(e.target.files, 'camera'));
         }
     }
 
@@ -1141,8 +1203,8 @@ class CameraManager {
                         lastModified: Date.now()
                     });
 
-                    // Handle the captured file
-                    this.handleFileSelection([file]);
+                    // Handle the captured file with 'camera' source
+                    this.handleFileSelection([file], 'camera');
                     this.closeCamera();
                 }
             }, 'image/jpeg', 0.9);
@@ -1241,12 +1303,12 @@ class CameraManager {
         this.cameraChoiceContainer.classList.remove('d-none');
     }
 
-    handleFileSelection(files) {
-        console.log('DEBUG: CameraManager.handleFileSelection called with files:', files);
+    handleFileSelection(files, source = 'gallery') {
+        console.log('DEBUG: CameraManager.handleFileSelection called with files:', files, 'source:', source);
 
         if (files && files.length > 0) {
             const file = files[0];
-            console.log('DEBUG: File selected:', file.name, 'Size:', file.size);
+            console.log('DEBUG: File selected:', file.name, 'Size:', file.size, 'Source:', source);
 
             // Validate file
             if (this.validateFile(file)) {
@@ -1258,13 +1320,13 @@ class CameraManager {
                 console.log('DEBUG: File set to main input, verifying:',
                     this.mainFileInput.files[0] ? this.mainFileInput.files[0].name : 'NONE');
 
-                // Use the existing showPreview function - access it from window scope
+                // Use the existing showPreview function with the correct source
                 if (typeof window.showPreview === 'function') {
-                    window.showPreview(file);
-                    console.log('DEBUG: showPreview called successfully');
+                    window.showPreview(file, source);
+                    console.log('DEBUG: showPreview called successfully with source:', source);
                 } else if (typeof showPreview === 'function') {
-                    showPreview(file);
-                    console.log('DEBUG: showPreview (local) called successfully');
+                    showPreview(file, source);
+                    console.log('DEBUG: showPreview (local) called successfully with source:', source);
                 } else {
                     console.error('DEBUG: showPreview function not found in scope');
                     // Fallback: manually trigger preview

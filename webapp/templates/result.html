@@ -198,7 +198,11 @@
                                             class="fw-bold mb-2 result-title d-flex align-items-center justify-content-center gap-2 {% if result.class_id == 0 %}text-success{% elif result.class_id == 1 %}text-warning{% else %}text-danger{% endif %}">
                                             {% if result.class_id == 0 %}<i class="fas fa-leaf text-success"></i>
                                             {% elif result.class_id == 1 %}<i class="fas fa-fire text-warning"></i>
-                                            {% else %}<i class="fas fa-exclamation-triangle text-danger"></i>
+                                            {% elif result.class_id == 2 %}<i
+                                                class="fas fa-exclamation-triangle text-danger"></i>
+                                            {% elif result.class_id == 3 %}<i
+                                                class="fas fa-exclamation-triangle text-danger"></i>
+                                            {% else %}<i class="fas fa-ban text-secondary"></i>
                                             {% endif %}
                                             {{ result.predicted_class }}
                                         </h2>
@@ -215,11 +219,15 @@
                                             <div class="d-flex justify-content-between align-items-center mb-1">
                                                 <span class="fw-semibold">
                                                     {% if loop.index == 1 %}<i
-                                                        class="fas fa-leaf text-success me-1"></i>{% endif %}
-                                                    {% if loop.index == 2 %}<i
-                                                        class="fas fa-fire text-warning me-1"></i>{% endif %}
-                                                    {% if loop.index == 3 %}<i
-                                                        class="fas fa-exclamation-triangle text-danger me-1"></i>{% endif %}
+                                                        class="fas fa-leaf text-success me-1"></i>
+                                                    {% elif loop.index == 2 %}<i
+                                                        class="fas fa-fire text-warning me-1"></i>
+                                                    {% elif loop.index == 3 %}<i
+                                                        class="fas fa-exclamation-triangle text-danger me-1"></i>
+                                                    {% elif loop.index == 4 %}<i
+                                                        class="fas fa-exclamation-triangle text-danger me-1"></i>
+                                                    {% else %}<i class="fas fa-ban text-secondary me-1"></i>
+                                                    {% endif %}
                                                     {{ class_name }}:
                                                 </span>
                                                 <span
@@ -272,62 +280,94 @@
                                     <span class="info-icon me-3">
                                         {% if result.class_id == 0 %}<i class="fas fa-leaf text-success fa-lg"></i>
                                         {% elif result.class_id == 1 %}<i class="fas fa-fire text-warning fa-lg"></i>
-                                        {% else %}<i class="fas fa-exclamation-triangle text-danger fa-lg"></i>
+                                        {% elif result.class_id == 2 %}<i
+                                            class="fas fa-exclamation-triangle text-danger fa-lg"></i>
+                                        {% elif result.class_id == 3 %}<i
+                                            class="fas fa-exclamation-triangle text-danger fa-lg"></i>
+                                        {% else %}<i class="fas fa-ban text-secondary fa-lg"></i>
                                         {% endif %}
                                     </span>
                                     <h5 class="fw-bold mb-0 text-dark">Primary Classification Results</h5>
                                 </div>
                                 <div class="mb-2">
-                                    <strong>Severity Details:</strong>
+                                    <strong>Severity Details & Urgency:</strong>
                                     {% if result.class_id == 0 %}
-                                    <p class="mb-2">First-degree burns are the mildest form, affecting only the outer
-                                        layer
-                                        of skin (epidermis). They typically cause redness and pain but heal within a few
-                                        days.</p>
+                                    <p class="mb-2"><strong>No Burn / Normal Skin:</strong> No signs of burn detected.
+                                        <span class="text-success">No medical attention required.</span></p>
                                     {% elif result.class_id == 1 %}
-                                    <p class="mb-2">Second-degree burns affect both the outer layer and the underlying
-                                        layer
-                                        of skin. They may cause swelling, severe pain, and blistering.</p>
+                                    <p class="mb-2"><strong>First-degree burn:</strong> Mild, affects only the outer
+                                        skin (epidermis). <span class="text-success">Low urgency.</span> Usually heals
+                                        within days.</p>
+                                    {% elif result.class_id == 2 %}
+                                    <p class="mb-2"><strong>Second-degree burn:</strong> Affects outer and underlying
+                                        skin layers. <span class="text-warning">Moderate urgency.</span> May require
+                                        medical attention if large or infected.</p>
+                                    {% elif result.class_id == 3 %}
+                                    <p class="mb-2"><strong>Third-degree burn:</strong> Severe, affects all skin layers
+                                        and possibly deeper tissues. <span class="text-danger">High urgency!</span>
+                                        <strong>Seek medical help immediately.</strong></p>
                                     {% else %}
-                                    <p class="mb-2">Third-degree burns are the most severe, affecting all layers of skin
-                                        and
-                                        potentially underlying tissues. They require immediate medical attention.</p>
+                                    <p class="mb-2"><strong>Fourth-degree burn:</strong> Most severe, extends into
+                                        muscle/bone. <span class="text-danger">Critical urgency!</span> <strong>Call
+                                            emergency services immediately.</strong></p>
                                     {% endif %}
                                 </div>
                                 <div class="mb-2">
-                                    <strong>Precautions:</strong>
+                                    <strong>Dos and Don'ts:</strong>
                                     {% if result.class_id == 0 %}
                                     <ul class="mb-2">
-                                        <li>Avoid further sun or heat exposure.</li>
-                                        <li>Keep the area clean and dry.</li>
-                                        <li>Use soothing lotions or cool compresses.</li>
+                                        <li>Maintain normal skin hygiene.</li>
+                                        <li>Protect skin from excessive heat or sun.</li>
+                                        <li><strong>Don't</strong> apply unnecessary treatments.</li>
                                     </ul>
                                     {% elif result.class_id == 1 %}
                                     <ul class="mb-2">
-                                        <li>Do not break blisters.</li>
+                                        <li>Cool the area with running water.</li>
+                                        <li>Use soothing lotions or aloe vera.</li>
+                                        <li>Keep the area clean and dry.</li>
+                                        <li><strong>Don't</strong> apply ice directly or break blisters.</li>
+                                    </ul>
+                                    {% elif result.class_id == 2 %}
+                                    <ul class="mb-2">
+                                        <li>Cool the burn with water for 10-20 minutes.</li>
                                         <li>Apply sterile, non-stick bandages.</li>
-                                        <li>Monitor for signs of infection.</li>
+                                        <li>Monitor for infection (redness, pus).</li>
+                                        <li><strong>Don't</strong> break blisters or use home remedies like butter.</li>
+                                    </ul>
+                                    {% elif result.class_id == 3 %}
+                                    <ul class="mb-2">
+                                        <li>Cover with a clean, dry cloth.</li>
+                                        <li>Keep the person warm and calm.</li>
+                                        <li>Call emergency services or go to ER.</li>
+                                        <li><strong>Don't</strong> apply ointments, ice, or immerse in water.</li>
                                     </ul>
                                     {% else %}
                                     <ul class="mb-2">
-                                        <li>Cover the burn with a clean, dry cloth.</li>
-                                        <li>Do not apply ointments or ice.</li>
-                                        <li>Seek emergency medical care immediately.</li>
+                                        <li>Call emergency services immediately.</li>
+                                        <li>Cover with sterile, dry cloth.</li>
+                                        <li>Keep the person warm and monitor breathing.</li>
+                                        <li><strong>Don't</strong> attempt to treat at home or remove stuck clothing.
+                                        </li>
                                     </ul>
                                     {% endif %}
                                 </div>
                                 <div>
                                     <strong>Decision Support:</strong>
                                     {% if result.class_id == 0 %}
-                                    <p>If pain or redness worsens, or if the burn covers a large area, consult a
-                                        healthcare
-                                        provider.</p>
+                                    <p>No action needed. If you notice any skin changes, consult a healthcare provider.
+                                    </p>
                                     {% elif result.class_id == 1 %}
+                                    <p>If pain or redness worsens, or if the burn covers a large area, consult a
+                                        healthcare provider.</p>
+                                    {% elif result.class_id == 2 %}
                                     <p>If the burn is larger than 3 inches, on the face/hands/genitals, or if signs of
                                         infection appear, seek medical attention.</p>
-                                    {% else %}
+                                    {% elif result.class_id == 3 %}
                                     <p>Third-degree burns always require professional medical evaluation and treatment.
-                                    </p>
+                                        <strong>Do not delay.</strong></p>
+                                    {% else %}
+                                    <p>Fourth-degree burns are life-threatening. <strong>Call emergency services
+                                            immediately.</strong></p>
                                     {% endif %}
                                 </div>
                             </div>

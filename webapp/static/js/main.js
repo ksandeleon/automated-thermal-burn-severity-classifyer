@@ -1283,7 +1283,7 @@ class CameraManager {
                 const galleryBtn = document.createElement('button');
                 galleryBtn.type = 'button';
                 galleryBtn.id = 'useGalleryBtn';
-                galleryBtn.className = 'btn-custom btn-primary btn-sm ms-2';
+                galleryBtn.className = 'btn-custom btn-primary btn-sm';
                 galleryBtn.innerHTML = '<i class="fas fa-images me-2"></i>Use Gallery Instead';
                 galleryBtn.addEventListener('click', () => {
                     this.hideError();

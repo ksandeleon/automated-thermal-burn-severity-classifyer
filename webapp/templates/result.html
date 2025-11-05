@@ -137,6 +137,483 @@
             padding: 1.25rem 0.75rem !important;
         }
         }
+
+        /* Tailwind-Inspired Clinical Assessment Design */
+        .clinical-assessment {
+            margin-top: 2rem;
+        }
+
+        /* Compact Header */
+        .assessment-header {
+            margin-bottom: 1.5rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(165, 182, 141, 0.2);
+        }
+
+        .severity-indicator-compact {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .severity-indicator-compact.severity-normal {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .severity-indicator-compact.severity-first {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .severity-indicator-compact.severity-second {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .severity-indicator-compact.severity-third {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .severity-indicator-compact.severity-fourth {
+            background: linear-gradient(135deg, #7c3aed, #5b21b6);
+        }
+
+        .assessment-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+            letter-spacing: -0.025em;
+        }
+
+        .assessment-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-light);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Main Content Grid */
+        .clinical-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        /* Diagnosis Card - Full Width Hero */
+        .diagnosis-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .diagnosis-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .diagnosis-header {
+            background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagnosis-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .diagnosis-icon {
+            width: 2.75rem;
+            height: 2.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .diagnosis-title-main {
+            font-size: 1.375rem;
+            font-weight: 800;
+            color: white;
+            margin: 0;
+            letter-spacing: -0.025em;
+        }
+
+        .diagnosis-classification {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .urgency-indicator {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            text-align: center;
+        }
+
+        .urgency-indicator.urgency-none {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .urgency-indicator.urgency-low {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        .urgency-indicator.urgency-moderate {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .urgency-indicator.urgency-high {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .urgency-indicator.urgency-critical {
+            background: rgba(124, 58, 237, 0.2);
+            border-color: rgba(239, 68, 68, 0.8);
+            animation: pulse-urgent 2s infinite;
+        }
+
+        <blade keyframes|%20pulse-urgent%20%7B>0%,
+        100% {
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            transform: scale(1);
+        }
+
+        50% {
+            box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            transform: scale(1.02);
+        }
+        }
+
+        .urgency-text {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .diagnosis-content {
+            padding: 2rem;
+        }
+
+        .diagnosis-description {
+            font-size: 1rem;
+            line-height: 1.75;
+            color: var(--text-dark);
+            margin: 0;
+            font-weight: 500;
+        }
+
+        /* Treatment Grid */
+        .treatment-grid {
+            display: grid;
+            gap: 1.5rem;
+            grid-template-columns: 1fr;
+        }
+
+        .treatment-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .treatment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .treatment-card-header {
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .treatment-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .treatment-icon.success {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .treatment-icon.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .treatment-icon.info {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .treatment-card-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+            letter-spacing: -0.025em;
+        }
+
+        .treatment-steps {
+            list-style: none;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+            margin: 0;
+        }
+
+        .treatment-step {
+            position: relative;
+            padding: 0.75rem 0 0.75rem 2rem;
+            margin: 0;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+            font-weight: 500;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .treatment-step:last-child {
+            border-bottom: none;
+        }
+
+        .immediate-care .treatment-step::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            width: 1rem;
+            height: 1rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .immediate-care .treatment-step::after {
+            content: '✓';
+            position: absolute;
+            left: 0.25rem;
+            top: 0.9rem;
+            color: white;
+            font-size: 0.625rem;
+            font-weight: bold;
+        }
+
+        .avoid-actions .treatment-step::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            width: 1rem;
+            height: 1rem;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avoid-actions .treatment-step::after {
+            content: '×';
+            position: absolute;
+            left: 0.25rem;
+            top: 0.9rem;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .medical-decision .treatment-step::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            width: 1rem;
+            height: 1rem;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .medical-decision .treatment-step::after {
+            content: 'i';
+            position: absolute;
+            left: 0.375rem;
+            top: 0.9rem;
+            color: white;
+            font-size: 0.625rem;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        /* Medical Recommendation */
+        .medical-recommendation {
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .recommendation-level {
+            padding: 1.25rem;
+            border-radius: 12px;
+            border-left: 4px solid;
+        }
+
+        .level-none {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.04) 100%);
+            border-left-color: #059669;
+        }
+
+        .level-monitor {
+            background: linear-gradient(135deg, rgba(107, 114, 128, 0.08) 0%, rgba(75, 85, 99, 0.04) 100%);
+            border-left-color: #4b5563;
+        }
+
+        .level-caution {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.04) 100%);
+            border-left-color: #d97706;
+        }
+
+        .level-urgent {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.04) 100%);
+            border-left-color: #dc2626;
+        }
+
+        .level-critical {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(91, 33, 182, 0.06) 100%);
+            border-left-color: #7c3aed;
+            border: 2px solid rgba(239, 68, 68, 0.2);
+            animation: pulse-critical 3s infinite;
+        }
+
+        <blade keyframes|%20pulse-critical%20%7B>0%,
+        100% {
+            border-color: rgba(239, 68, 68, 0.2);
+            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+        }
+
+        50% {
+            border-color: rgba(124, 58, 237, 0.4);
+            box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+        }
+        }
+
+        .recommendation-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            letter-spacing: -0.025em;
+        }
+
+        .recommendation-text {
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            margin: 0;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Responsive Grid */
+        <blade media|%20(min-width%3A%20768px)%20%7B>.treatment-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .medical-decision {
+            grid-column: 1 / -1;
+        }
+
+        .assessment-title {
+            font-size: 1.5rem;
+        }
+
+        .assessment-subtitle {
+            font-size: 1rem;
+        }
+
+        .severity-indicator-compact {
+            width: 3rem;
+            height: 3rem;
+            font-size: 1.25rem;
+        }
+
+        .diagnosis-title-main {
+            font-size: 1.5rem;
+        }
+
+        .treatment-card-title {
+            font-size: 1.25rem;
+        }
+
+        .treatment-step {
+            font-size: 1rem;
+        }
+        }
+
+        <blade media|%20(min-width%3A%201024px)%20%7B>.clinical-grid {
+            gap: 2rem;
+        }
+
+        .treatment-grid {
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .medical-decision {
+            grid-column: auto;
+        }
+
+        .diagnosis-content {
+            padding: 2.5rem;
+        }
+
+        .treatment-card-header {
+            padding: 2rem 2rem 1.25rem 2rem;
+        }
+
+        .treatment-steps {
+            padding: 0 2rem 2rem 2rem;
+        }
+
+        .medical-recommendation {
+            padding: 0 2rem 2rem 2rem;
+        }
+        }
     </style>
 </head>
 
@@ -195,12 +672,12 @@
                                 <div class="result-card card mb-4 p-3 border-0 shadow-sm">
                                     <div class="text-center mb-3">
                                         <h2
-                                            class="fw-bold mb-2 result-title d-flex align-items-center justify-content-center gap-2 {% if result.class_id == 0 %}text-success{% elif result.class_id == 1 %}text-warning{% else %}text-danger{% endif %}">
-                                            {% if result.class_id == 0 %}<i class="fas fa-leaf text-success"></i>
-                                            {% elif result.class_id == 1 %}<i class="fas fa-fire text-warning"></i>
-                                            {% elif result.class_id == 2 %}<i
+                                            class="fw-bold mb-2 result-title d-flex align-items-center justify-content-center gap-2 {% if result.class_id == 4 %}text-success{% elif result.class_id == 0 %}text-warning{% else %}text-danger{% endif %}">
+                                            {% if result.class_id == 4 %}<i class="fas fa-leaf text-success"></i>
+                                            {% elif result.class_id == 0 %}<i class="fas fa-fire text-warning"></i>
+                                            {% elif result.class_id == 1 %}<i
                                                 class="fas fa-exclamation-triangle text-danger"></i>
-                                            {% elif result.class_id == 3 %}<i
+                                            {% elif result.class_id == 2 %}<i
                                                 class="fas fa-exclamation-triangle text-danger"></i>
                                             {% else %}<i class="fas fa-ban text-secondary"></i>
                                             {% endif %}
@@ -219,14 +696,14 @@
                                             <div class="d-flex justify-content-between align-items-center mb-1">
                                                 <span class="fw-semibold">
                                                     {% if loop.index == 1 %}<i
-                                                        class="fas fa-leaf text-success me-1"></i>
-                                                    {% elif loop.index == 2 %}<i
                                                         class="fas fa-fire text-warning me-1"></i>
+                                                    {% elif loop.index == 2 %}<i
+                                                        class="fas fa-exclamation-triangle text-danger me-1"></i>
                                                     {% elif loop.index == 3 %}<i
                                                         class="fas fa-exclamation-triangle text-danger me-1"></i>
                                                     {% elif loop.index == 4 %}<i
-                                                        class="fas fa-exclamation-triangle text-danger me-1"></i>
-                                                    {% else %}<i class="fas fa-ban text-secondary me-1"></i>
+                                                        class="fas fa-ban text-secondary me-1"></i>
+                                                    {% else %}<i class="fas fa-leaf text-success me-1"></i>
                                                     {% endif %}
                                                     {{ class_name }}:
                                                 </span>
@@ -236,8 +713,8 @@
                                             <div class="progress custom-progress"
                                                 style="height: 12px; background: #f3f3f3; border-radius: 8px;">
                                                 <div class="progress-bar
-                                                    {% if loop.index == 1 %}bg-success
-                                                    {% elif loop.index == 2 %}bg-warning
+                                                    {% if loop.index == 1 %}bg-warning
+                                                    {% elif loop.index == 5 %}bg-success
                                                     {% else %}bg-danger
                                                     {% endif %}" role="progressbar"
                                                     style="width: {{ probability * 100 }}%; border-radius: 8px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1);">
@@ -273,102 +750,227 @@
                         </div>
 
                         <!-- Primary Classification Results Section -->
-                        <section class="mt-4">
-                            <div class="info-card p-4 rounded-4 shadow-sm mb-4"
-                                style="background: linear-gradient(135deg, #eafaf1 0%, #e3f6fd 100%);">
-                                <div class="d-flex align-items-center mb-3">
-                                    <span class="info-icon me-3">
-                                        {% if result.class_id == 0 %}<i class="fas fa-leaf text-success fa-lg"></i>
-                                        {% elif result.class_id == 1 %}<i class="fas fa-fire text-warning fa-lg"></i>
-                                        {% elif result.class_id == 2 %}<i
-                                            class="fas fa-exclamation-triangle text-danger fa-lg"></i>
-                                        {% elif result.class_id == 3 %}<i
-                                            class="fas fa-exclamation-triangle text-danger fa-lg"></i>
-                                        {% else %}<i class="fas fa-ban text-secondary fa-lg"></i>
+                        <section class="clinical-assessment mt-5">
+                            <!-- Compact Header -->
+                            <div class="assessment-header">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="severity-indicator-compact
+                                        {% if result.class_id == 4 %}severity-normal
+                                        {% elif result.class_id == 0 %}severity-first
+                                        {% elif result.class_id == 1 %}severity-second
+                                        {% elif result.class_id == 2 %}severity-third
+                                        {% else %}severity-fourth
+                                        {% endif %}">
+                                        {% if result.class_id == 4 %}<i class="fas fa-check-circle"></i>
+                                        {% elif result.class_id == 0 %}<i class="fas fa-thermometer-quarter"></i>
+                                        {% elif result.class_id == 1 %}<i class="fas fa-thermometer-half"></i>
+                                        {% elif result.class_id == 2 %}<i class="fas fa-thermometer-three-quarters"></i>
+                                        {% else %}<i class="fas fa-thermometer-full"></i>
                                         {% endif %}
-                                    </span>
-                                    <h5 class="fw-bold mb-0 text-dark">Primary Classification Results</h5>
+                                    </div>
+                                    <div>
+                                        <h3 class="assessment-title">Clinical Assessment</h3>
+                                        <p class="assessment-subtitle">Professional medical analysis and care
+                                            recommendations</p>
+                                    </div>
                                 </div>
-                                <div class="mb-2">
-                                    <strong>Severity Details & Urgency:</strong>
-                                    {% if result.class_id == 0 %}
-                                    <p class="mb-2"><strong>No Burn / Normal Skin:</strong> No signs of burn detected.
-                                        <span class="text-success">No medical attention required.</span></p>
-                                    {% elif result.class_id == 1 %}
-                                    <p class="mb-2"><strong>First-degree burn:</strong> Mild, affects only the outer
-                                        skin (epidermis). <span class="text-success">Low urgency.</span> Usually heals
-                                        within days.</p>
-                                    {% elif result.class_id == 2 %}
-                                    <p class="mb-2"><strong>Second-degree burn:</strong> Affects outer and underlying
-                                        skin layers. <span class="text-warning">Moderate urgency.</span> May require
-                                        medical attention if large or infected.</p>
-                                    {% elif result.class_id == 3 %}
-                                    <p class="mb-2"><strong>Third-degree burn:</strong> Severe, affects all skin layers
-                                        and possibly deeper tissues. <span class="text-danger">High urgency!</span>
-                                        <strong>Seek medical help immediately.</strong></p>
-                                    {% else %}
-                                    <p class="mb-2"><strong>Fourth-degree burn:</strong> Most severe, extends into
-                                        muscle/bone. <span class="text-danger">Critical urgency!</span> <strong>Call
-                                            emergency services immediately.</strong></p>
-                                    {% endif %}
+                            </div>
+
+                            <!-- Main Content Grid -->
+                            <div class="clinical-grid">
+
+                                <!-- Diagnosis Card - Full Width, Prominent -->
+                                <div class="diagnosis-card">
+                                    <div class="diagnosis-header">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="diagnosis-icon">
+                                                    <i class="fas fa-stethoscope"></i>
+                                                </div>
+                                                <div>
+                                                    <h4 class="diagnosis-title-main">
+                                                        {% if result.class_id == 4 %}Normal Skin / No Burn Detected
+                                                        {% elif result.class_id == 0 %}First-Degree Burn (Superficial)
+                                                        {% elif result.class_id == 1 %}Second-Degree Burn (Partial
+                                                        Thickness)
+                                                        {% elif result.class_id == 2 %}Third-Degree Burn (Full
+                                                        Thickness)
+                                                        {% else %}Fourth-Degree Burn (Deep Full Thickness)
+                                                        {% endif %}
+                                                    </h4>
+                                                    <p class="diagnosis-classification">Burn Severity Classification</p>
+                                                </div>
+                                            </div>
+                                            <div class="urgency-indicator
+                                                {% if result.class_id == 4 %}urgency-none
+                                                {% elif result.class_id == 0 %}urgency-low
+                                                {% elif result.class_id == 1 %}urgency-moderate
+                                                {% elif result.class_id == 2 %}urgency-high
+                                                {% else %}urgency-critical
+                                                {% endif %}">
+                                                <span class="urgency-text">
+                                                    {% if result.class_id == 4 %}No Urgency
+                                                    {% elif result.class_id == 0 %}Low Urgency
+                                                    {% elif result.class_id == 1 %}Moderate Urgency
+                                                    {% elif result.class_id == 2 %}High Urgency
+                                                    {% else %}Critical Emergency
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="diagnosis-content">
+                                        <p class="diagnosis-description">
+                                            {% if result.class_id == 4 %}No signs of thermal injury identified. Skin
+                                            appears healthy and intact with normal color and texture.
+                                            {% elif result.class_id == 0 %}Affects only the epidermis (outer skin
+                                            layer). Characterized by redness, mild pain, and dry skin. Typically heals
+                                            within 3-7 days without scarring.
+                                            {% elif result.class_id == 1 %}Involves both epidermis and dermis layers.
+                                            May present with blistering, severe pain, and swelling. Requires careful
+                                            monitoring for infection and proper wound care.
+                                            {% elif result.class_id == 2 %}Destroys all layers of skin and may affect
+                                            deeper tissues. Appears white, charred, or leathery. Requires immediate
+                                            medical intervention and surgical treatment.
+                                            {% else %}Life-threatening injury extending through skin into muscle, bone,
+                                            and internal structures. Requires immediate emergency surgery and intensive
+                                            care management.
+                                            {% endif %}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div class="mb-2">
-                                    <strong>Dos and Don'ts:</strong>
-                                    {% if result.class_id == 0 %}
-                                    <ul class="mb-2">
-                                        <li>Maintain normal skin hygiene.</li>
-                                        <li>Protect skin from excessive heat or sun.</li>
-                                        <li><strong>Don't</strong> apply unnecessary treatments.</li>
-                                    </ul>
-                                    {% elif result.class_id == 1 %}
-                                    <ul class="mb-2">
-                                        <li>Cool the area with running water.</li>
-                                        <li>Use soothing lotions or aloe vera.</li>
-                                        <li>Keep the area clean and dry.</li>
-                                        <li><strong>Don't</strong> apply ice directly or break blisters.</li>
-                                    </ul>
-                                    {% elif result.class_id == 2 %}
-                                    <ul class="mb-2">
-                                        <li>Cool the burn with water for 10-20 minutes.</li>
-                                        <li>Apply sterile, non-stick bandages.</li>
-                                        <li>Monitor for infection (redness, pus).</li>
-                                        <li><strong>Don't</strong> break blisters or use home remedies like butter.</li>
-                                    </ul>
-                                    {% elif result.class_id == 3 %}
-                                    <ul class="mb-2">
-                                        <li>Cover with a clean, dry cloth.</li>
-                                        <li>Keep the person warm and calm.</li>
-                                        <li>Call emergency services or go to ER.</li>
-                                        <li><strong>Don't</strong> apply ointments, ice, or immerse in water.</li>
-                                    </ul>
-                                    {% else %}
-                                    <ul class="mb-2">
-                                        <li>Call emergency services immediately.</li>
-                                        <li>Cover with sterile, dry cloth.</li>
-                                        <li>Keep the person warm and monitor breathing.</li>
-                                        <li><strong>Don't</strong> attempt to treat at home or remove stuck clothing.
-                                        </li>
-                                    </ul>
-                                    {% endif %}
-                                </div>
-                                <div>
-                                    <strong>Decision Support:</strong>
-                                    {% if result.class_id == 0 %}
-                                    <p>No action needed. If you notice any skin changes, consult a healthcare provider.
-                                    </p>
-                                    {% elif result.class_id == 1 %}
-                                    <p>If pain or redness worsens, or if the burn covers a large area, consult a
-                                        healthcare provider.</p>
-                                    {% elif result.class_id == 2 %}
-                                    <p>If the burn is larger than 3 inches, on the face/hands/genitals, or if signs of
-                                        infection appear, seek medical attention.</p>
-                                    {% elif result.class_id == 3 %}
-                                    <p>Third-degree burns always require professional medical evaluation and treatment.
-                                        <strong>Do not delay.</strong></p>
-                                    {% else %}
-                                    <p>Fourth-degree burns are life-threatening. <strong>Call emergency services
-                                            immediately.</strong></p>
-                                    {% endif %}
+
+                                <!-- Treatment Protocol Grid -->
+                                <div class="treatment-grid">
+
+                                    <!-- Immediate Care Card -->
+                                    <div class="treatment-card immediate-care">
+                                        <div class="treatment-card-header">
+                                            <div class="treatment-icon success">
+                                                <i class="fas fa-hand-holding-medical"></i>
+                                            </div>
+                                            <h5 class="treatment-card-title">Immediate Care</h5>
+                                        </div>
+                                        <ul class="treatment-steps">
+                                            {% if result.class_id == 4 %}
+                                            <li class="treatment-step">Continue normal skin care routine</li>
+                                            <li class="treatment-step">Monitor for any changes or irritation</li>
+                                            <li class="treatment-step">Maintain proper skin hydration</li>
+                                            <li class="treatment-step">Apply sunscreen if exposed to UV</li>
+                                            {% elif result.class_id == 0 %}
+                                            <li class="treatment-step">Cool with running water for 10-15 minutes</li>
+                                            <li class="treatment-step">Apply aloe vera gel or cool compress</li>
+                                            <li class="treatment-step">Take over-the-counter pain relief if needed</li>
+                                            <li class="treatment-step">Keep the area clean and moisturized</li>
+                                            {% elif result.class_id == 1 %}
+                                            <li class="treatment-step">Cool with water for 15-20 minutes</li>
+                                            <li class="treatment-step">Apply sterile, non-adherent dressing</li>
+                                            <li class="treatment-step">Elevate affected area if possible</li>
+                                            <li class="treatment-step">Monitor for signs of infection</li>
+                                            {% elif result.class_id == 2 %}
+                                            <li class="treatment-step">Cover with clean, dry cloth</li>
+                                            <li class="treatment-step">Call emergency services immediately</li>
+                                            <li class="treatment-step">Monitor vital signs and breathing</li>
+                                            <li class="treatment-step">Prepare for emergency transport</li>
+                                            {% else %}
+                                            <li class="treatment-step">Call 911 / emergency services now</li>
+                                            <li class="treatment-step">Cover loosely with sterile cloth</li>
+                                            <li class="treatment-step">Monitor breathing and circulation</li>
+                                            <li class="treatment-step">Prepare for immediate transport</li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+
+                                    <!-- Avoid Actions Card -->
+                                    <div class="treatment-card avoid-actions">
+                                        <div class="treatment-card-header">
+                                            <div class="treatment-icon danger">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </div>
+                                            <h5 class="treatment-card-title">Avoid These Actions</h5>
+                                        </div>
+                                        <ul class="treatment-steps">
+                                            {% if result.class_id == 4 %}
+                                            <li class="treatment-step">No specific restrictions needed</li>
+                                            <li class="treatment-step">Avoid harsh or irritating products</li>
+                                            <li class="treatment-step">Don't over-treat normal skin</li>
+                                            <li class="treatment-step">Avoid excessive scrubbing or friction</li>
+                                            {% elif result.class_id == 0 %}
+                                            <li class="treatment-step">Don't apply ice directly to skin</li>
+                                            <li class="treatment-step">Avoid breaking any blisters that form</li>
+                                            <li class="treatment-step">Don't use butter, oils, or home remedies</li>
+                                            <li class="treatment-step">Avoid petroleum-based products</li>
+                                            {% elif result.class_id == 1 %}
+                                            <li class="treatment-step">Never pop or drain blisters</li>
+                                            <li class="treatment-step">Avoid ice or very cold water</li>
+                                            <li class="treatment-step">Don't use adhesive bandages on burn</li>
+                                            <li class="treatment-step">Avoid cotton or fluffy materials</li>
+                                            {% elif result.class_id == 2 %}
+                                            <li class="treatment-step">Don't remove stuck clothing/debris</li>
+                                            <li class="treatment-step">Avoid ice, ointments, or creams</li>
+                                            <li class="treatment-step">Don't immerse in water</li>
+                                            <li class="treatment-step">Never attempt home treatment</li>
+                                            {% else %}
+                                            <li class="treatment-step">Don't attempt any home treatment</li>
+                                            <li class="treatment-step">Never remove embedded materials</li>
+                                            <li class="treatment-step">Avoid any topical treatments</li>
+                                            <li class="treatment-step">Don't delay emergency care</li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+
+                                    <!-- Medical Decision Card -->
+                                    <div class="treatment-card medical-decision">
+                                        <div class="treatment-card-header">
+                                            <div class="treatment-icon info">
+                                                <i class="fas fa-user-md"></i>
+                                            </div>
+                                            <h5 class="treatment-card-title">When to Seek Medical Care</h5>
+                                        </div>
+                                        <div class="medical-recommendation">
+                                            {% if result.class_id == 4 %}
+                                            <div class="recommendation-level level-none">
+                                                <h6 class="recommendation-title">No Medical Intervention Required</h6>
+                                                <p class="recommendation-text">Continue routine skin care. Consult a
+                                                    dermatologist if you notice any unusual changes, persistent
+                                                    irritation, or new lesions that don't heal normally.</p>
+                                            </div>
+                                            {% elif result.class_id == 0 %}
+                                            <div class="recommendation-level level-monitor">
+                                                <h6 class="recommendation-title">Self-Care with Monitoring</h6>
+                                                <p class="recommendation-text">Most first-degree burns heal on their
+                                                    own. <strong>Seek medical care if:</strong> pain increases
+                                                    significantly, burn covers area larger than your palm, signs of
+                                                    infection appear, or healing doesn't progress after 3-5 days.</p>
+                                            </div>
+                                            {% elif result.class_id == 1 %}
+                                            <div class="recommendation-level level-caution">
+                                                <h6 class="recommendation-title">Medical Evaluation Recommended</h6>
+                                                <p class="recommendation-text"><strong>See a healthcare provider
+                                                        if:</strong> burn is larger than 3 inches, located on
+                                                    face/hands/feet/genitals, shows signs of infection (increased pain,
+                                                    pus, red streaking), or if you have diabetes/immune compromise.</p>
+                                            </div>
+                                            {% elif result.class_id == 2 %}
+                                            <div class="recommendation-level level-urgent">
+                                                <h6 class="recommendation-title">Emergency Medical Care Required</h6>
+                                                <p class="recommendation-text"><strong>Go to emergency room
+                                                        immediately.</strong> Third-degree burns always require
+                                                    professional medical treatment, wound debridement, and may need skin
+                                                    grafting. Do not delay seeking care.</p>
+                                            </div>
+                                            {% else %}
+                                            <div class="recommendation-level level-critical">
+                                                <h6 class="recommendation-title">Call Emergency Services Now</h6>
+                                                <p class="recommendation-text"><strong>This is a life-threatening
+                                                        emergency.</strong> Fourth-degree burns require immediate
+                                                    surgical intervention and intensive care. Call 911 or emergency
+                                                    services immediately and prepare for emergency transport.</p>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </section>

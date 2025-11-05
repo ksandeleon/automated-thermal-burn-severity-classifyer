@@ -909,31 +909,6 @@ input[type="file"] {
 }
 
 /* ===================================
-   GRID & LAYOUT IMPROVEMENTS
-   =================================== */
-
-/* Severity cards responsive grid */
-.classification-section .row {
-    gap: 0;
-}
-
-@media (min-width: 768px) {
-    .classification-section .row {
-        gap: 1rem;
-    }
-}
-
-.classification-section .col-md-4 {
-    margin-bottom: 1rem;
-}
-
-@media (min-width: 768px) {
-    .classification-section .col-md-4 {
-        margin-bottom: 0;
-    }
-}
-
-/* ===================================
    ACCESSIBILITY & SPECIAL MODES
    =================================== */
 

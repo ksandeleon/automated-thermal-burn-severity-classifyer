@@ -492,13 +492,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Handle form submission - This is the main handler
         form.addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent default form submission
+
             console.log('DEBUG: Form submit event triggered');
             const file = fileInput.files[0];
 
             console.log('DEBUG: File in input:', file ? file.name : 'NO FILE');
 
             if (!file) {
-                e.preventDefault();
                 console.error('DEBUG: No file selected, preventing submission');
                 showAlert('Please select a file first.', 'error');
                 return false;
@@ -506,26 +507,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Validate file before submission
             if (!validateFile(file)) {
-                e.preventDefault();
                 console.error('DEBUG: File validation failed');
                 return false;
             }
 
-            console.log('DEBUG: File validated, allowing form submission');
+            console.log('DEBUG: File validated, starting upload with progress tracking');
 
-            // Show enhanced loading state
-            const submitButton = e.submitter || uploadBtn;
-            if (submitButton) {
-                showLoadingStateForButton(submitButton);
-            } else {
-                showLoadingState();
-            }
+            // Show progress modal
+            const progressModal = new bootstrap.Modal(document.getElementById('progressModal'));
+            progressModal.show();
 
-            // Add form loading class
-            form.classList.add('loading');
+            // Submit form via AJAX
+            const formData = new FormData(form);
 
-            console.log('DEBUG: Form submitting with file:', file.name);
-            // Don't prevent default - let the form submit naturally
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.session_id) {
+                    console.log('DEBUG: Got session ID:', data.session_id);
+                    // Start listening to progress stream
+                    connectToProgressStream(data.session_id, progressModal);
+                } else {
+                    throw new Error('No session ID received');
+                }
+            })
+            .catch(error => {
+                console.error('DEBUG: Upload error:', error);
+                progressModal.hide();
+                showAlert('Error uploading file: ' + error.message, 'error');
+            });
+
+            return false;
         });
     }
 
@@ -851,6 +866,83 @@ document.addEventListener('DOMContentLoaded', function() {
         const animateElements = document.querySelectorAll('.severity-card, .disclaimer-card');
         animateElements.forEach(el => observer.observe(el));
     });
+
+    // Function to connect to Server-Sent Events for progress updates
+    function connectToProgressStream(sessionId, modalInstance) {
+        console.log('DEBUG: Connecting to progress stream for session:', sessionId);
+
+        const progressStep = document.getElementById('progressStep');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercent = document.getElementById('progressPercent');
+
+        const eventSource = new EventSource(`/progress/${sessionId}`);
+
+        eventSource.onmessage = function(event) {
+            try {
+                const data = JSON.parse(event.data);
+                console.log('DEBUG: Progress update:', data);
+
+                // Update UI
+                if (progressStep) {
+                    progressStep.textContent = data.step || 'Processing...';
+                }
+
+                const percent = Math.min(100, Math.max(0, data.percent || 0));
+                if (progressBar) {
+                    progressBar.style.width = percent + '%';
+                    progressBar.setAttribute('aria-valuenow', percent);
+                }
+                if (progressPercent) {
+                    progressPercent.textContent = Math.round(percent) + '%';
+                }
+
+                // Check for completion or redirect
+                if (data.step === 'redirect' && data.session_id) {
+                    // Build the result URL using the session_id
+                    const resultUrl = `/result/${data.session_id}`;
+                    console.log('DEBUG: Redirecting to:', resultUrl);
+                    eventSource.close();
+
+                    // Smooth transition
+                    setTimeout(() => {
+                        window.location.href = resultUrl;
+                    }, 500);
+                } else if (data.error) {
+                    console.error('DEBUG: Analysis error:', data.step);
+                    eventSource.close();
+                    modalInstance.hide();
+                    showAlert(data.step || 'An error occurred during analysis', 'error');
+                } else if (percent >= 100 && data.step === 'Complete') {
+                    console.log('DEBUG: Analysis complete');
+                    eventSource.close();
+                    // Will redirect via the redirect message
+                }
+
+            } catch (e) {
+                console.error('DEBUG: Error parsing progress data:', e);
+            }
+        };
+
+        eventSource.onerror = function(error) {
+            console.error('DEBUG: EventSource error:', error);
+            eventSource.close();
+            modalInstance.hide();
+            showAlert('Lost connection to server. Please try again.', 'error');
+        };
+
+        // Timeout after 5 minutes
+        setTimeout(() => {
+            if (eventSource.readyState !== EventSource.CLOSED) {
+                console.warn('DEBUG: Progress stream timeout');
+                eventSource.close();
+                modalInstance.hide();
+                showAlert('Analysis timed out. Please try again.', 'error');
+            }
+        }, 300000); // 5 minutes
+    }
+
+    // Expose connectToProgressStream globally if needed
+    window.connectToProgressStream = connectToProgressStream;
 });
 
 // Utility functions

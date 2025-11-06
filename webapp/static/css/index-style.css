@@ -49,6 +49,7 @@ p {
 img {
     max-width: 100%;
     height: auto;
+    display: block;
 }
 
 /* Form inputs - Touch friendly */
@@ -963,4 +964,71 @@ input[type="file"] {
 /* Dark Mode Support (if implemented in future) */
 @media (prefers-color-scheme: dark) {
     /* Add dark mode styles if needed */
+}
+
+/* ===================================
+   PROGRESS MODAL STYLES
+   =================================== */
+#progressModal .modal-content {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+#progressModal .modal-header {
+    background: linear-gradient(135deg, #a5b68d 0%, #8fa673 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+    padding: 1.5rem;
+}
+
+#progressModal .modal-title {
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+#progressModal .modal-body {
+    padding: 2rem;
+}
+
+.progress-animation {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+#progressStep {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #333;
+    min-height: 30px;
+    transition: all 0.3s ease;
+}
+
+#progressModal .progress {
+    background-color: #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#progressModal .progress-bar {
+    background: linear-gradient(135deg, #a5b68d 0%, #8fa673 100%);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: width 0.4s ease;
+}
+
+#progressPercent {
+    line-height: 25px;
 }

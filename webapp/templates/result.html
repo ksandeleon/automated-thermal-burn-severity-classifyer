@@ -11,666 +11,29 @@
         rel="stylesheet">
     <link rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/result-style.css') }}">
     <style>
-        .debug-switch:checked {
-            background-color: var(--accent-1) !important;
-            border-color: var(--accent-2) !important;
-            box-shadow: 0 0 0 0.2rem rgba(165, 182, 141, 0.25);
+        .equation-box {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            border-left: 4px solid #0d6efd;
         }
 
-        .debug-switch {
-            background-color: var(--secondary-bg);
-            border-color: var(--accent-1);
-            transition: background 0.3s, border 0.3s;
+        .equation-box code {
+            color: #0f5132;
+            background: transparent;
+            padding: 0;
         }
 
-        /* Mobile-specific spacing improvements */
-        @media (max-width: 767px) {
-.container-fluid {
-            padding: 1rem 0.75rem !important;
+        .math-flow .card {
+            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .main-card {
-            margin: 0 !important;
-        }
-
-        .card-body-custom {
-            padding: 1.5rem 1rem !important;
-        }
-
-        .card-header-custom {
-            padding: 2rem 1rem !important;
-        }
-
-        /* Section spacing */
-        .row.g-4 {
-            row-gap: 2rem !important;
-        }
-
-        /* Result card spacing */
-        .result-card {
-            margin-bottom: 2rem !important;
-        }
-
-        /* Info cards spacing */
-        .info-card {
-            padding: 1.5rem 1rem !important;
-            margin-bottom: 2rem !important;
-        }
-
-        /* Preview container spacing */
-        .preview-container {
-            margin-bottom: 1.5rem !important;
-        }
-
-        /* Section titles */
-        .section-title {
-            margin-bottom: 1.25rem !important;
-            font-size: 1.1rem !important;
-        }
-
-        /* Result title */
-        .result-title {
-            font-size: 1.5rem !important;
-            margin-bottom: 1rem !important;
-        }
-
-        /* Confidence box */
-        .confidence-box {
-            margin-bottom: 1.25rem !important;
-        }
-
-        /* Progress bars */
-        .mb-3 {
-            margin-bottom: 1.25rem !important;
-        }
-
-        /* Lists in info cards */
-        .info-card ul {
-            margin-bottom: 1rem !important;
-            padding-left: 1.25rem !important;
-        }
-
-        .info-card li {
-            margin-bottom: 0.5rem !important;
-        }
-
-        /* Disclaimer section */
-        .disclaimer-section {
-            margin-top: 2rem !important;
-        }
-
-        .disclaimer-card {
-            padding: 1.5rem 1rem !important;
-        }
-
-        /* Debug toggle */
-        .mb-4 {
-            margin-bottom: 1.5rem !important;
-        }
-
-        /* Action buttons */
-        .btn-custom {
-            padding: 0.875rem 1.5rem !important;
-            width: 100% !important;
-        }
-
-        /* Header elements */
-        .header-icon {
-            margin-bottom: 1rem !important;
-        }
-
-        .display-4 {
-            font-size: 2rem !important;
-        }
-
-        .lead {
-            font-size: 1rem !important;
-        }
-        }
-
-        /* Small mobile (< 375px) */
-        @media (max-width: 374px) {
-.card-body-custom {
-            padding: 1.25rem 0.75rem !important;
-        }
-
-        .info-card {
-            padding: 1.25rem 0.75rem !important;
-        }
-        }
-
-        /* Result Icon Animation */
-        .result-icon-animated {
-            font-size: 4rem;
-            display: inline-block;
-            animation: iconShakeLoop 2s ease-in-out infinite;
-        }
-
-        @keyframes iconShakeLoop {
-0% {
-            transform: scale(1) rotate(0deg);
-        }
-
-        10% {
-            transform: scale(1.15) rotate(0deg);
-        }
-
-        15% {
-            transform: scale(1.15) rotate(-8deg);
-        }
-
-        20% {
-            transform: scale(1.15) rotate(8deg);
-        }
-
-        25% {
-            transform: scale(1.15) rotate(-8deg);
-        }
-
-        30% {
-            transform: scale(1.15) rotate(8deg);
-        }
-
-        35% {
-            transform: scale(1.15) rotate(-5deg);
-        }
-
-        40% {
-            transform: scale(1.15) rotate(5deg);
-        }
-
-        45% {
-            transform: scale(1.15) rotate(0deg);
-        }
-
-        55% {
-            transform: scale(1) rotate(0deg);
-        }
-
-        100% {
-            transform: scale(1) rotate(0deg);
-        }
-        }
-
-        /* Tailwind-Inspired Clinical Assessment Design */
-        .clinical-assessment {
-            margin-top: 2rem;
-        }
-
-        /* Compact Header */
-        .assessment-header {
-            margin-bottom: 1.5rem;
-            padding: 1rem 0;
-            border-bottom: 1px solid rgba(165, 182, 141, 0.2);
-        }
-
-        .severity-indicator-compact {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .severity-indicator-compact.severity-normal {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .severity-indicator-compact.severity-first {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .severity-indicator-compact.severity-second {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-        }
-
-        .severity-indicator-compact.severity-third {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .severity-indicator-compact.severity-fourth {
-            background: linear-gradient(135deg, #7c3aed, #5b21b6);
-        }
-
-        .assessment-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin: 0;
-            letter-spacing: -0.025em;
-        }
-
-        .assessment-subtitle {
-            font-size: 0.875rem;
-            color: var(--text-light);
-            margin: 0;
-            font-weight: 500;
-        }
-
-        /* Main Content Grid */
-        .clinical-grid {
-            display: grid;
-            gap: 1.5rem;
-        }
-
-        /* Diagnosis Card - Full Width Hero */
-        .diagnosis-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-        }
-
-        .diagnosis-card:hover {
+        .math-flow .card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-        }
-
-        .diagnosis-header {
-            background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);
-            padding: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .diagnosis-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
-            pointer-events: none;
-        }
-
-        .diagnosis-icon {
-            width: 2.75rem;
-            height: 2.75rem;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.25rem;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .diagnosis-title-main {
-            font-size: 1.375rem;
-            font-weight: 800;
-            color: white;
-            margin: 0;
-            letter-spacing: -0.025em;
-        }
-
-        .diagnosis-classification {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.85);
-            margin: 0;
-            font-weight: 500;
-        }
-
-        .urgency-indicator {
-            padding: 0.5rem 1rem;
-            border-radius: 50px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            text-align: center;
-        }
-
-        .urgency-indicator.urgency-none {
-            background: rgba(16, 185, 129, 0.2);
-        }
-
-        .urgency-indicator.urgency-low {
-            background: rgba(16, 185, 129, 0.2);
-        }
-
-        .urgency-indicator.urgency-moderate {
-            background: rgba(245, 158, 11, 0.2);
-        }
-
-        .urgency-indicator.urgency-high {
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        .urgency-indicator.urgency-critical {
-            background: rgba(124, 58, 237, 0.2);
-            border-color: rgba(239, 68, 68, 0.8);
-            animation: pulse-urgent 2s infinite;
-        }
-
-        @keyframes pulse-urgent {
-        0%,
-        100% {
-            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
-            transform: scale(1);
-        }
-
-        50% {
-            box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
-            transform: scale(1.02);
-        }
-        }
-
-        .urgency-text {
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .diagnosis-content {
-            padding: 2rem;
-        }
-
-        .diagnosis-description {
-            font-size: 1rem;
-            line-height: 1.75;
-            color: var(--text-dark);
-            margin: 0;
-            font-weight: 500;
-        }
-
-        /* Treatment Grid */
-        .treatment-grid {
-            display: grid;
-            gap: 1.5rem;
-            grid-template-columns: 1fr;
-        }
-
-        .treatment-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-        }
-
-        .treatment-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-        }
-
-        .treatment-card-header {
-            padding: 1.5rem 1.5rem 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .treatment-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
-
-        .treatment-icon.success {
-            background: linear-gradient(135deg, #10b981, #059669);
-        }
-
-        .treatment-icon.danger {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-        }
-
-        .treatment-icon.info {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        }
-
-        .treatment-card-title {
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin: 0;
-            letter-spacing: -0.025em;
-        }
-
-        .treatment-steps {
-            list-style: none;
-            padding: 0 1.5rem 1.5rem 1.5rem;
-            margin: 0;
-        }
-
-        .treatment-step {
-            position: relative;
-            padding: 0.75rem 0 0.75rem 2rem;
-            margin: 0;
-            font-size: 0.9375rem;
-            line-height: 1.6;
-            color: var(--text-dark);
-            font-weight: 500;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        }
-
-        .treatment-step:last-child {
-            border-bottom: none;
-        }
-
-        .immediate-care .treatment-step::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 1rem;
-            width: 1rem;
-            height: 1rem;
-            background: linear-gradient(135deg, #10b981, #059669);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .immediate-care .treatment-step::after {
-            content: '✓';
-            position: absolute;
-            left: 0.25rem;
-            top: 0.9rem;
-            color: white;
-            font-size: 0.625rem;
-            font-weight: bold;
-        }
-
-        .avoid-actions .treatment-step::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 1rem;
-            width: 1rem;
-            height: 1rem;
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .avoid-actions .treatment-step::after {
-            content: '×';
-            position: absolute;
-            left: 0.25rem;
-            top: 0.9rem;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .medical-decision .treatment-step::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 1rem;
-            width: 1rem;
-            height: 1rem;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .medical-decision .treatment-step::after {
-            content: 'i';
-            position: absolute;
-            left: 0.375rem;
-            top: 0.9rem;
-            color: white;
-            font-size: 0.625rem;
-            font-weight: bold;
-            font-style: italic;
-        }
-
-        /* Medical Recommendation */
-        .medical-recommendation {
-            padding: 0 1.5rem 1.5rem 1.5rem;
-        }
-
-        .recommendation-level {
-            padding: 1.25rem;
-            border-radius: 12px;
-            border-left: 4px solid;
-        }
-
-        .level-none {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(5, 150, 105, 0.04) 100%);
-            border-left-color: #059669;
-        }
-
-        .level-monitor {
-            background: linear-gradient(135deg, rgba(107, 114, 128, 0.08) 0%, rgba(75, 85, 99, 0.04) 100%);
-            border-left-color: #4b5563;
-        }
-
-        .level-caution {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(217, 119, 6, 0.04) 100%);
-            border-left-color: #d97706;
-        }
-
-        .level-urgent {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.04) 100%);
-            border-left-color: #dc2626;
-        }
-
-        .level-critical {
-            background: linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(91, 33, 182, 0.06) 100%);
-            border-left-color: #7c3aed;
-            border: 2px solid rgba(239, 68, 68, 0.2);
-            animation: pulse-critical 3s infinite;
-        }
-
-        <blade keyframes|%20pulse-critical%20%7B>0%,
-        100% {
-            border-color: rgba(239, 68, 68, 0.2);
-            box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
-        }
-
-        50% {
-            border-color: rgba(124, 58, 237, 0.4);
-            box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
-        }
-        }
-
-        .recommendation-title {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--text-dark);
-            letter-spacing: -0.025em;
-        }
-
-        .recommendation-text {
-            font-size: 0.9375rem;
-            line-height: 1.6;
-            margin: 0;
-            color: var(--text-light);
-            font-weight: 500;
-        }
-
-        /* Responsive Grid */
-        @media (min-width: 768px) {
-.treatment-grid {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .medical-decision {
-            grid-column: 1 / -1;
-        }
-
-        .assessment-title {
-            font-size: 1.5rem;
-        }
-
-        .assessment-subtitle {
-            font-size: 1rem;
-        }
-
-        .severity-indicator-compact {
-            width: 3rem;
-            height: 3rem;
-            font-size: 1.25rem;
-        }
-
-        .diagnosis-title-main {
-            font-size: 1.5rem;
-        }
-
-        .treatment-card-title {
-            font-size: 1.25rem;
-        }
-
-        .treatment-step {
-            font-size: 1rem;
-        }
-        }
-
-        @media (min-width: 1024px) {
-.clinical-grid {
-            gap: 2rem;
-        }
-
-        .treatment-grid {
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .medical-decision {
-            grid-column: auto;
-        }
-
-        .diagnosis-content {
-            padding: 2.5rem;
-        }
-
-        .treatment-card-header {
-            padding: 2rem 2rem 1.25rem 2rem;
-        }
-
-        .treatment-steps {
-            padding: 0 2rem 2rem 2rem;
-        }
-
-        .medical-recommendation {
-            padding: 0 2rem 2rem 2rem;
-        }
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
     </style>
 </head>
@@ -701,8 +64,9 @@
                     </div>
                     <!-- Body Section -->
                     <div class="card-body-custom">
-                        <!-- Debug Toggle -->
-                        <div class="mb-4 d-flex justify-content-end align-items-center gap-2" style="min-width:220px;">
+                        <!-- Debug & Computational Analysis Toggle -->
+                        <div class="mb-4 d-flex justify-content-end align-items-center gap-3 flex-wrap"
+                            style="min-width:220px;">
                             <span class="fw-semibold text-dark d-flex align-items-center gap-2"
                                 style="font-size:1.05rem;">
                                 <i class="fas fa-eye text-secondary"></i> Attention Map
@@ -711,6 +75,17 @@
                                 <input type="checkbox" id="debugToggle" class="form-check-input debug-switch"
                                     style="width:2.5em;height:1.5em;cursor:pointer;vertical-align:middle;">
                             </div>
+
+                            {% if computational_data %}
+                            <span class="fw-semibold text-dark d-flex align-items-center gap-2"
+                                style="font-size:1.05rem;">
+                                <i class="fas fa-calculator text-primary"></i> Computational Flow
+                            </span>
+                            <div class="form-switch d-flex align-items-center">
+                                <input type="checkbox" id="computationalToggle" class="form-check-input debug-switch"
+                                    style="width:2.5em;height:1.5em;cursor:pointer;vertical-align:middle;">
+                            </div>
+                            {% endif %}
                         </div>
                         <div class="row g-4">
                             <!-- Image Display -->
@@ -772,7 +147,8 @@
                                             <div class="progress custom-progress"
                                                 style="height: 12px; background: #f3f3f3; border-radius: 8px;">
                                                 <div class="progress-bar
-                                                    {% if loop.index == 1 %}bg-warning
+                                                    {% if loop.index == 1 %}bg-success
+                                                    {% elif loop.index == 2 %}bg-warning
                                                     {% elif loop.index == 5 %}bg-success
                                                     {% else %}bg-danger
                                                     {% endif %}" role="progressbar"
@@ -798,6 +174,698 @@
                             </div>
                         </div>
 
+                        <!-- Computational Flow Analysis (hidden by default) -->
+                        {% if computational_data %}
+                        <div class="row mb-4" id="computationalSection" style="display:none;">
+                            <div class="col-12">
+                                <div class="card shadow-sm border-0">
+                                    <div class="card-header bg-primary text-white">
+                                        <h5 class="mb-0">
+                                            <i class="fas fa-brain me-2"></i>
+                                            Hybrid CNN-Transformer Computational Flow
+                                        </h5>
+                                    </div>
+                                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+
+                                        <!-- Tabs for different analysis types -->
+                                        <ul class="nav nav-tabs mb-3" id="analysisTab" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#summary" type="button">
+                                                    <i class="fas fa-chart-line me-1"></i> Summary
+                                                </button>
+                                            </li>
+                                            {% if computational_data.concrete %}
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="concrete-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#concrete" type="button">
+                                                    <i class="fas fa-calculator me-1"></i> Concrete Math
+                                                </button>
+                                            </li>
+                                            {% endif %}
+                                            {% if computational_data.flow %}
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="flow-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#flow" type="button">
+                                                    <i class="fas fa-project-diagram me-1"></i> Full Flow
+                                                </button>
+                                            </li>
+                                            {% endif %}
+                                            {% if computational_data.detailed %}
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="detailed-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#detailed" type="button">
+                                                    <i class="fas fa-layer-group me-1"></i> Layer Details
+                                                </button>
+                                            </li>
+                                            {% endif %}
+                                            {% if computational_data.trace %}
+                                            <li class="nav-item" role="presentation">
+                                                <button class="nav-link" id="trace-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#trace" type="button">
+                                                    <i class="fas fa-route me-1"></i> My Image Trace
+                                                </button>
+                                            </li>
+                                            {% endif %}
+                                        </ul>
+
+                                        <!-- Tab Content -->
+                                        <div class="tab-content" id="analysisTabContent">
+
+                                            <!-- Summary Tab -->
+                                            <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                                                <h6 class="fw-bold mb-3">
+                                                    <i class="fas fa-equals me-2"></i>
+                                                    Mathematical Computation Flow
+                                                </h6>
+                                                <div class="alert alert-info small mb-3">
+                                                    <i class="fas fa-lightbulb me-2"></i>
+                                                    This shows the actual mathematical equations and transformations
+                                                    that convert your input image into a burn severity prediction.
+                                                </div>
+
+                                                <!-- Step-by-step mathematical flow -->
+                                                <div class="math-flow">
+
+                                                    <!-- Step 1: Input -->
+                                                    <div class="card mb-3 border-primary">
+                                                        <div class="card-header bg-primary text-white">
+                                                            <strong>📥 Step 1: Input Image</strong>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="equation-box p-3 bg-light rounded mb-2">
+                                                                <code>X<sub>input</sub> = Image(224 × 224 × 3)</code>
+                                                            </div>
+                                                            <p class="small mb-0">Your uploaded image is represented as
+                                                                a 3D tensor with height, width, and RGB color channels.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 2: CNN Feature Extraction -->
+                                                    <div class="card mb-3 border-success">
+                                                        <div class="card-header bg-success text-white">
+                                                            <strong>🔬 Step 2: CNN Feature Extraction
+                                                                (ResNet50)</strong>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="equation-box p-3 bg-light rounded mb-2">
+                                                                <code>F<sub>CNN</sub> =
+                                                                    ResNet50(X<sub>input</sub>)</code><br>
+                                                                <code>F<sub>CNN</sub> =
+                                                                    Conv(ReLU(BatchNorm(...Conv(X<sub>input</sub>))))</code><br>
+                                                                <code>Shape: (7 × 7 × 2048)</code>
+                                                            </div>
+                                                            <p class="small mb-2"><strong>What CNN does:</strong></p>
+                                                            <ul class="small mb-0">
+                                                                <li><strong>Convolution</strong>: Applies 50 layers of
+                                                                    filters to detect burn patterns, edges, textures
+                                                                </li>
+                                                                <li><strong>Formula</strong>: Output[i,j,k] = Σ(Input *
+                                                                    Kernel) + Bias</li>
+                                                                <li><strong>Result</strong>: 7×7 grid with 2048 features
+                                                                    per location = spatial feature map</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 3: Reshape -->
+                                                    <div class="card mb-3 border-info">
+                                                        <div class="card-header bg-info text-white">
+                                                            <strong>🔄 Step 3: Reshape to Sequence</strong>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="equation-box p-3 bg-light rounded mb-2">
+                                                                <code>T<sub>tokens</sub> =
+                                                                    Reshape(F<sub>CNN</sub>)</code><br>
+                                                                <code>T<sub>tokens</sub> = (7 × 7, 2048) → (49 tokens,
+                                                                    2048 features)</code>
+                                                            </div>
+                                                            <p class="small mb-2"><strong>What Reshape does:</strong>
+                                                            </p>
+                                                            <ul class="small mb-0">
+                                                                <li>Flattens the spatial 7×7 grid into a sequence of 49
+                                                                    tokens</li>
+                                                                <li>Each token represents one spatial location with 2048
+                                                                    features</li>
+                                                                <li>Prepares data for transformer processing</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 4: Transformer Attention -->
+                                                    <div class="card mb-3 border-warning">
+                                                        <div class="card-header bg-warning text-dark">
+                                                            <strong>🧠 Step 4: Transformer Multi-Head Attention</strong>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="equation-box p-3 bg-light rounded mb-2">
+                                                                <code>Q = T<sub>tokens</sub> × W<sub>Q</sub>
+                                                                    (Query)</code><br>
+                                                                <code>K = T<sub>tokens</sub> × W<sub>K</sub>
+                                                                    (Key)</code><br>
+                                                                <code>V = T<sub>tokens</sub> × W<sub>V</sub>
+                                                                    (Value)</code><br><br>
+                                                                <code>Attention(Q,K,V) = softmax(Q × K<sup>T</sup> /
+                                                                    √d<sub>k</sub>) × V</code><br><br>
+                                                                <code>T<sub>attended</sub> =
+                                                                    MultiHead(T<sub>tokens</sub>) + T<sub>tokens</sub>
+                                                                    (Residual)</code>
+                                                            </div>
+                                                            <p class="small mb-2"><strong>What Transformer
+                                                                    does:</strong></p>
+                                                            <ul class="small mb-0">
+                                                                <li><strong>Self-Attention</strong>: Learns which burn
+                                                                    regions relate to each other</li>
+                                                                <li><strong>Multi-Head</strong>: Uses 4 parallel
+                                                                    attention mechanisms (4 heads)</li>
+                                                                <li><strong>2 Blocks</strong>: Applies attention twice
+                                                                    for deeper relationships</li>
+                                                                <li><strong>Result</strong>: Tokens with contextual
+                                                                    understanding of the entire burn area</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 5: Global Average Pooling -->
+                                                    <div class="card mb-3 border-secondary">
+                                                        <div class="card-header bg-secondary text-white">
+                                                            <strong>📊 Step 5: Global Average Pooling</strong>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="equation-box p-3 bg-light rounded mb-2">
+                                                                <code>F<sub>pooled</sub> = (1/49) × Σ<sub>i=1...49</sub>
+                                                                    T<sub>attended</sub>[i]</code><br>
+                                                                <code>Shape: (2048,) — Single feature vector</code>
+                                                            </div>
+                                                            <p class="small mb-2"><strong>What Pooling does:</strong>
+                                                            </p>
+                                                            <ul class="small mb-0">
+                                                                <li>Averages all 49 token representations into one
+                                                                    vector</li>
+                                                                <li>Creates a global representation of the entire burn
+                                                                </li>
+                                                                <li>Reduces (49 × 2048) → (2048) dimensional vector</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 6: Classification -->
+                                                    <div class="card mb-3 border-danger">
+                                                        <div class="card-header bg-danger text-white">
+                                                            <strong>🎯 Step 6: Classification (Dense + Softmax)</strong>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="equation-box p-3 bg-light rounded mb-2">
+                                                                <code>Logits = F<sub>pooled</sub> × W<sub>dense</sub> +
+                                                                    b</code><br>
+                                                                <code>Logits = (2048,) × (2048, 5) + (5,) =
+                                                                    (5,)</code><br><br>
+                                                                <code>P(class<sub>i</sub>) = exp(logit<sub>i</sub>) /
+                                                                    Σ<sub>j=1...5</sub>
+                                                                    exp(logit<sub>j</sub>)</code><br><br>
+                                                                <code>Prediction = argmax(P)</code>
+                                                            </div>
+                                                            <p class="small mb-2"><strong>What Classification
+                                                                    does:</strong></p>
+                                                            <ul class="small mb-2">
+                                                                <li><strong>Dense Layer</strong>: Linear transformation
+                                                                    to 5 class scores (logits)</li>
+                                                                <li><strong>Softmax</strong>: Converts logits to
+                                                                    probabilities that sum to 1</li>
+                                                                <li><strong>ArgMax</strong>: Selects the class with
+                                                                    highest probability</li>
+                                                            </ul>
+                                                            {% if computational_data.detailed and computational_data.detailed.logits %}
+                                                            <div
+                                                                class="p-3 bg-warning bg-opacity-10 rounded border border-warning">
+                                                                <p class="small mb-2"><strong>📊 Your Image's
+                                                                        Logits:</strong></p>
+                                                                <ul class="small mb-0">
+                                                                    {% for class_name, logit_value in computational_data.detailed.logits.items() %}
+                                                                    <li>{{ class_name }}:
+                                                                        <code>{{ "%.4f"|format(logit_value) }}</code>
+                                                                    </li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Final Result -->
+                                                    <div class="card border-primary">
+                                                        <div class="card-header bg-primary text-white">
+                                                            <strong>✅ Final Result</strong>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div
+                                                                class="equation-box p-3 bg-success bg-opacity-10 rounded border border-success mb-2">
+                                                                <code class="text-success fs-5">Burn Severity =
+                                                                    {{ result.predicted_class }}</code><br>
+                                                                <code class="text-success">Confidence =
+                                                                    {{ "%.2f"|format(result.confidence * 100) }}%</code>
+                                                            </div>
+                                                            <p class="small mb-2"><strong>Complete Mathematical
+                                                                    Flow:</strong></p>
+                                                            <div class="p-3 bg-light rounded">
+                                                                <code class="small">
+                                                                    Image → CNN → Reshape → Transformer → Pool → Dense →
+                                                                    Softmax → Prediction
+                                                                    <br><br>
+                                                                    {{ result.predicted_class }} =
+                                                                    argmax(softmax(Dense(Pool(Transformer(Reshape(CNN(Image)))))))
+                                                                </code>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <!-- Concrete Math Tab -->
+                                            {% if computational_data.concrete %}
+                                            <div class="tab-pane fade" id="concrete" role="tabpanel">
+                                                <h6 class="fw-bold mb-3">
+                                                    <i class="fas fa-calculator me-2"></i>
+                                                    Actual Numerical Computations with Real Weights
+                                                </h6>
+                                                <div class="alert alert-info small mb-3">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    This shows actual mathematical operations with real model weights
+                                                    and values at each computation step.
+                                                </div>
+
+                                                {% for step in computational_data.concrete %}
+                                                <div class="card mb-3 border-start border-primary border-3">
+                                                    <div class="card-header bg-light">
+                                                        <strong class="text-primary">{{ step.step }}</strong>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        {% if step.operation %}
+                                                        <p class="mb-2"><strong>Operation:</strong>
+                                                            <code>{{ step.operation }}</code></p>
+                                                        {% endif %}
+
+                                                        {% if step.input_shape %}
+                                                        <p class="mb-2"><strong>Input Shape:</strong>
+                                                            {{ step.input_shape }}</p>
+                                                        {% endif %}
+
+                                                        {% if step.output_shape %}
+                                                        <p class="mb-2"><strong>Output Shape:</strong>
+                                                            {{ step.output_shape }}</p>
+                                                        {% endif %}
+
+                                                        {% if step.sample_weights %}
+                                                        <div class="mb-2">
+                                                            <strong>Sample Weights:</strong>
+                                                            <pre class="bg-light p-2 rounded small mb-0"
+                                                                style="max-height: 150px; overflow-y: auto;"><code>{{ step.sample_weights }}</code></pre>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        {% if step.computation_example %}
+                                                        <div class="mb-2">
+                                                            <strong>Computation Example:</strong>
+                                                            <pre class="bg-light p-2 rounded small mb-0"
+                                                                style="max-height: 150px; overflow-y: auto;"><code>{{ step.computation_example }}</code></pre>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        {% if step.sample_output %}
+                                                        <div class="mb-2">
+                                                            <strong>Sample Output Values:</strong>
+                                                            <pre class="bg-light p-2 rounded small mb-0"
+                                                                style="max-height: 100px; overflow-y: auto;"><code>{{ step.sample_output }}</code></pre>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        {% if step.statistics %}
+                                                        <div class="row g-2 mt-2">
+                                                            {% for stat_name, stat_value in step.statistics.items() %}
+                                                            <div class="col-md-6">
+                                                                <div class="p-2 bg-light rounded small">
+                                                                    <strong>{{ stat_name }}:</strong>
+                                                                    {{ "%.4f"|format(stat_value) if stat_value is number else stat_value }}
+                                                                </div>
+                                                            </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                        {% endif %}
+
+                                                        <!-- If none of the structured fields exist, show raw JSON -->
+                                                        {% if not step.operation and not step.input_shape and not step.output_shape %}
+                                                        <pre class="bg-light p-2 rounded small mb-0"
+                                                            style="max-height: 200px; overflow-y: auto;"><code>{{ step | tojson(indent=2) }}</code></pre>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Full Flow Tab -->
+                                            {% if computational_data.flow %}
+                                            <div class="tab-pane fade" id="flow" role="tabpanel">
+                                                <h6 class="fw-bold mb-3">
+                                                    <i class="fas fa-project-diagram me-2"></i>
+                                                    Complete Computational Flow
+                                                </h6>
+
+                                                <!-- Summary Card -->
+                                                <div class="card mb-3 border-primary">
+                                                    <div class="card-header bg-primary text-white">
+                                                        <strong><i class="fas fa-chart-bar me-2"></i>Flow
+                                                            Summary</strong>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row g-3">
+                                                            <div class="col-md-4">
+                                                                <div class="p-2 bg-light rounded text-center">
+                                                                    <small class="text-muted d-block">Total
+                                                                        Steps</small>
+                                                                    <strong
+                                                                        class="fs-4">{{ computational_data.flow.summary.total_steps }}</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="p-2 bg-light rounded text-center">
+                                                                    <small class="text-muted d-block">Prediction</small>
+                                                                    <strong
+                                                                        class="text-primary">{{ computational_data.flow.summary.predicted_class }}</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="p-2 bg-light rounded text-center">
+                                                                    <small class="text-muted d-block">Confidence</small>
+                                                                    <strong
+                                                                        class="fs-4 text-success">{{ "%.2f"|format(computational_data.flow.summary.confidence * 100) }}%</strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Computation Steps Accordion -->
+                                                <div class="accordion" id="flowAccordion">
+                                                    {% for log_entry in computational_data.flow.computation_log %}
+                                                    <div class="accordion-item mb-2 border">
+                                                        <h2 class="accordion-header" id="flowHeading{{ loop.index }}">
+                                                            <button class="accordion-button collapsed" type="button"
+                                                                data-bs-toggle="collapse"
+                                                                data-bs-target="#flow{{ loop.index }}"
+                                                                aria-expanded="false"
+                                                                aria-controls="flow{{ loop.index }}">
+                                                                <div class="d-flex align-items-center w-100">
+                                                                    <span class="badge bg-primary me-2">Step
+                                                                        {{ loop.index }}</span>
+                                                                    <strong>{{ log_entry.step }}</strong>
+                                                                </div>
+                                                            </button>
+                                                        </h2>
+                                                        <div id="flow{{ loop.index }}" class="accordion-collapse collapse"
+                                                            aria-labelledby="flowHeading{{ loop.index }}"
+                                                            data-bs-parent="#flowAccordion">
+                                                            <div class="accordion-body">
+                                                                {% if log_entry.details %}
+                                                                {% if log_entry.details is mapping %}
+                                                                <dl class="row mb-0">
+                                                                    {% for key, value in log_entry.details.items() %}
+                                                                    <dt class="col-sm-3 text-muted">{{ key }}</dt>
+                                                                    <dd class="col-sm-9">
+                                                                        {% if value is mapping or value is sequence %}
+                                                                        <pre class="bg-light p-2 rounded small mb-0"
+                                                                            style="max-height: 200px; overflow-y: auto;"><code>{{ value | tojson(indent=2) }}</code></pre>
+                                                                        {% else %}
+                                                                        <code>{{ value }}</code>
+                                                                        {% endif %}
+                                                                    </dd>
+                                                                    {% endfor %}
+                                                                </dl>
+                                                                {% else %}
+                                                                <pre class="bg-light p-2 rounded small mb-0"
+                                                                    style="max-height: 300px; overflow-y: auto;"><code>{{ log_entry.details | tojson(indent=2) }}</code></pre>
+                                                                {% endif %}
+                                                                {% else %}
+                                                                <p class="text-muted mb-0">No detailed information
+                                                                    available for this step.</p>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Detailed Analysis Tab -->
+                                            {% if computational_data.detailed %}
+                                            <div class="tab-pane fade" id="detailed" role="tabpanel">
+                                                <h6 class="fw-bold mb-3">Layer-by-Layer Analysis</h6>
+
+                                                <!-- CNN Features -->
+                                                {% if computational_data.detailed.cnn_features %}
+                                                <div class="mb-3">
+                                                    <strong class="text-primary">CNN Features</strong>
+                                                    <div class="p-2 bg-light rounded small">
+                                                        <p class="mb-1"><strong>Shape:</strong>
+                                                            {{ computational_data.detailed.cnn_features.shape }}</p>
+                                                        <p class="mb-1"><strong>Mean Activation:</strong>
+                                                            {{ "%.4f"|format(computational_data.detailed.cnn_features.mean_activation) }}
+                                                        </p>
+                                                        <p class="mb-0"><strong>Max Activation:</strong>
+                                                            {{ "%.4f"|format(computational_data.detailed.cnn_features.max_activation) }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+
+                                                <!-- Transformer Attention -->
+                                                {% if computational_data.detailed.transformer_attention %}
+                                                <div class="mb-3">
+                                                    <strong class="text-info">Transformer Attention</strong>
+                                                    {% for block in computational_data.detailed.transformer_attention %}
+                                                    <div class="p-2 bg-light rounded small mb-2">
+                                                        <p class="mb-1"><strong>Block {{ block.block }}:</strong></p>
+                                                        <p class="mb-1">Mean Attention:
+                                                            {{ "%.4f"|format(block.mean_attention) }}
+                                                        </p>
+                                                        <p class="mb-0">Attention Strength:
+                                                            {{ "%.4f"|format(block.attention_strength) }}
+                                                        </p>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                                {% endif %}
+
+                                                <!-- Logits -->
+                                                {% if computational_data.detailed.logits %}
+                                                <div class="mb-3">
+                                                    <strong class="text-danger">Classification Logits</strong>
+                                                    <div class="p-2 bg-light rounded small">
+                                                        {% for class_name, logit_value in computational_data.detailed.logits.items() %}
+                                                        <p class="mb-1">{{ class_name }}:
+                                                            {{ "%.4f"|format(logit_value) }}</p>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- My Image Trace Tab -->
+                                            {% if computational_data.trace %}
+                                            <div class="tab-pane fade" id="trace" role="tabpanel">
+                                                <h6 class="fw-bold mb-3">
+                                                    <i class="fas fa-route me-2"></i>
+                                                    YOUR IMAGE - Step-by-Step Computation Trace
+                                                </h6>
+                                                <div class="alert alert-success small mb-3">
+                                                    <i class="fas fa-camera me-2"></i>
+                                                    This shows the <strong>actual numerical values from YOUR uploaded
+                                                        image</strong> being transformed at each layer of the network.
+                                                    You can see exactly how your specific image is processed!
+                                                </div>
+
+                                                {% for step in computational_data.trace.steps %}
+                                                <div
+                                                    class="card mb-3 {% if step.step_number == 0 %}border-primary{% elif step.step_number < 3 %}border-success{% elif step.step_number < 6 %}border-info{% elif step.step_number < 10 %}border-warning{% else %}border-danger{% endif %}">
+                                                    <div
+                                                        class="card-header {% if step.step_number == 0 %}bg-primary text-white{% elif step.step_number < 3 %}bg-success text-white{% elif step.step_number < 6 %}bg-info text-white{% elif step.step_number < 10 %}bg-warning text-dark{% else %}bg-danger text-white{% endif %}">
+                                                        <strong>
+                                                            {% if step.step_number == 0 %}📸
+                                                            {% elif step.step_number < 3 %}🔬
+                                                            {% elif step.step_number < 6 %}🔄
+                                                            {% elif step.step_number < 10 %}🧠
+                                                            {% else %}🎯
+                                                            {% endif %}
+                                                            Step {{ step.step_number }}: {{ step.step_name }}
+                                                        </strong>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <p class="small text-muted mb-2"><strong>Operation:</strong>
+                                                            {{ step.operation }}</p>
+
+                                                        {% if step.layer_name %}
+                                                        <p class="small mb-2"><strong>Layer:</strong>
+                                                            <code>{{ step.layer_name }}</code></p>
+                                                        {% endif %}
+
+                                                        {% if step.input_shape and step.output_shape %}
+                                                        <p class="small mb-2">
+                                                            <strong>Shape Transform:</strong>
+                                                            <code>{{ step.input_shape }}</code> →
+                                                            <code>{{ step.output_shape }}</code>
+                                                        </p>
+                                                        {% endif %}
+
+                                                        <!-- Pixel Samples for Input Step -->
+                                                        {% if step.samples and step.step_number == 0 %}
+                                                        <div class="mt-2">
+                                                            <strong class="small">Sample Pixel Values from YOUR
+                                                                Image:</strong>
+                                                            <div class="table-responsive mt-2">
+                                                                <table class="table table-sm table-bordered small">
+                                                                    <thead class="table-light">
+                                                                        <tr>
+                                                                            <th>Location</th>
+                                                                            <th>Position</th>
+                                                                            <th>Red</th>
+                                                                            <th>Green</th>
+                                                                            <th>Blue</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {% for sample in step.samples %}
+                                                                        <tr>
+                                                                            <td>{{ sample.location }}</td>
+                                                                            <td><code>{{ sample.position }}</code></td>
+                                                                            <td>{{ "%.1f"|format(sample.RGB_values[0]) }}
+                                                                            </td>
+                                                                            <td>{{ "%.1f"|format(sample.RGB_values[1]) }}
+                                                                            </td>
+                                                                            <td>{{ "%.1f"|format(sample.RGB_values[2]) }}
+                                                                            </td>
+                                                                        </tr>
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        <!-- CNN/Transformer/Pooling Samples -->
+                                                        {% if step.samples and step.step_number > 0 and step.step_number < 15 %}
+                                                        <div class="mt-2">
+                                                            <strong class="small">Sample Output Values:</strong>
+                                                            <div class="p-2 bg-light rounded mt-2">
+                                                                {% for sample in step.samples[:3] %}
+                                                                <div class="mb-2 small">
+                                                                    {% if sample.position %}
+                                                                    <code>{{ sample.position }}</code>:
+                                                                    {% elif sample.spatial_position %}
+                                                                    <code>{{ sample.spatial_position }}</code>:
+                                                                    {% elif sample.token_index is defined %}
+                                                                    Token {{ sample.token_index }}:
+                                                                    {% endif %}
+
+                                                                    {% if sample.filter_outputs %}
+                                                                    [{{ sample.filter_outputs|map('round', 2)|join(', ') }}]
+                                                                    {% elif sample.top_5_values %}
+                                                                    Top features:
+                                                                    [{{ sample.top_5_values|map('round', 2)|join(', ') }}]
+                                                                    {% elif sample.sample_values %}
+                                                                    [{{ sample.sample_values|map('round', 4)|join(', ') }}]
+                                                                    {% elif sample.mean_attention is defined %}
+                                                                    Mean:
+                                                                    {{ "%.4f"|format(sample.mean_attention) }}
+                                                                    {% endif %}
+                                                                </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        <!-- Top Features for Pooling Step -->
+                                                        {% if step.top_20_features %}
+                                                        <div class="mt-2">
+                                                            <strong class="small">Top 20 Features (highest
+                                                                values):</strong>
+                                                            <div class="p-2 bg-light rounded mt-2 small"
+                                                                style="max-height: 200px; overflow-y: auto;">
+                                                                {% for idx, val in zip(step.top_20_features.indices[:10], step.top_20_features.values[:10]) %}
+                                                                <div>Feature {{ idx }}:
+                                                                    {{ "%.4f"|format(val) }}</div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        <!-- Final Probabilities -->
+                                                        {% if step.probabilities %}
+                                                        <div class="mt-3">
+                                                            <strong class="small">Final Class Probabilities from YOUR
+                                                                Image:</strong>
+                                                            <div class="mt-2">
+                                                                {% for class_name, prob in step.probabilities.items() %}
+                                                                <div class="d-flex align-items-center mb-2">
+                                                                    <span class="small me-2"
+                                                                        style="width: 180px;">{{ class_name }}:</span>
+                                                                    <div class="progress flex-grow-1"
+                                                                        style="height: 20px;">
+                                                                        <div class="progress-bar {% if loop.index0 == result.class_id %}bg-success{% else %}bg-secondary{% endif %}"
+                                                                            style="width: {{ (prob * 100)|round(2) }}%">
+                                                                            {{ (prob * 100)|round(2) }}%
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        <!-- Statistics -->
+                                                        {% if step.statistics %}
+                                                        <div class="mt-3 p-2 bg-light rounded">
+                                                            <strong class="small">Statistics:</strong>
+                                                            <div class="small">
+                                                                Min:
+                                                                {{ "%.4f"|format(step.statistics.min) }}
+                                                                |
+                                                                Max:
+                                                                {{ "%.4f"|format(step.statistics.max) }}
+                                                                |
+                                                                Mean:
+                                                                {{ "%.4f"|format(step.statistics.mean) }}
+                                                                |
+                                                                Std:
+                                                                {{ "%.4f"|format(step.statistics.std) }}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+
+                                                <div class="alert alert-info small mt-3">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    <strong>What you're seeing:</strong> These are the actual numerical
+                                                    values extracted from YOUR specific uploaded image. Each step shows
+                                                    how your image data is transformed - from raw pixel values to the
+                                                    final burn severity prediction. The numbers you see are unique to
+                                                    your image!
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
                         <!-- Debug Info (hidden by default) -->
                         <div class="alert alert-secondary mt-3" id="debugInfo" style="display:none;" role="alert">
                             <strong>DEBUG:</strong><br>
@@ -820,11 +888,16 @@
                                         {% elif result.class_id == 2 %}severity-third
                                         {% else %}severity-fourth
                                         {% endif %}">
-                                        {% if result.class_id == 4 %}<i class="fas fa-check-circle"></i>
-                                        {% elif result.class_id == 0 %}<i class="fas fa-thermometer-quarter"></i>
-                                        {% elif result.class_id == 1 %}<i class="fas fa-thermometer-half"></i>
-                                        {% elif result.class_id == 2 %}<i class="fas fa-thermometer-three-quarters"></i>
-                                        {% else %}<i class="fas fa-thermometer-full"></i>
+                                        {% if result.class_id == 4 %}
+                                        <i class="fas fa-thumbs-up"></i>
+                                        {% elif result.class_id == 0 %}
+                                        <i class="fas fa-leaf"></i>
+                                        {% elif result.class_id == 1 %}
+                                        <i class="fas fa-fire"></i>
+                                        {% elif result.class_id == 2 %}
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% else %}
+                                        <i class="fas fa-skull-crossbones"></i>
                                         {% endif %}
                                     </div>
                                     <div>
@@ -844,7 +917,17 @@
                                         <div class="d-flex align-items-center justify-content-between">
                                             <div class="d-flex align-items-center gap-3">
                                                 <div class="diagnosis-icon">
-                                                    <i class="fas fa-stethoscope"></i>
+                                                    {% if result.class_id == 4 %}
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                    {% elif result.class_id == 0 %}
+                                                    <i class="fas fa-leaf"></i>
+                                                    {% elif result.class_id == 1 %}
+                                                    <i class="fas fa-fire"></i>
+                                                    {% elif result.class_id == 2 %}
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    {% else %}
+                                                    <i class="fas fa-skull-crossbones"></i>
+                                                    {% endif %}
                                                 </div>
                                                 <div>
                                                     <h4 class="diagnosis-title-main">
@@ -990,7 +1073,8 @@
                                             {% if result.class_id == 4 %}
                                             <div class="recommendation-level level-none">
                                                 <h6 class="recommendation-title">No Medical Intervention Required</h6>
-                                                <p class="recommendation-text">Continue routine skin care. Consult a
+                                                <p class="recommendation-text">No emergent actions needed. Continue
+                                                    routine skin care. Consult a
                                                     dermatologist if you notice any unusual changes, persistent
                                                     irritation, or new lesions that don't heal normally.</p>
                                             </div>
@@ -1034,13 +1118,26 @@
                             </div>
                         </section>
                         <!-- Emergency and Medical Guidance Section -->
-                        <section class="mb-4">
+                        <section class="mb-4 mt-4">
                             <div class="info-card p-4 rounded-4 shadow-sm"
                                 style="background: linear-gradient(135deg, #fffbe6 0%, #ffeaea 100%);">
                                 <div class="d-flex align-items-center mb-3">
                                     <span class="info-icon me-3"><i
                                             class="fas fa-ambulance text-danger fa-lg"></i></span>
-                                    <h5 class="fw-bold mb-0 text-dark">Emergency & Medical Guidance</h5>
+                                    <h5 class="fw-bold mb-0 text-dark">Emergency & Medical Guidance (Philippines)</h5>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Essential Emergency Contacts:</strong>
+                                    <ul class="mb-2">
+                                        <li><strong>National Emergency Hotline:</strong> <span
+                                                class="text-danger">911</span>
+                                        </li>
+                                        <li><strong>Philippine Red Cross:</strong> <span class="text-primary">143</span>
+                                            or
+                                            local chapter</li>
+                                        <li><strong>Department of Health (DOH):</strong> <span class="text-primary">(02)
+                                                8651-7800</span></li>
+                                    </ul>
                                 </div>
                                 <div class="mb-2">
                                     <strong>Emergency Assessment Indicators:</strong>
@@ -1048,34 +1145,44 @@
                                         <li>Burns covering large areas or critical locations (face, hands, feet,
                                             genitals).</li>
                                         <li>Signs of shock (pale, clammy skin, rapid pulse).</li>
-                                        <li>Difficulty breathing or burns to airway.</li>
+                                        <li>Difficulty breathing, burns to airway, or unconsciousness.</li>
                                     </ul>
                                 </div>
                                 <div class="mb-2">
                                     <strong>First Aid Instructions:</strong>
                                     <ul class="mb-2">
+                                        <li>Call <strong>911</strong> immediately for severe burns or emergencies.</li>
                                         <li>Remove the person from the source of the burn.</li>
-                                        <li>Cool the burn with running water (not ice) for 10-20 minutes.</li>
-                                        <li>Cover with a clean, non-stick bandage.</li>
+                                        <li>Cool the burn with clean running water (not ice) for 10-20 minutes.</li>
+                                        <li>Cover with a clean, non-stick bandage or cloth.</li>
+                                        <li>Do <strong>not</strong> apply ointments, butter, or home remedies.</li>
                                     </ul>
                                 </div>
                                 <div>
                                     <strong>When to See a Healthcare Provider:</strong>
                                     <ul>
                                         <li>If the burn is deep, large, or on sensitive areas.</li>
-                                        <li>If there are signs of infection (pus, increased pain, redness).</li>
-                                        <li>If healing does not progress or if in doubt, seek medical advice.</li>
+                                        <li>If there are signs of infection (pus, increased pain, redness, fever).</li>
+                                        <li>If healing does not progress or if in doubt, seek medical advice at the
+                                            nearest
+                                            hospital or clinic.</li>
                                     </ul>
+                                </div>
+                                <div class="mt-3">
+                                    <strong>Tip:</strong> For emergencies, stay calm and provide clear information when
+                                    calling for help. Know your location and follow instructions from responders.
                                 </div>
                             </div>
                         </section>
 
                         <!-- Action Buttons -->
                         <div class="row mt-4">
-                            <div class="col-12 text-center">
-                                <a href="{{ url_for('index') }}" class="btn-custom btn-primary">
-                                    <span class="btn-icon"><i class="fas fa-rotate-right"></i></span>
-                                    <span class="btn-text">Classify Another Image</span>
+                            <div class="col-12 d-flex justify-content-center">
+                                <a href="{{ url_for('index') }}"
+                                    class="btn-custom btn-primary d-flex flex-row align-items-center justify-content-center"
+                                    style="width: 50%; max-width: 320px; min-width: 180px;">
+                                    <span class="btn-icon me-1"><i class="fas fa-check-circle"></i></span>
+                                    <span class="btn-text text-center w-100">Finish</span>
                                 </a>
                             </div>
                         </div>
@@ -1106,6 +1213,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
+        // Toggle for Attention Map (Grad-CAM)
         document.getElementById('debugToggle').addEventListener('change', function () {
             const debugInfo = document.getElementById('debugInfo');
             const gradcamSection = document.getElementById('gradcamSection');
@@ -1117,6 +1225,25 @@
                 gradcamSection.style.display = 'none';
             }
         });
+
+        // Toggle for Computational Flow
+        {
+            %
+            if computational_data %
+        }
+        const computationalToggle = document.getElementById('computationalToggle');
+        if (computationalToggle) {
+            computationalToggle.addEventListener('change', function () {
+                const computationalSection = document.getElementById('computationalSection');
+                if (this.checked) {
+                    computationalSection.style.display = '';
+                } else {
+                    computationalSection.style.display = 'none';
+                }
+            });
+        } {
+            % endif %
+        }
     </script>
 </body>
 

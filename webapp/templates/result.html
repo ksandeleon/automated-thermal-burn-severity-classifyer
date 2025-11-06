@@ -25,7 +25,8 @@
         }
 
         /* Mobile-specific spacing improvements */
-        <blade media|%20(max-width%3A%20767px)%20%7B>.container-fluid {
+        @media (max-width: 767px) {
+.container-fluid {
             padding: 1rem 0.75rem !important;
         }
 
@@ -129,12 +130,66 @@
         }
 
         /* Small mobile (< 375px) */
-        <blade media|%20(max-width%3A%20374px)%20%7B>.card-body-custom {
+        @media (max-width: 374px) {
+.card-body-custom {
             padding: 1.25rem 0.75rem !important;
         }
 
         .info-card {
             padding: 1.25rem 0.75rem !important;
+        }
+        }
+
+        /* Result Icon Animation */
+        .result-icon-animated {
+            font-size: 4rem;
+            display: inline-block;
+            animation: iconShakeLoop 2s ease-in-out infinite;
+        }
+
+        @keyframes iconShakeLoop {
+0% {
+            transform: scale(1) rotate(0deg);
+        }
+
+        10% {
+            transform: scale(1.15) rotate(0deg);
+        }
+
+        15% {
+            transform: scale(1.15) rotate(-8deg);
+        }
+
+        20% {
+            transform: scale(1.15) rotate(8deg);
+        }
+
+        25% {
+            transform: scale(1.15) rotate(-8deg);
+        }
+
+        30% {
+            transform: scale(1.15) rotate(8deg);
+        }
+
+        35% {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        40% {
+            transform: scale(1.15) rotate(5deg);
+        }
+
+        45% {
+            transform: scale(1.15) rotate(0deg);
+        }
+
+        55% {
+            transform: scale(1) rotate(0deg);
+        }
+
+        100% {
+            transform: scale(1) rotate(0deg);
         }
         }
 
@@ -296,7 +351,8 @@
             animation: pulse-urgent 2s infinite;
         }
 
-        <blade keyframes|%20pulse-urgent%20%7B>0%,
+        @keyframes pulse-urgent {
+        0%,
         100% {
             box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
             transform: scale(1);
@@ -550,7 +606,8 @@
         }
 
         /* Responsive Grid */
-        <blade media|%20(min-width%3A%20768px)%20%7B>.treatment-grid {
+        @media (min-width: 768px) {
+.treatment-grid {
             grid-template-columns: 1fr 1fr;
         }
 
@@ -585,7 +642,8 @@
         }
         }
 
-        <blade media|%20(min-width%3A%201024px)%20%7B>.clinical-grid {
+        @media (min-width: 1024px) {
+.clinical-grid {
             gap: 2rem;
         }
 
@@ -671,16 +729,17 @@
                                 </h5>
                                 <div class="result-card card mb-4 p-3 border-0 shadow-sm">
                                     <div class="text-center mb-3">
+                                        <!-- Large Animated Icon -->
+                                        <div class="mb-3">
+                                            <i class="{% if result.class_id == 4 %}fas fa-thumbs-up text-success
+                                            {% elif result.class_id == 0 %}fas fa-leaf text-success
+                                            {% elif result.class_id == 1 %}fas fa-fire text-warning
+                                            {% elif result.class_id == 2 %}fas fa-exclamation-triangle text-danger
+                                            {% else %}fas fa-skull-crossbones text-danger
+                                            {% endif %} result-icon-animated"></i>
+                                        </div>
                                         <h2
-                                            class="fw-bold mb-2 result-title d-flex align-items-center justify-content-center gap-2 {% if result.class_id == 4 %}text-success{% elif result.class_id == 0 %}text-warning{% else %}text-danger{% endif %}">
-                                            {% if result.class_id == 4 %}<i class="fas fa-leaf text-success"></i>
-                                            {% elif result.class_id == 0 %}<i class="fas fa-fire text-warning"></i>
-                                            {% elif result.class_id == 1 %}<i
-                                                class="fas fa-exclamation-triangle text-danger"></i>
-                                            {% elif result.class_id == 2 %}<i
-                                                class="fas fa-exclamation-triangle text-danger"></i>
-                                            {% else %}<i class="fas fa-ban text-secondary"></i>
-                                            {% endif %}
+                                            class="fw-bold mb-2 result-title {% if result.class_id == 4 %}text-success{% elif result.class_id == 0 %}text-success{% elif result.class_id == 1 %}text-warning{% else %}text-danger{% endif %}">
                                             {{ result.predicted_class }}
                                         </h2>
                                         <div class="confidence-box mx-auto mb-2 p-2 rounded-3 bg-light border">
@@ -696,14 +755,14 @@
                                             <div class="d-flex justify-content-between align-items-center mb-1">
                                                 <span class="fw-semibold">
                                                     {% if loop.index == 1 %}<i
-                                                        class="fas fa-fire text-warning me-1"></i>
+                                                        class="fas fa-leaf text-success me-1"></i>
                                                     {% elif loop.index == 2 %}<i
-                                                        class="fas fa-exclamation-triangle text-danger me-1"></i>
+                                                        class="fas fa-fire text-warning me-1"></i>
                                                     {% elif loop.index == 3 %}<i
                                                         class="fas fa-exclamation-triangle text-danger me-1"></i>
                                                     {% elif loop.index == 4 %}<i
-                                                        class="fas fa-ban text-secondary me-1"></i>
-                                                    {% else %}<i class="fas fa-leaf text-success me-1"></i>
+                                                        class="fas fa-skull-crossbones text-danger me-1"></i>
+                                                    {% else %}<i class="fas fa-thumbs-up text-success me-1"></i>
                                                     {% endif %}
                                                     {{ class_name }}:
                                                 </span>

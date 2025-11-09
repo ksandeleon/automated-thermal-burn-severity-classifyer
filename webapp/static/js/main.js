@@ -876,11 +876,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const progressPercent = document.getElementById('progressPercent');
 
         const eventSource = new EventSource(`/progress/${sessionId}`);
+        let redirectTimeout = null;
 
         eventSource.onmessage = function(event) {
             try {
                 const data = JSON.parse(event.data);
                 console.log('DEBUG: Progress update:', data);
+                console.log('DEBUG: Step:', data.step, 'Percent:', data.percent, 'Session ID:', data.session_id);
 
                 // Update UI
                 if (progressStep) {
@@ -896,30 +898,61 @@ document.addEventListener('DOMContentLoaded', function() {
                     progressPercent.textContent = Math.round(percent) + '%';
                 }
 
-                // Check for completion or redirect
+                // Check for explicit redirect message
                 if (data.step === 'redirect' && data.session_id) {
-                    // Build the result URL using the session_id
+                    console.log('DEBUG: *** REDIRECT MESSAGE RECEIVED ***');
                     const resultUrl = `/result/${data.session_id}`;
                     console.log('DEBUG: Redirecting to:', resultUrl);
-                    eventSource.close();
 
-                    // Smooth transition
+                    // Clear any pending redirect timeout
+                    if (redirectTimeout) {
+                        clearTimeout(redirectTimeout);
+                        redirectTimeout = null;
+                    }
+
+                    eventSource.close();
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+
+                    // Immediate redirect
                     setTimeout(() => {
+                        console.log('DEBUG: Executing redirect now...');
                         window.location.href = resultUrl;
-                    }, 500);
+                    }, 300);
+
                 } else if (data.error) {
                     console.error('DEBUG: Analysis error:', data.step);
+                    if (redirectTimeout) {
+                        clearTimeout(redirectTimeout);
+                    }
                     eventSource.close();
-                    modalInstance.hide();
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
                     showAlert(data.step || 'An error occurred during analysis', 'error');
+
                 } else if (percent >= 100 && data.step === 'Complete') {
-                    console.log('DEBUG: Analysis complete');
-                    eventSource.close();
-                    // Will redirect via the redirect message
+                    console.log('DEBUG: Analysis complete, setting fallback redirect...');
+
+                    // Set a fallback - if no redirect message comes in 3 seconds, redirect anyway
+                    if (redirectTimeout) {
+                        clearTimeout(redirectTimeout);
+                    }
+                    redirectTimeout = setTimeout(() => {
+                        console.log('DEBUG: Fallback redirect triggered (no redirect message received)');
+                        eventSource.close();
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                        // Use the session ID from the URL parameter
+                        window.location.href = `/result/${sessionId}`;
+                    }, 3000); // 3 second fallback
                 }
 
             } catch (e) {
                 console.error('DEBUG: Error parsing progress data:', e);
+                console.error('DEBUG: Raw event data:', event.data);
             }
         };
 

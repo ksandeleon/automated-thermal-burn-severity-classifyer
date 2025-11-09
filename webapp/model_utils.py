@@ -256,7 +256,9 @@ class BurnClassifier:
                     'total_activation': float(np.sum(feature_vec)),
                     'description': f'Features at spatial location [{y}, {x}]'
                 })
-                print(f"  Spatial [{y:2d}, {x:2d}] - Top 5 channels: {list(top_5_indices)} = {[f'{v:.2f}' for v in top_5_values]}")
+                # Convert to Python types for printing
+                top_5_indices_py = [int(idx) for idx in top_5_indices]
+                print(f"  Spatial [{y:2d}, {x:2d}] - Top 5 channels: {top_5_indices_py} = {[f'{v:.2f}' for v in top_5_values]}")
 
             trace['steps'].append({
                 'step_number': 2,
@@ -510,25 +512,25 @@ class BurnClassifier:
                 progress_callback(step, percent)
 
         print(f"DEBUG: Making prediction for image: {image_path}")
-        report_progress("Initializing", 0)
+        report_progress("Initializing analysis...", 0)
 
         if not self.model:
             return None, "Model not loaded"
 
         # Preprocess image
-        report_progress("Preprocessing image", 10)
+        report_progress("Preprocessing image...", 5)
         img_array = self.preprocess_image(image_path)
         if img_array is None:
             return None, "Error preprocessing image"
 
         try:
-            # Make prediction
-            report_progress("Running CNN feature extraction", 20)
+            # Make base prediction first
+            report_progress("Running initial prediction...", 10)
             predictions = self.model.predict(img_array, verbose=0)
             predicted_class = np.argmax(predictions[0])
             confidence = float(predictions[0][predicted_class])
 
-            report_progress("Processing prediction results", 40)
+            report_progress("Processing prediction results...", 15)
             result = {
                 'predicted_class': self.class_names[predicted_class],
                 'class_id': int(predicted_class),
@@ -541,7 +543,7 @@ class BurnClassifier:
 
             if with_gradcam:
                 print("DEBUG: Generating Grad-CAM overlay...")
-                report_progress("Generating attention visualization (Grad-CAM)", 50)
+                report_progress("Generating attention heatmap...", 25)
                 _, overlay = self.gradcam(image_path, pred_index=predicted_class)
                 if overlay is not None:
                     result['gradcam_overlay'] = overlay  # numpy array
@@ -551,7 +553,7 @@ class BurnClassifier:
 
             if with_computational_flow:
                 print("DEBUG: Analyzing computational flow...")
-                report_progress("Analyzing computational flow", 60)
+                report_progress("Extracting CNN features...", 35)
                 flow_analysis = self.analyze_computational_flow(image_path)
                 if flow_analysis:
                     result['computational_flow'] = flow_analysis
@@ -559,7 +561,7 @@ class BurnClassifier:
 
             if detailed_analysis:
                 print("DEBUG: Generating detailed analysis...")
-                report_progress("Extracting intermediate layer outputs", 70)
+                report_progress("Reshaping for transformer...", 50)
                 detailed = self.get_detailed_analysis(image_path)
                 if detailed:
                     result['detailed_analysis'] = detailed
@@ -567,7 +569,7 @@ class BurnClassifier:
 
             if show_concrete_math:
                 print("DEBUG: Generating concrete computational analysis...")
-                report_progress("Computing concrete mathematical operations", 80)
+                report_progress("Analyzing transformer attention...", 65)
                 try:
                     concrete = self.show_concrete_computations(image_path)
                     if concrete:
@@ -579,7 +581,7 @@ class BurnClassifier:
 
             if trace_image:
                 print("DEBUG: Tracing image through model...")
-                report_progress("Tracing your image through the network", 90)
+                report_progress("Tracing through network layers...", 75)
                 trace = self.trace_my_image(image_path)
                 if trace:
                     result['image_trace'] = trace
@@ -587,6 +589,12 @@ class BurnClassifier:
                 else:
                     print("DEBUG: Image trace generation failed")
 
+            report_progress("Computing feature importance...", 90)
+            # Small delay to show the final message
+            import time
+            time.sleep(0.2)
+            report_progress("Finalizing results...", 95)
+            time.sleep(0.2)
             report_progress("Complete", 100)
             return result, None
         except Exception as e:
@@ -610,10 +618,10 @@ class BurnClassifier:
             cnn_features = resnet_functional.predict(img_array, verbose=0)
 
             analysis['cnn_features'] = {
-                'shape': cnn_features.shape,
+                'shape': tuple(int(x) for x in cnn_features.shape),
                 'mean_activation': float(np.mean(cnn_features)),
                 'max_activation': float(np.max(cnn_features)),
-                'spatial_attention_map': np.mean(cnn_features[0], axis=-1).tolist()
+                'spatial_attention_map': [[float(v) for v in row] for row in np.mean(cnn_features[0], axis=-1)]
             }
 
             # 2. Transformer attention
@@ -636,8 +644,8 @@ class BurnClassifier:
             pooled_features = pooling_model.predict(img_array, verbose=0)
 
             analysis['pooled_features'] = {
-                'shape': pooled_features.shape,
-                'top_10_indices': np.argsort(pooled_features[0])[-10:].tolist(),
+                'shape': tuple(int(x) for x in pooled_features.shape),
+                'top_10_indices': [int(x) for x in np.argsort(pooled_features[0])[-10:]],
                 'top_10_values': [float(x) for x in np.sort(pooled_features[0])[-10:]]
             }
 
@@ -677,7 +685,7 @@ class BurnClassifier:
 
         # Log input
         self._log_computation("INPUT", {
-            'shape': img_array.shape,
+            'shape': tuple(int(x) for x in img_array.shape),
             'dtype': str(img_array.dtype),
             'min_value': float(np.min(img_array)),
             'max_value': float(np.max(img_array)),
@@ -705,12 +713,12 @@ class BurnClassifier:
             self._log_computation("CNN_OUTPUT", {
                 'layer': 'ResNet50',
                 'operation': 'Convolutional Neural Network (50 layers)',
-                'input_shape': img_array.shape,
-                'output_shape': cnn_features.shape,
+                'input_shape': tuple(int(x) for x in img_array.shape),
+                'output_shape': tuple(int(x) for x in cnn_features.shape),
                 'description': 'Extract spatial features using ResNet50',
                 'spatial_dimensions': f'{cnn_features.shape[1]}x{cnn_features.shape[2]}',
-                'feature_channels': cnn_features.shape[3],
-                'total_features': np.prod(cnn_features.shape[1:]),
+                'feature_channels': int(cnn_features.shape[3]),
+                'total_features': int(np.prod(cnn_features.shape[1:])),
                 'activation_stats': {
                     'min': float(np.min(cnn_features)),
                     'max': float(np.max(cnn_features)),
@@ -756,11 +764,11 @@ class BurnClassifier:
 
                 self._log_computation("RESHAPE", {
                     'operation': 'Reshape spatial grid to sequence',
-                    'input_shape': cnn_features.shape,
-                    'output_shape': reshaped_features.shape,
+                    'input_shape': tuple(int(x) for x in cnn_features.shape),
+                    'output_shape': tuple(int(x) for x in reshaped_features.shape),
                     'description': f'Convert {cnn_features.shape[1]}x{cnn_features.shape[2]} spatial grid to {reshaped_features.shape[1]} tokens',
-                    'tokens': reshaped_features.shape[1],
-                    'features_per_token': reshaped_features.shape[2],
+                    'tokens': int(reshaped_features.shape[1]),
+                    'features_per_token': int(reshaped_features.shape[2]),
                     'mathematical_operation': f'{cnn_features.shape[1]} * {cnn_features.shape[2]} = {reshaped_features.shape[1]} tokens'
                 })
 
@@ -798,13 +806,13 @@ class BurnClassifier:
                     'operation': 'Multi-Head Self-Attention',
                     'num_heads': config.get('num_heads', 'unknown'),
                     'key_dim': config.get('key_dim', 'unknown'),
-                    'input_shape': reshaped_features.shape if idx == 0 else 'previous_block_output',
-                    'output_shape': attn_output.shape,
+                    'input_shape': tuple(int(x) for x in reshaped_features.shape) if idx == 0 else 'previous_block_output',
+                    'output_shape': tuple(int(x) for x in attn_output.shape),
                     'description': f'Attention mechanism: Q, K, V matrices with {config.get("num_heads")} heads',
                     'mathematical_operations': {
-                        'query_projection': f'Q = input @ W_q  (shape: {attn_output.shape})',
-                        'key_projection': f'K = input @ W_k  (shape: {attn_output.shape})',
-                        'value_projection': f'V = input @ W_v  (shape: {attn_output.shape})',
+                        'query_projection': f'Q = input @ W_q  (shape: {tuple(int(x) for x in attn_output.shape)})',
+                        'key_projection': f'K = input @ W_k  (shape: {tuple(int(x) for x in attn_output.shape)})',
+                        'value_projection': f'V = input @ W_v  (shape: {tuple(int(x) for x in attn_output.shape)})',
                         'attention_scores': 'Attention = softmax(Q @ K^T / sqrt(d_k))',
                         'attention_output': 'Output = Attention @ V'
                     },
@@ -815,7 +823,7 @@ class BurnClassifier:
                         'std': float(np.std(attn_output))
                     },
                     'attention_distribution': {
-                        'most_attended_tokens': np.argsort(np.mean(attn_output[0], axis=-1))[-5:].tolist(),
+                        'most_attended_tokens': [int(x) for x in np.argsort(np.mean(attn_output[0], axis=-1))[-5:]],
                         'attention_strength': float(np.mean(np.abs(attn_output)))
                     }
                 })
@@ -834,11 +842,11 @@ class BurnClassifier:
 
             self._log_computation("GLOBAL_POOLING", {
                 'operation': 'Global Average Pooling',
-                'input_shape': attn_output.shape,
-                'output_shape': pooled_features.shape,
+                'input_shape': tuple(int(x) for x in attn_output.shape),
+                'output_shape': tuple(int(x) for x in pooled_features.shape),
                 'description': 'Average all token representations into single feature vector',
-                'mathematical_operation': f'pool = mean(tokens, axis=1) -> shape: {pooled_features.shape}',
-                'feature_vector_length': pooled_features.shape[1],
+                'mathematical_operation': f'pool = mean(tokens, axis=1) -> shape: {tuple(int(x) for x in pooled_features.shape)}',
+                'feature_vector_length': int(pooled_features.shape[1]),
                 'feature_stats': {
                     'min': float(np.min(pooled_features)),
                     'max': float(np.max(pooled_features)),
@@ -847,7 +855,7 @@ class BurnClassifier:
                     'non_zero_count': int(np.count_nonzero(pooled_features))
                 },
                 'top_10_features': {
-                    'indices': np.argsort(pooled_features[0])[-10:].tolist(),
+                    'indices': [int(x) for x in np.argsort(pooled_features[0])[-10:]],
                     'values': [float(x) for x in np.sort(pooled_features[0])[-10:]]
                 }
             })
@@ -881,12 +889,12 @@ class BurnClassifier:
 
             self._log_computation("DENSE_LAYER", {
                 'operation': 'Dense (Fully Connected) Layer',
-                'input_shape': pooled_features.shape,
-                'output_shape': logits.shape,
-                'weight_matrix_shape': weight_matrix.shape if weight_matrix is not None else 'unknown',
-                'bias_vector_shape': bias_vector.shape if bias_vector is not None else 'unknown',
+                'input_shape': tuple(int(x) for x in pooled_features.shape),
+                'output_shape': tuple(int(x) for x in logits.shape),
+                'weight_matrix_shape': tuple(int(x) for x in weight_matrix.shape) if weight_matrix is not None else 'unknown',
+                'bias_vector_shape': tuple(int(x) for x in bias_vector.shape) if bias_vector is not None else 'unknown',
                 'mathematical_operation': 'logits = (input @ W) + b',
-                'computation': f'{pooled_features.shape[1]} features @ {weight_matrix.shape if weight_matrix is not None else "?"} weights + bias',
+                'computation': f'{pooled_features.shape[1]} features @ {tuple(int(x) for x in weight_matrix.shape) if weight_matrix is not None else "?"} weights + bias',
                 'raw_logits': {
                     self.class_names[i]: float(logits_flat[i])
                     for i in range(len(self.class_names))
@@ -932,28 +940,28 @@ class BurnClassifier:
             print("-"*80)
 
             # Use flattened predictions array for safe indexing
-            predicted_class = np.argmax(predictions_flat)
-            confidence = predictions_flat[predicted_class]
-            sorted_indices = np.argsort(predictions_flat)[::-1];
+            predicted_class = int(np.argmax(predictions_flat))
+            confidence = float(predictions_flat[predicted_class])
+            sorted_indices = np.argsort(predictions_flat)[::-1]
 
             self._log_computation("FINAL_PREDICTION", {
                 'operation': 'argmax(probabilities)',
-                'predicted_class_id': int(predicted_class),
+                'predicted_class_id': predicted_class,
                 'predicted_class_name': self.class_names[predicted_class],
-                'confidence': float(confidence),
-                'confidence_percentage': f'{float(confidence * 100):.2f}%',
+                'confidence': confidence,
+                'confidence_percentage': f'{confidence * 100:.2f}%',
                 'ranking': [
                     {
                         'rank': i + 1,
-                        'class': self.class_names[idx],
-                        'probability': float(predictions_flat[idx]),
-                        'percentage': f'{float(predictions_flat[idx] * 100):.2f}%'
+                        'class': self.class_names[int(idx)],
+                        'probability': float(predictions_flat[int(idx)]),
+                        'percentage': f'{float(predictions_flat[int(idx)]) * 100:.2f}%'
                     }
                     for i, idx in enumerate(sorted_indices)
                 ],
                 'decision_threshold': 0.5,
                 'exceeds_threshold': bool(confidence >= 0.5),
-                'probability_gap_to_second': float(confidence - predictions_flat[sorted_indices[1]])
+                'probability_gap_to_second': float(confidence - predictions_flat[int(sorted_indices[1])])
             })
 
             print("\n" + "="*80)
@@ -1132,8 +1140,8 @@ class BurnClassifier:
 
         concrete_log.append({
             'step': 'CNN Features',
-            'output_shape': cnn_features.shape,
-            'sample_center_features': center_features[:20].tolist(),
+            'output_shape': tuple(int(x) for x in cnn_features.shape),
+            'sample_center_features': [float(x) for x in center_features[:20]],
             'statistics': {
                 'mean': float(np.mean(cnn_features)),
                 'max': float(np.max(cnn_features)),

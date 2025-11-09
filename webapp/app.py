@@ -6,6 +6,7 @@ import uuid
 import json
 import threading
 import time
+import numpy as np
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'
@@ -13,6 +14,23 @@ app.secret_key = 'your-secret-key-here'
 # Store progress for each analysis session
 progress_store = {}
 progress_lock = threading.Lock()
+
+def convert_to_serializable(obj):
+    """
+    Recursively convert NumPy types to native Python types for JSON serialization.
+    """
+    if isinstance(obj, np.integer):
+        return int(obj)
+    elif isinstance(obj, np.floating):
+        return float(obj)
+    elif isinstance(obj, np.ndarray):
+        return obj.tolist()
+    elif isinstance(obj, dict):
+        return {key: convert_to_serializable(value) for key, value in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [convert_to_serializable(item) for item in obj]
+    else:
+        return obj
 
 # Configuration
 UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'static', 'uploads')  # Use webapp/static/uploads
@@ -59,14 +77,14 @@ def upload_file():
 
             # Initialize progress
             with progress_lock:
-                progress_store[session_id] = {'step': 'Starting analysis...', 'percent': 0}
+                progress_store[session_id] = convert_to_serializable({'step': 'Starting analysis...', 'percent': 0})
 
             # Start analysis in background thread
             def run_analysis():
                 try:
                     def progress_callback(step, percent):
                         with progress_lock:
-                            progress_store[session_id] = {'step': step, 'percent': percent}
+                            progress_store[session_id] = convert_to_serializable({'step': step, 'percent': percent})
                         print(f"Progress: {step} - {percent}%")
 
                     model = get_model_instance()
@@ -82,7 +100,7 @@ def upload_file():
 
                     if error:
                         with progress_lock:
-                            progress_store[session_id] = {'step': f'Error: {error}', 'percent': 100, 'error': True}
+                            progress_store[session_id] = convert_to_serializable({'step': f'Error: {error}', 'percent': 100, 'error': True})
                         return
 
                     # Save Grad-CAM overlay
@@ -95,26 +113,26 @@ def upload_file():
                         cv2.imwrite(overlay_path, gradcam_overlay)
 
                     # Store result in session
-                    template_result = {
+                    template_result = convert_to_serializable({
                         'predicted_class': result['predicted_class'],
                         'class_id': result['class_id'],
                         'confidence': result['confidence'],
                         'all_probabilities': result['all_probabilities']
-                    }
+                    })
 
                     computational_data = {}
                     if 'computational_flow' in result:
-                        computational_data['flow'] = result['computational_flow']
+                        computational_data['flow'] = convert_to_serializable(result['computational_flow'])
                     if 'detailed_analysis' in result:
-                        computational_data['detailed'] = result['detailed_analysis']
+                        computational_data['detailed'] = convert_to_serializable(result['detailed_analysis'])
                     if 'concrete_computations' in result:
-                        computational_data['concrete'] = result['concrete_computations']
+                        computational_data['concrete'] = convert_to_serializable(result['concrete_computations'])
                     if 'image_trace' in result:
-                        computational_data['trace'] = result['image_trace']
+                        computational_data['trace'] = convert_to_serializable(result['image_trace'])
 
                     # Store in session-specific cache
                     with progress_lock:
-                        progress_store[session_id] = {
+                        progress_store[session_id] = convert_to_serializable({
                             'step': 'Complete',
                             'percent': 100,
                             'result': template_result,
@@ -122,13 +140,13 @@ def upload_file():
                             'image_filename': filename,
                             'overlay_filename': overlay_filename,
                             'session_id': session_id  # Store session_id so frontend can build URL
-                        }
+                        })
 
                 except Exception as e:
                     import traceback
                     traceback.print_exc()
                     with progress_lock:
-                        progress_store[session_id] = {'step': f'Error: {str(e)}', 'percent': 100, 'error': True}
+                        progress_store[session_id] = convert_to_serializable({'step': f'Error: {str(e)}', 'percent': 100, 'error': True})
 
             # Start analysis thread
             thread = threading.Thread(target=run_analysis)
@@ -238,17 +256,23 @@ def progress_stream(session_id):
 
             current_percent = progress.get('percent', 0)
 
-            # Only send if progress changed
-            if current_percent != last_progress:
+            # Only send if progress changed or it's complete
+            if current_percent != last_progress or current_percent >= 100:
                 last_progress = current_percent
-                yield f"data: {json.dumps(progress)}\n\n"
+                # Make sure to convert to serializable before sending
+                safe_progress = convert_to_serializable(progress)
+                yield f"data: {json.dumps(safe_progress)}\n\n"
 
             # Check if complete
             if current_percent >= 100:
-                # Send completion with session_id so frontend can build URL
-                stored_session_id = progress.get('session_id')
-                if stored_session_id:
-                    yield f"data: {json.dumps({'step': 'redirect', 'percent': 100, 'session_id': stored_session_id})}\n\n"
+                # Send explicit redirect message with session_id
+                stored_session_id = progress.get('session_id', session_id)  # Fallback to URL session_id
+                redirect_msg = convert_to_serializable({
+                    'step': 'redirect',
+                    'percent': 100,
+                    'session_id': stored_session_id
+                })
+                yield f"data: {json.dumps(redirect_msg)}\n\n"
                 break
 
             time.sleep(0.5)  # Check every 500ms

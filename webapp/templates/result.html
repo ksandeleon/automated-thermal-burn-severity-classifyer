@@ -794,9 +794,11 @@
                                                                 values):</strong>
                                                             <div class="p-2 bg-light rounded mt-2 small"
                                                                 style="max-height: 200px; overflow-y: auto;">
-                                                                {% for idx, val in zip(step.top_20_features.indices[:10], step.top_20_features.values[:10]) %}
-                                                                <div>Feature {{ idx }}:
-                                                                    {{ "%.4f"|format(val) }}</div>
+                                                                {% for i in range(step.top_20_features['indices'][:10]|length) %}
+                                                                <div>Feature
+                                                                    {{ step.top_20_features['indices'][i] }}:
+                                                                    {{ "%.4f"|format(step.top_20_features['values'][i]) }}
+                                                                </div>
                                                                 {% endfor %}
                                                             </div>
                                                         </div>
@@ -1242,7 +1244,8 @@
                 }
             });
         } {
-            % endif %
+            %
+            endif %
         }
     </script>
 </body>

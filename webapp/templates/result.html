@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Classification Result - Skin Burn Classifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -18,7 +19,7 @@
             font-family: 'Courier New', monospace;
             font-size: 0.95rem;
             line-height: 1.8;
-            border-left: 4px solid #0d6efd;
+            border-left: 4px solid var(--accent-1);
         }
 
         .equation-box code {
@@ -34,6 +35,131 @@
         .math-flow .card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Custom Tab Styling with Your Theme */
+        #analysisTab .nav-link {
+            color: var(--text-dark);
+            background: transparent;
+        }
+
+        #analysisTab .nav-link:hover {
+            background: rgba(165, 182, 141, 0.1);
+            border-color: var(--accent-1) !important;
+        }
+
+        #analysisTab .nav-link.active {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white !important;
+            border-color: var(--accent-1) !important;
+        }
+
+        #analysisTab .nav-link i {
+            transition: transform 0.3s ease;
+        }
+
+        #analysisTab .nav-link:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Step Cards with Your Theme */
+        .step-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(165, 182, 141, 0.2);
+        }
+
+        .step-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(165, 182, 141, 0.2);
+            border-color: var(--accent-1);
+        }
+
+        /* Code Blocks with Your Theme */
+        .code-block {
+            background: linear-gradient(135deg, #3a4a3a 0%, #2c3b2c 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Stat Badges with Your Theme */
+        .stat-badge {
+            background: linear-gradient(135deg, rgba(237, 232, 220, 0.5) 0%, rgba(255, 255, 255, 0.5) 100%);
+            border: 1px solid rgba(165, 182, 141, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-badge:hover {
+            background: linear-gradient(135deg, rgba(165, 182, 141, 0.2) 0%, rgba(193, 207, 161, 0.2) 100%);
+            transform: scale(1.02);
+            border-color: var(--accent-1);
+        }
+
+        /* Slide-in Animation */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        /* Info Banners with Your Theme */
+        .info-banner {
+            background: linear-gradient(135deg, rgba(165, 182, 141, 0.1) 0%, rgba(193, 207, 161, 0.1) 100%);
+            border-left: 4px solid var(--accent-1);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        /* Header Gradients matching your theme */
+        .header-gradient-green {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+        }
+
+        .header-gradient-pink {
+            background: linear-gradient(135deg, #e7bcbc, #d8a8a8);
+        }
+
+        .header-gradient-beige {
+            background: linear-gradient(135deg, #ede8dc, #d4c4b0);
+        }
+
+        /* Accordion Styling with Your Theme */
+        #flowAccordion .accordion-button {
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        #flowAccordion .accordion-button:not(.collapsed) {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white;
+            box-shadow: 0 4px 12px rgba(165, 182, 141, 0.3);
+        }
+
+        #flowAccordion .accordion-button:not(.collapsed) .badge {
+            background: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        #flowAccordion .accordion-button:focus {
+            box-shadow: 0 0 0 0.25rem rgba(165, 182, 141, 0.25);
+            border-color: var(--accent-1);
+        }
+
+        #flowAccordion .accordion-button::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+        }
+
+        #flowAccordion .accordion-button:not(.collapsed)::after {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
         }
     </style>
 </head>
@@ -176,266 +302,381 @@
 
                         <!-- Computational Flow Analysis (hidden by default) -->
                         {% if computational_data %}
-                        <div class="row mb-4" id="computationalSection" style="display:none;">
+                        <div class="row mb-4 animate-slide-in" id="computationalSection" style="display:none;">
                             <div class="col-12">
-                                <div class="card shadow-sm border-0">
-                                    <div class="card-header bg-primary text-white">
-                                        <h5 class="mb-0">
-                                            <i class="fas fa-brain me-2"></i>
-                                            Hybrid CNN-Transformer Computational Flow
-                                        </h5>
+                                <!-- Card with Your Theme -->
+                                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                                    <!-- Header with Your Theme Colors -->
+                                    <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);">
+                                        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 px-3">
+                                            <div class="text-center text-md-start">
+                                                <h5 class="mb-2 fw-bold d-flex align-items-center gap-2 justify-content-center justify-content-md-start">
+                                                    <i class="fas fa-brain"></i>
+                                                    <span>Hybrid CNN-Transformer Computational Flow</span>
+                                                </h5>
+                                                <p class="mb-0 small opacity-90">
+                                                    Deep dive into the mathematical operations and transformations
+                                                </p>
+                                            </div>
+                                            <div class="d-none d-md-block">
+                                                <div class="bg-white bg-opacity-25 rounded-3 px-3 py-2" style="backdrop-filter: blur(10px);">
+                                                    <p class="mb-0 small fw-semibold text-white">AI Explainability</p>
+                                                    <p class="mb-0 small text-white opacity-75">Complete Transparency</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="card-body" style="max-height: 600px; overflow-y: auto;">
 
-                                        <!-- Tabs for different analysis types -->
-                                        <ul class="nav nav-tabs mb-3" id="analysisTab" role="tablist">
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link active" id="summary-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#summary" type="button">
-                                                    <i class="fas fa-chart-line me-1"></i> Summary
-                                                </button>
-                                            </li>
-                                            {% if computational_data.concrete %}
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="concrete-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#concrete" type="button">
-                                                    <i class="fas fa-calculator me-1"></i> Concrete Math
-                                                </button>
-                                            </li>
-                                            {% endif %}
-                                            {% if computational_data.flow %}
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="flow-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#flow" type="button">
-                                                    <i class="fas fa-project-diagram me-1"></i> Full Flow
-                                                </button>
-                                            </li>
-                                            {% endif %}
-                                            {% if computational_data.detailed %}
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="detailed-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#detailed" type="button">
-                                                    <i class="fas fa-layer-group me-1"></i> Layer Details
-                                                </button>
-                                            </li>
-                                            {% endif %}
-                                            {% if computational_data.trace %}
-                                            <li class="nav-item" role="presentation">
-                                                <button class="nav-link" id="trace-tab" data-bs-toggle="tab"
-                                                    data-bs-target="#trace" type="button">
-                                                    <i class="fas fa-route me-1"></i> My Image Trace
-                                                </button>
-                                            </li>
-                                            {% endif %}
-                                        </ul>
+                                    <div class="p-4 p-md-5" style="background: linear-gradient(135deg, rgba(237, 232, 220, 0.3) 0%, rgba(255, 255, 255, 0.5) 100%);">
+                                        <!-- Modern Tab Navigation with Your Theme -->
+                                        <div class="mb-4">
+                                            <ul class="nav nav-pills d-flex flex-wrap gap-2 p-3 rounded-3 shadow-sm" style="background: rgba(255, 255, 255, 0.9);" id="analysisTab" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all" 
+                                                        id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab"
+                                                        aria-controls="summary" aria-selected="true"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-chart-line" style="color: var(--accent-1);"></i>
+                                                        <span class="d-none d-sm-inline">Summary</span>
+                                                    </button>
+                                                </li>
+                                                {% if computational_data.concrete %}
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all" 
+                                                        id="concrete-tab" data-bs-toggle="tab" data-bs-target="#concrete" type="button" role="tab"
+                                                        aria-controls="concrete" aria-selected="false"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-calculator" style="color: #c798b6;"></i>
+                                                        <span class="d-none d-sm-inline">Concrete Math</span>
+                                                    </button>
+                                                </li>
+                                                {% endif %}
+                                                {% if computational_data.flow %}
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all" 
+                                                        id="flow-tab" data-bs-toggle="tab" data-bs-target="#flow" type="button" role="tab"
+                                                        aria-controls="flow" aria-selected="false"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-project-diagram" style="color: var(--accent-2);"></i>
+                                                        <span class="d-none d-sm-inline">Full Flow</span>
+                                                    </button>
+                                                </li>
+                                                {% endif %}
+                                                {% if computational_data.detailed %}
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all" 
+                                                        id="detailed-tab" data-bs-toggle="tab" data-bs-target="#detailed" type="button" role="tab"
+                                                        aria-controls="detailed" aria-selected="false"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-layer-group" style="color: #d4a574;"></i>
+                                                        <span class="d-none d-sm-inline">Layer Details</span>
+                                                    </button>
+                                                </li>
+                                                {% endif %}
+                                                {% if computational_data.trace %}
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all" 
+                                                        id="trace-tab" data-bs-toggle="tab" data-bs-target="#trace" type="button" role="tab"
+                                                        aria-controls="trace" aria-selected="false"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-route" style="color: #e7bcbc;"></i>
+                                                        <span class="d-none d-sm-inline">My Image Trace</span>
+                                                    </button>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
 
-                                        <!-- Tab Content -->
+                                        <!-- Tab Content with Your Theme -->
                                         <div class="tab-content" id="analysisTabContent">
 
                                             <!-- Summary Tab -->
-                                            <div class="tab-pane fade show active" id="summary" role="tabpanel">
-                                                <h6 class="fw-bold mb-3">
-                                                    <i class="fas fa-equals me-2"></i>
-                                                    Mathematical Computation Flow
-                                                </h6>
-                                                <div class="alert alert-info small mb-3">
-                                                    <i class="fas fa-lightbulb me-2"></i>
-                                                    This shows the actual mathematical equations and transformations
-                                                    that convert your input image into a burn severity prediction.
+                                            <div class="tab-pane fade show active" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                                                <!-- Modern Header -->
+                                                <div class="mb-5">
+                                                    <h6 class="fs-4 fw-bold text-dark mb-3 d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center rounded-3 p-2" 
+                                                             style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <i class="fas fa-equals text-white"></i>
+                                                        </div>
+                                                        <span>Mathematical Computation Flow</span>
+                                                    </h6>
+                                                    <div class="info-banner rounded-3 p-4 shadow-sm">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <i class="fas fa-lightbulb mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                This shows the actual mathematical equations and transformations
+                                                                that convert your input image into a burn severity prediction.
+                                                                Each step represents a fundamental operation in the neural network.
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 <!-- Step-by-step mathematical flow -->
                                                 <div class="math-flow">
 
                                                     <!-- Step 1: Input -->
-                                                    <div class="card mb-3 border-primary">
-                                                        <div class="card-header bg-primary text-white">
-                                                            <strong>📥 Step 1: Input Image</strong>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <div class="equation-box p-3 bg-light rounded mb-2">
-                                                                <code>X<sub>input</sub> = Image(224 × 224 × 3)</code>
+                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
+                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2" 
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                    <span class="fs-4">📥</span>
+                                                                </div>
+                                                                <h6 class="text-white fw-bold mb-0">Step 1: Input Image</h6>
                                                             </div>
-                                                            <p class="small mb-0">Your uploaded image is represented as
-                                                                a 3D tensor with height, width, and RGB color channels.
+                                                        </div>
+                                                        <div class="p-4 bg-white">
+                                                            <div class="code-block mb-3">
+                                                                <code class="text-success">X<sub class="text-info">input</sub> = Image(224 × 224 × 3)</code>
+                                                            </div>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                Your uploaded image is represented as a 3D tensor with height, width, and RGB color channels.
+                                                                This standardized format allows the neural network to process the image consistently.
                                                             </p>
                                                         </div>
                                                     </div>
 
                                                     <!-- Step 2: CNN Feature Extraction -->
-                                                    <div class="card mb-3 border-success">
-                                                        <div class="card-header bg-success text-white">
-                                                            <strong>🔬 Step 2: CNN Feature Extraction
-                                                                (ResNet50)</strong>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <div class="equation-box p-3 bg-light rounded mb-2">
-                                                                <code>F<sub>CNN</sub> =
-                                                                    ResNet50(X<sub>input</sub>)</code><br>
-                                                                <code>F<sub>CNN</sub> =
-                                                                    Conv(ReLU(BatchNorm(...Conv(X<sub>input</sub>))))</code><br>
-                                                                <code>Shape: (7 × 7 × 2048)</code>
+                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
+                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2" 
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                    <span class="fs-4">🔬</span>
+                                                                </div>
+                                                                <h6 class="text-white fw-bold mb-0">Step 2: CNN Feature Extraction (ResNet50)</h6>
                                                             </div>
-                                                            <p class="small mb-2"><strong>What CNN does:</strong></p>
-                                                            <ul class="small mb-0">
-                                                                <li><strong>Convolution</strong>: Applies 50 layers of
-                                                                    filters to detect burn patterns, edges, textures
-                                                                </li>
-                                                                <li><strong>Formula</strong>: Output[i,j,k] = Σ(Input *
-                                                                    Kernel) + Bias</li>
-                                                                <li><strong>Result</strong>: 7×7 grid with 2048 features
-                                                                    per location = spatial feature map</li>
-                                                            </ul>
+                                                        </div>
+                                                        <div class="p-4 bg-white">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">F<sub class="text-info">CNN</sub> = ResNet50(X<sub class="text-info">input</sub>)</code></div>
+                                                                <div class="mb-2"><code class="text-warning">F<sub class="text-info">CNN</sub> = Conv(ReLU(BatchNorm(...Conv(X<sub class="text-info">input</sub>))))</code></div>
+                                                                <div><code class="text-primary">Shape: (7 × 7 × 2048)</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What CNN does:</p>
+                                                                <ul class="list-unstyled small text-dark">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-check-circle text-success mt-1"></i>
+                                                                        <span><strong>Convolution:</strong> Applies 50 layers of filters to detect burn patterns, edges, textures</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-check-circle text-success mt-1"></i>
+                                                                        <span><strong>Formula:</strong> Output[i,j,k] = Σ(Input * Kernel) + Bias</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-check-circle text-success mt-1"></i>
+                                                                        <span><strong>Result:</strong> 7×7 grid with 2048 features per location = spatial feature map</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
                                                         </div>
                                                     </div>
 
                                                     <!-- Step 3: Reshape -->
-                                                    <div class="card mb-3 border-info">
-                                                        <div class="card-header bg-info text-white">
-                                                            <strong>🔄 Step 3: Reshape to Sequence</strong>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <div class="equation-box p-3 bg-light rounded mb-2">
-                                                                <code>T<sub>tokens</sub> =
-                                                                    Reshape(F<sub>CNN</sub>)</code><br>
-                                                                <code>T<sub>tokens</sub> = (7 × 7, 2048) → (49 tokens,
-                                                                    2048 features)</code>
+                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
+                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #17a2b8, #0dcaf0);">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2" 
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                    <span class="fs-4">🔄</span>
+                                                                </div>
+                                                                <h6 class="text-white fw-bold mb-0">Step 3: Reshape to Sequence</h6>
                                                             </div>
-                                                            <p class="small mb-2"><strong>What Reshape does:</strong>
-                                                            </p>
-                                                            <ul class="small mb-0">
-                                                                <li>Flattens the spatial 7×7 grid into a sequence of 49
-                                                                    tokens</li>
-                                                                <li>Each token represents one spatial location with 2048
-                                                                    features</li>
-                                                                <li>Prepares data for transformer processing</li>
-                                                            </ul>
+                                                        </div>
+                                                        <div class="p-4 bg-white">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">T<sub class="text-info">tokens</sub> = Reshape(F<sub class="text-info">CNN</sub>)</code></div>
+                                                                <div><code class="text-warning">T<sub class="text-info">tokens</sub> = (7 × 7, 2048) → (49 tokens, 2048 features)</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What Reshape does:</p>
+                                                                <ul class="list-unstyled small text-dark">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-arrow-right text-info mt-1"></i>
+                                                                        <span>Flattens the spatial 7×7 grid into a sequence of 49 tokens</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-arrow-right text-info mt-1"></i>
+                                                                        <span>Each token represents one spatial location with 2048 features</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-arrow-right text-info mt-1"></i>
+                                                                        <span>Prepares data for transformer processing</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
                                                         </div>
                                                     </div>
 
                                                     <!-- Step 4: Transformer Attention -->
-                                                    <div class="card mb-3 border-warning">
-                                                        <div class="card-header bg-warning text-dark">
-                                                            <strong>🧠 Step 4: Transformer Multi-Head Attention</strong>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <div class="equation-box p-3 bg-light rounded mb-2">
-                                                                <code>Q = T<sub>tokens</sub> × W<sub>Q</sub>
-                                                                    (Query)</code><br>
-                                                                <code>K = T<sub>tokens</sub> × W<sub>K</sub>
-                                                                    (Key)</code><br>
-                                                                <code>V = T<sub>tokens</sub> × W<sub>V</sub>
-                                                                    (Value)</code><br><br>
-                                                                <code>Attention(Q,K,V) = softmax(Q × K<sup>T</sup> /
-                                                                    √d<sub>k</sub>) × V</code><br><br>
-                                                                <code>T<sub>attended</sub> =
-                                                                    MultiHead(T<sub>tokens</sub>) + T<sub>tokens</sub>
-                                                                    (Residual)</code>
+                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
+                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2" 
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                    <span class="fs-4">🧠</span>
+                                                                </div>
+                                                                <h6 class="text-white fw-bold mb-0">Step 4: Transformer Multi-Head Attention</h6>
                                                             </div>
-                                                            <p class="small mb-2"><strong>What Transformer
-                                                                    does:</strong></p>
-                                                            <ul class="small mb-0">
-                                                                <li><strong>Self-Attention</strong>: Learns which burn
-                                                                    regions relate to each other</li>
-                                                                <li><strong>Multi-Head</strong>: Uses 4 parallel
-                                                                    attention mechanisms (4 heads)</li>
-                                                                <li><strong>2 Blocks</strong>: Applies attention twice
-                                                                    for deeper relationships</li>
-                                                                <li><strong>Result</strong>: Tokens with contextual
-                                                                    understanding of the entire burn area</li>
-                                                            </ul>
+                                                        </div>
+                                                        <div class="p-4 bg-white">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">Q = T<sub class="text-info">tokens</sub> × W<sub class="text-info">Q</sub> (Query)</code></div>
+                                                                <div class="mb-2"><code class="text-success">K = T<sub class="text-info">tokens</sub> × W<sub class="text-info">K</sub> (Key)</code></div>
+                                                                <div class="mb-2"><code class="text-success">V = T<sub class="text-info">tokens</sub> × W<sub class="text-info">V</sub> (Value)</code></div>
+                                                                <div class="mb-2"><code class="text-warning">Attention(Q,K,V) = softmax(Q × K<sup class="text-primary">T</sup> / √d<sub class="text-info">k</sub>) × V</code></div>
+                                                                <div><code class="text-primary">T<sub class="text-info">attended</sub> = MultiHead(T<sub class="text-info">tokens</sub>) + T<sub class="text-info">tokens</sub> (Residual)</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What Transformer does:</p>
+                                                                <ul class="list-unstyled small text-dark">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-brain text-warning mt-1"></i>
+                                                                        <span><strong>Self-Attention:</strong> Learns which burn regions relate to each other</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-brain text-warning mt-1"></i>
+                                                                        <span><strong>Multi-Head:</strong> Uses 4 parallel attention mechanisms (4 heads)</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-brain text-warning mt-1"></i>
+                                                                        <span><strong>2 Blocks:</strong> Applies attention twice for deeper relationships</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-brain text-warning mt-1"></i>
+                                                                        <span><strong>Result:</strong> Tokens with contextual understanding of the entire burn area</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
                                                         </div>
                                                     </div>
 
                                                     <!-- Step 5: Global Average Pooling -->
-                                                    <div class="card mb-3 border-secondary">
-                                                        <div class="card-header bg-secondary text-white">
-                                                            <strong>📊 Step 5: Global Average Pooling</strong>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <div class="equation-box p-3 bg-light rounded mb-2">
-                                                                <code>F<sub>pooled</sub> = (1/49) × Σ<sub>i=1...49</sub>
-                                                                    T<sub>attended</sub>[i]</code><br>
-                                                                <code>Shape: (2048,) — Single feature vector</code>
+                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
+                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #6c757d, #495057);">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2" 
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                    <span class="fs-4">📊</span>
+                                                                </div>
+                                                                <h6 class="text-white fw-bold mb-0">Step 5: Global Average Pooling</h6>
                                                             </div>
-                                                            <p class="small mb-2"><strong>What Pooling does:</strong>
-                                                            </p>
-                                                            <ul class="small mb-0">
-                                                                <li>Averages all 49 token representations into one
-                                                                    vector</li>
-                                                                <li>Creates a global representation of the entire burn
-                                                                </li>
-                                                                <li>Reduces (49 × 2048) → (2048) dimensional vector</li>
-                                                            </ul>
+                                                        </div>
+                                                        <div class="p-4 bg-white">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">F<sub class="text-info">pooled</sub> = (1/49) × Σ<sub class="text-info">i=1...49</sub> T<sub class="text-info">attended</sub>[i]</code></div>
+                                                                <div><code class="text-primary">Shape: (2048,) — Single feature vector</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What Pooling does:</p>
+                                                                <ul class="list-unstyled small text-dark">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-compress text-secondary mt-1"></i>
+                                                                        <span>Averages all 49 token representations into one vector</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-compress text-secondary mt-1"></i>
+                                                                        <span>Creates a global representation of the entire burn</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-compress text-secondary mt-1"></i>
+                                                                        <span>Reduces (49 × 2048) → (2048) dimensional vector</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
                                                         </div>
                                                     </div>
 
                                                     <!-- Step 6: Classification -->
-                                                    <div class="card mb-3 border-danger">
-                                                        <div class="card-header bg-danger text-white">
-                                                            <strong>🎯 Step 6: Classification (Dense + Softmax)</strong>
+                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
+                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #dc3545, #d63384);">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2" 
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                    <span class="fs-4">🎯</span>
+                                                                </div>
+                                                                <h6 class="text-white fw-bold mb-0">Step 6: Classification (Dense + Softmax)</h6>
+                                                            </div>
                                                         </div>
-                                                        <div class="card-body">
-                                                            <div class="equation-box p-3 bg-light rounded mb-2">
-                                                                <code>Logits = F<sub>pooled</sub> × W<sub>dense</sub> +
-                                                                    b</code><br>
-                                                                <code>Logits = (2048,) × (2048, 5) + (5,) =
-                                                                    (5,)</code><br><br>
-                                                                <code>P(class<sub>i</sub>) = exp(logit<sub>i</sub>) /
-                                                                    Σ<sub>j=1...5</sub>
-                                                                    exp(logit<sub>j</sub>)</code><br><br>
-                                                                <code>Prediction = argmax(P)</code>
+                                                        <div class="p-4 bg-white">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">Logits = F<sub class="text-info">pooled</sub> × W<sub class="text-info">dense</sub> + b</code></div>
+                                                                <div class="mb-2"><code class="text-warning">Logits = (2048,) × (2048, 5) + (5,) = (5,)</code></div>
+                                                                <div class="mb-2"><code class="text-primary">P(class<sub class="text-info">i</sub>) = exp(logit<sub class="text-info">i</sub>) / Σ<sub class="text-info">j=1...5</sub> exp(logit<sub class="text-info">j</sub>)</code></div>
+                                                                <div><code class="text-danger">Prediction = argmax(P)</code></div>
                                                             </div>
-                                                            <p class="small mb-2"><strong>What Classification
-                                                                    does:</strong></p>
-                                                            <ul class="small mb-2">
-                                                                <li><strong>Dense Layer</strong>: Linear transformation
-                                                                    to 5 class scores (logits)</li>
-                                                                <li><strong>Softmax</strong>: Converts logits to
-                                                                    probabilities that sum to 1</li>
-                                                                <li><strong>ArgMax</strong>: Selects the class with
-                                                                    highest probability</li>
-                                                            </ul>
-                                                            {% if computational_data.detailed and computational_data.detailed.logits %}
-                                                            <div
-                                                                class="p-3 bg-warning bg-opacity-10 rounded border border-warning">
-                                                                <p class="small mb-2"><strong>📊 Your Image's
-                                                                        Logits:</strong></p>
-                                                                <ul class="small mb-0">
-                                                                    {% for class_name, logit_value in computational_data.detailed.logits.items() %}
-                                                                    <li>{{ class_name }}:
-                                                                        <code>{{ "%.4f"|format(logit_value) }}</code>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What Classification does:</p>
+                                                                <ul class="list-unstyled small text-dark mb-3">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-network-wired text-danger mt-1"></i>
+                                                                        <span><strong>Dense Layer:</strong> Linear transformation to 5 class scores (logits)</span>
                                                                     </li>
-                                                                    {% endfor %}
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-network-wired text-danger mt-1"></i>
+                                                                        <span><strong>Softmax:</strong> Converts logits to probabilities that sum to 1</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-network-wired text-danger mt-1"></i>
+                                                                        <span><strong>ArgMax:</strong> Selects the class with highest probability</span>
+                                                                    </li>
                                                                 </ul>
+                                                                {% if computational_data.detailed and computational_data.detailed.logits %}
+                                                                <div class="rounded-3 p-3" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(253, 126, 20, 0.1) 100%); border: 1px solid rgba(255, 193, 7, 0.3);">
+                                                                    <p class="small fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                                                                        <i class="fas fa-chart-bar text-warning"></i>
+                                                                        <span>Your Image's Logits:</span>
+                                                                    </p>
+                                                                    <div class="row g-2">
+                                                                        {% for class_name, logit_value in computational_data.detailed.logits.items() %}
+                                                                        <div class="col-md-6">
+                                                                            <div class="stat-badge px-3 py-2 rounded-3">
+                                                                                <span class="small fw-semibold text-dark">{{ class_name }}:</span>
+                                                                                <code class="small fw-bold ms-2" style="color: var(--accent-1);">{{ "%.4f"|format(logit_value) }}</code>
+                                                                            </div>
+                                                                        </div>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </div>
+                                                                {% endif %}
                                                             </div>
-                                                            {% endif %}
                                                         </div>
                                                     </div>
 
                                                     <!-- Final Result -->
-                                                    <div class="card border-primary">
-                                                        <div class="card-header bg-primary text-white">
-                                                            <strong>✅ Final Result</strong>
-                                                        </div>
-                                                        <div class="card-body">
-                                                            <div
-                                                                class="equation-box p-3 bg-success bg-opacity-10 rounded border border-success mb-2">
-                                                                <code class="text-success fs-5">Burn Severity =
-                                                                    {{ result.predicted_class }}</code><br>
-                                                                <code class="text-success">Confidence =
-                                                                    {{ "%.2f"|format(result.confidence * 100) }}%</code>
+                                                    <div class="step-card rounded-3 overflow-hidden shadow-lg" style="border: 3px solid var(--accent-1);">
+                                                        <div class="px-4 py-4" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <div class="d-flex align-items-center gap-3">
+                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2 bg-white" 
+                                                                     style="width: 56px; height: 56px;">
+                                                                    <span class="fs-2">✅</span>
+                                                                </div>
+                                                                <h6 class="text-white fw-bold fs-5 mb-0">Final Result</h6>
                                                             </div>
-                                                            <p class="small mb-2"><strong>Complete Mathematical
-                                                                    Flow:</strong></p>
-                                                            <div class="p-3 bg-light rounded">
-                                                                <code class="small">
-                                                                    Image → CNN → Reshape → Transformer → Pool → Dense →
-                                                                    Softmax → Prediction
-                                                                    <br><br>
-                                                                    {{ result.predicted_class }} =
-                                                                    argmax(softmax(Dense(Pool(Transformer(Reshape(CNN(Image)))))))
-                                                                </code>
+                                                        </div>
+                                                        <div class="p-4" style="background: linear-gradient(135deg, rgba(165, 182, 141, 0.05) 0%, rgba(193, 207, 161, 0.05) 100%);">
+                                                            <div class="code-block mb-3" style="border: 3px solid #28a745;">
+                                                                <div class="mb-2"><code class="text-success fw-bold fs-6">Burn Severity = {{ result.predicted_class }}</code></div>
+                                                                <div><code class="text-success">Confidence = {{ "%.2f"|format(result.confidence * 100) }}%</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                                                                    <i class="fas fa-route" style="color: var(--accent-1);"></i>
+                                                                    <span>Complete Mathematical Flow:</span>
+                                                                </p>
+                                                                <div class="bg-white rounded-3 p-4 shadow-sm" style="border: 2px solid rgba(165, 182, 141, 0.2);">
+                                                                    <code class="small text-dark d-block mb-3" style="line-height: 1.8;">
+                                                                        Image → CNN → Reshape → Transformer → Pool → Dense → Softmax → Prediction
+                                                                    </code>
+                                                                    <div class="pt-3" style="border-top: 1px solid rgba(165, 182, 141, 0.2);">
+                                                                        <code class="small text-dark d-block" style="word-break: break-all; line-height: 1.6;">
+                                                                            <strong style="color: var(--accent-1);">{{ result.predicted_class }}</strong> = argmax(softmax(Dense(Pool(Transformer(Reshape(CNN(Image)))))))
+                                                                        </code>
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -445,122 +686,153 @@
 
                                             <!-- Concrete Math Tab -->
                                             {% if computational_data.concrete %}
-                                            <div class="tab-pane fade" id="concrete" role="tabpanel">
-                                                <h6 class="fw-bold mb-3">
-                                                    <i class="fas fa-calculator me-2"></i>
-                                                    Actual Numerical Computations with Real Weights
-                                                </h6>
-                                                <div class="alert alert-info small mb-3">
-                                                    <i class="fas fa-info-circle me-2"></i>
-                                                    This shows actual mathematical operations with real model weights
-                                                    and values at each computation step.
+                                            <div class="tab-pane fade" id="concrete" role="tabpanel" aria-labelledby="concrete-tab">
+                                                <!-- Modern Header -->
+                                                <div class="mb-6">
+                                                    <h6 class="text-2xl font-bold text-gray-800 mb-3 flex items-center gap-3">
+                                                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                                                            <i class="fas fa-calculator text-white"></i>
+                                                        </div>
+                                                        <span>Actual Numerical Computations with Real Weights</span>
+                                                    </h6>
+                                                    <div class="bg-purple-50 border-l-4 border-purple-500 rounded-r-xl p-4 shadow-sm">
+                                                        <div class="flex items-start gap-3">
+                                                            <i class="fas fa-info-circle text-purple-600 text-xl mt-1"></i>
+                                                            <p class="text-sm text-gray-700 mb-0">
+                                                                This shows actual mathematical operations with real model weights
+                                                                and values at each computation step. See the exact numbers your model uses!
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
-                                                {% for step in computational_data.concrete %}
-                                                <div class="card mb-3 border-start border-primary border-3">
-                                                    <div class="card-header bg-light">
-                                                        <strong class="text-primary">{{ step.step }}</strong>
-                                                    </div>
-                                                    <div class="card-body">
-                                                        {% if step.operation %}
-                                                        <p class="mb-2"><strong>Operation:</strong>
-                                                            <code>{{ step.operation }}</code></p>
-                                                        {% endif %}
-
-                                                        {% if step.input_shape %}
-                                                        <p class="mb-2"><strong>Input Shape:</strong>
-                                                            {{ step.input_shape }}</p>
-                                                        {% endif %}
-
-                                                        {% if step.output_shape %}
-                                                        <p class="mb-2"><strong>Output Shape:</strong>
-                                                            {{ step.output_shape }}</p>
-                                                        {% endif %}
-
-                                                        {% if step.sample_weights %}
-                                                        <div class="mb-2">
-                                                            <strong>Sample Weights:</strong>
-                                                            <pre class="bg-light p-2 rounded small mb-0"
-                                                                style="max-height: 150px; overflow-y: auto;"><code>{{ step.sample_weights }}</code></pre>
+                                                <div class="space-y-5">
+                                                    {% for step in computational_data.concrete %}
+                                                    <div class="step-card rounded-2xl overflow-hidden border-l-4 border-purple-500 shadow-lg hover:shadow-xl bg-white">
+                                                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-purple-100">
+                                                            <strong class="text-purple-700 text-lg font-bold flex items-center gap-2">
+                                                                <i class="fas fa-calculator text-purple-500"></i>
+                                                                {{ step.step }}
+                                                            </strong>
                                                         </div>
-                                                        {% endif %}
-
-                                                        {% if step.computation_example %}
-                                                        <div class="mb-2">
-                                                            <strong>Computation Example:</strong>
-                                                            <pre class="bg-light p-2 rounded small mb-0"
-                                                                style="max-height: 150px; overflow-y: auto;"><code>{{ step.computation_example }}</code></pre>
-                                                        </div>
-                                                        {% endif %}
-
-                                                        {% if step.sample_output %}
-                                                        <div class="mb-2">
-                                                            <strong>Sample Output Values:</strong>
-                                                            <pre class="bg-light p-2 rounded small mb-0"
-                                                                style="max-height: 100px; overflow-y: auto;"><code>{{ step.sample_output }}</code></pre>
-                                                        </div>
-                                                        {% endif %}
-
-                                                        {% if step.statistics %}
-                                                        <div class="row g-2 mt-2">
-                                                            {% for stat_name, stat_value in step.statistics.items() %}
-                                                            <div class="col-md-6">
-                                                                <div class="p-2 bg-light rounded small">
-                                                                    <strong>{{ stat_name }}:</strong>
-                                                                    {{ "%.4f"|format(stat_value) if stat_value is number else stat_value }}
+                                                        <div class="p-6">
+                                                            {% if step.operation %}
+                                                            <div class="mb-4">
+                                                                <p class="text-sm font-semibold text-gray-700 mb-2">Operation:</p>
+                                                                <div class="code-block">
+                                                                    <code class="text-yellow-400 text-sm">{{ step.operation }}</code>
                                                                 </div>
                                                             </div>
-                                                            {% endfor %}
-                                                        </div>
-                                                        {% endif %}
+                                                            {% endif %}
 
-                                                        <!-- If none of the structured fields exist, show raw JSON -->
-                                                        {% if not step.operation and not step.input_shape and not step.output_shape %}
-                                                        <pre class="bg-light p-2 rounded small mb-0"
-                                                            style="max-height: 200px; overflow-y: auto;"><code>{{ step | tojson(indent=2) }}</code></pre>
-                                                        {% endif %}
+                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                                {% if step.input_shape %}
+                                                                <div class="stat-badge px-4 py-3 rounded-lg">
+                                                                    <p class="text-xs font-semibold text-gray-600 mb-1">Input Shape:</p>
+                                                                    <code class="text-sm font-bold text-blue-600">{{ step.input_shape }}</code>
+                                                                </div>
+                                                                {% endif %}
+
+                                                                {% if step.output_shape %}
+                                                                <div class="stat-badge px-4 py-3 rounded-lg">
+                                                                    <p class="text-xs font-semibold text-gray-600 mb-1">Output Shape:</p>
+                                                                    <code class="text-sm font-bold text-green-600">{{ step.output_shape }}</code>
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+
+                                                            {% if step.sample_weights %}
+                                                            <div class="mb-4">
+                                                                <strong class="text-sm font-semibold text-gray-700 block mb-2">Sample Weights:</strong>
+                                                                <pre class="code-block text-xs overflow-y-auto" style="max-height: 150px;"><code class="text-green-300">{{ step.sample_weights }}</code></pre>
+                                                            </div>
+                                                            {% endif %}
+
+                                                            {% if step.computation_example %}
+                                                            <div class="mb-4">
+                                                                <strong class="text-sm font-semibold text-gray-700 block mb-2">Computation Example:</strong>
+                                                                <pre class="code-block text-xs overflow-y-auto" style="max-height: 150px;"><code class="text-yellow-300">{{ step.computation_example }}</code></pre>
+                                                            </div>
+                                                            {% endif %}
+
+                                                            {% if step.sample_output %}
+                                                            <div class="mb-4">
+                                                                <strong class="text-sm font-semibold text-gray-700 block mb-2">Sample Output Values:</strong>
+                                                                <pre class="code-block text-xs overflow-y-auto" style="max-height: 100px;"><code class="text-blue-300">{{ step.sample_output }}</code></pre>
+                                                            </div>
+                                                            {% endif %}
+
+                                                            {% if step.statistics %}
+                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                                                                {% for stat_name, stat_value in step.statistics.items() %}
+                                                                <div class="stat-badge px-4 py-2 rounded-lg">
+                                                                    <p class="text-xs font-semibold text-gray-600 mb-1">{{ stat_name }}:</p>
+                                                                    <strong class="text-sm text-purple-600">{{ "%.4f"|format(stat_value) if stat_value is number else stat_value }}</strong>
+                                                                </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                            {% endif %}
+
+                                                            <!-- If none of the structured fields exist, show raw JSON -->
+                                                            {% if not step.operation and not step.input_shape and not step.output_shape %}
+                                                            <pre class="code-block text-xs overflow-y-auto" style="max-height: 200px;"><code class="text-gray-300">{{ step | tojson(indent=2) }}</code></pre>
+                                                            {% endif %}
+                                                        </div>
                                                     </div>
+                                                    {% endfor %}
                                                 </div>
-                                                {% endfor %}
                                             </div>
                                             {% endif %}
 
                                             <!-- Full Flow Tab -->
                                             {% if computational_data.flow %}
-                                            <div class="tab-pane fade" id="flow" role="tabpanel">
-                                                <h6 class="fw-bold mb-3">
-                                                    <i class="fas fa-project-diagram me-2"></i>
-                                                    Complete Computational Flow
-                                                </h6>
+                                            <div class="tab-pane fade" id="flow" role="tabpanel" aria-labelledby="flow-tab">
+                                                <!-- Modern Header -->
+                                                <div class="mb-5">
+                                                    <h6 class="fs-4 fw-bold text-dark mb-3 d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center rounded-3 p-2" 
+                                                             style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <i class="fas fa-project-diagram text-white"></i>
+                                                        </div>
+                                                        <span>Complete Computational Flow</span>
+                                                    </h6>
+                                                    <div class="info-banner rounded-3 p-4 shadow-sm">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <i class="fas fa-info-circle mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                This shows every computational step the model takes to process your image, 
+                                                                including detailed layer operations, transformations, and intermediate outputs.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                                 <!-- Summary Card -->
-                                                <div class="card mb-3 border-primary">
-                                                    <div class="card-header bg-primary text-white">
-                                                        <strong><i class="fas fa-chart-bar me-2"></i>Flow
-                                                            Summary</strong>
+                                                <div class="card mb-4 border-0 shadow-sm rounded-3 overflow-hidden">
+                                                    <div class="card-header text-white py-3" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                        <strong class="d-flex align-items-center gap-2">
+                                                            <i class="fas fa-chart-bar"></i>
+                                                            <span>Flow Summary</span>
+                                                        </strong>
                                                     </div>
-                                                    <div class="card-body">
+                                                    <div class="card-body p-4">
                                                         <div class="row g-3">
                                                             <div class="col-md-4">
-                                                                <div class="p-2 bg-light rounded text-center">
-                                                                    <small class="text-muted d-block">Total
-                                                                        Steps</small>
-                                                                    <strong
-                                                                        class="fs-4">{{ computational_data.flow.summary.total_steps }}</strong>
+                                                                <div class="stat-badge p-3 rounded-3 text-center">
+                                                                    <small class="text-muted d-block mb-1">Total Steps</small>
+                                                                    <strong class="fs-4 d-block" style="color: var(--accent-1);">{{ computational_data.flow.summary.total_steps }}</strong>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="p-2 bg-light rounded text-center">
-                                                                    <small class="text-muted d-block">Prediction</small>
-                                                                    <strong
-                                                                        class="text-primary">{{ computational_data.flow.summary.predicted_class }}</strong>
+                                                                <div class="stat-badge p-3 rounded-3 text-center">
+                                                                    <small class="text-muted d-block mb-1">Prediction</small>
+                                                                    <strong class="d-block" style="color: var(--accent-1);">{{ computational_data.flow.summary.predicted_class }}</strong>
                                                                 </div>
                                                             </div>
                                                             <div class="col-md-4">
-                                                                <div class="p-2 bg-light rounded text-center">
-                                                                    <small class="text-muted d-block">Confidence</small>
-                                                                    <strong
-                                                                        class="fs-4 text-success">{{ "%.2f"|format(computational_data.flow.summary.confidence * 100) }}%</strong>
+                                                                <div class="stat-badge p-3 rounded-3 text-center">
+                                                                    <small class="text-muted d-block mb-1">Confidence</small>
+                                                                    <strong class="fs-4 text-success d-block">{{ "%.2f"|format(computational_data.flow.summary.confidence * 100) }}%</strong>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -570,47 +842,72 @@
                                                 <!-- Computation Steps Accordion -->
                                                 <div class="accordion" id="flowAccordion">
                                                     {% for log_entry in computational_data.flow.computation_log %}
-                                                    <div class="accordion-item mb-2 border">
+                                                    <div class="accordion-item mb-3 border-0 rounded-3 overflow-hidden shadow-sm">
                                                         <h2 class="accordion-header" id="flowHeading{{ loop.index }}">
-                                                            <button class="accordion-button collapsed" type="button"
+                                                            <button class="accordion-button collapsed fw-semibold" type="button"
                                                                 data-bs-toggle="collapse"
                                                                 data-bs-target="#flow{{ loop.index }}"
                                                                 aria-expanded="false"
-                                                                aria-controls="flow{{ loop.index }}">
-                                                                <div class="d-flex align-items-center w-100">
-                                                                    <span class="badge bg-primary me-2">Step
-                                                                        {{ loop.index }}</span>
-                                                                    <strong>{{ log_entry.step }}</strong>
+                                                                aria-controls="flow{{ loop.index }}"
+                                                                style="background: linear-gradient(135deg, rgba(237, 232, 220, 0.5) 0%, rgba(255, 255, 255, 0.5) 100%);">
+                                                                <div class="d-flex align-items-center gap-3 w-100">
+                                                                    <span class="badge rounded-pill px-3 py-2" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white;">
+                                                                        Step {{ loop.index }}
+                                                                    </span>
+                                                                    <strong class="text-dark">{{ log_entry.step }}</strong>
                                                                 </div>
                                                             </button>
                                                         </h2>
                                                         <div id="flow{{ loop.index }}" class="accordion-collapse collapse"
                                                             aria-labelledby="flowHeading{{ loop.index }}"
                                                             data-bs-parent="#flowAccordion">
-                                                            <div class="accordion-body">
-                                                                {% if log_entry.details %}
-                                                                {% if log_entry.details is mapping %}
-                                                                <dl class="row mb-0">
-                                                                    {% for key, value in log_entry.details.items() %}
-                                                                    <dt class="col-sm-3 text-muted">{{ key }}</dt>
-                                                                    <dd class="col-sm-9">
-                                                                        {% if value is mapping or value is sequence %}
-                                                                        <pre class="bg-light p-2 rounded small mb-0"
-                                                                            style="max-height: 200px; overflow-y: auto;"><code>{{ value | tojson(indent=2) }}</code></pre>
-                                                                        {% else %}
-                                                                        <code>{{ value }}</code>
-                                                                        {% endif %}
-                                                                    </dd>
-                                                                    {% endfor %}
-                                                                </dl>
+                                                            <div class="accordion-body p-4" style="background: white;">
+                                                                <!-- Always show step name first -->
+                                                                <div class="mb-3 pb-3" style="border-bottom: 2px solid rgba(165, 182, 141, 0.2);">
+                                                                    <h6 class="fw-bold mb-2" style="color: var(--accent-1);">
+                                                                        <i class="fas fa-cog me-2"></i>
+                                                                        Operation: {{ log_entry.step }}
+                                                                    </h6>
+                                                                </div>
+
+                                                                <!-- Display details if available -->
+                                                                {% if log_entry.details and log_entry.details | length > 0 %}
+                                                                    {% if log_entry.details is mapping %}
+                                                                        <dl class="row mb-0">
+                                                                            {% for key, value in log_entry.details.items() %}
+                                                                            <dt class="col-sm-4 col-md-3 small fw-semibold mb-2" style="color: var(--accent-1);">{{ key }}</dt>
+                                                                            <dd class="col-sm-8 col-md-9 mb-3">
+                                                                                {% if value is mapping or value is sequence %}
+                                                                                <pre class="code-block small mb-0" style="max-height: 200px; overflow-y: auto;"><code style="color: #a8e6a1;">{{ value | tojson(indent=2) }}</code></pre>
+                                                                                {% else %}
+                                                                                <code class="small px-2 py-1 rounded d-inline-block" style="background: rgba(165, 182, 141, 0.15); color: #2c3e50; font-weight: 600;">{{ value }}</code>
+                                                                                {% endif %}
+                                                                            </dd>
+                                                                            {% endfor %}
+                                                                        </dl>
+                                                                    {% elif log_entry.details is sequence %}
+                                                                        <ul class="list-group">
+                                                                            {% for item in log_entry.details %}
+                                                                            <li class="list-group-item" style="background: rgba(165, 182, 141, 0.05); border-left: 3px solid var(--accent-1);">
+                                                                                {{ item }}
+                                                                            </li>
+                                                                            {% endfor %}
+                                                                        </ul>
+                                                                    {% else %}
+                                                                        <pre class="code-block small mb-0" style="max-height: 300px; overflow-y: auto;"><code style="color: #a8e6a1;">{{ log_entry.details | tojson(indent=2) }}</code></pre>
+                                                                    {% endif %}
                                                                 {% else %}
-                                                                <pre class="bg-light p-2 rounded small mb-0"
-                                                                    style="max-height: 300px; overflow-y: auto;"><code>{{ log_entry.details | tojson(indent=2) }}</code></pre>
+                                                                    <div class="alert mb-0" style="background: linear-gradient(135deg, rgba(165, 182, 141, 0.1) 0%, rgba(193, 207, 161, 0.1) 100%); border-left: 4px solid var(--accent-1); border-radius: 0.5rem;">
+                                                                        <i class="fas fa-info-circle me-2" style="color: var(--accent-1);"></i>
+                                                                        <span class="text-dark">This step was executed successfully. No additional details are stored for this operation.</span>
+                                                                    </div>
                                                                 {% endif %}
-                                                                {% else %}
-                                                                <p class="text-muted mb-0">No detailed information
-                                                                    available for this step.</p>
-                                                                {% endif %}
+
+                                                                <!-- Debug: Show raw data structure -->
+                                                                <div class="mt-3 p-3 rounded" style="background: rgba(245, 245, 245, 0.5); border: 1px dashed rgba(165, 182, 141, 0.3);">
+                                                                    <small class="text-muted d-block mb-2"><i class="fas fa-code me-1"></i> Raw Data:</small>
+                                                                    <pre class="mb-0 small" style="max-height: 150px; overflow-y: auto; color: #666;"><code>{{ log_entry | tojson(indent=2) }}</code></pre>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -621,7 +918,7 @@
 
                                             <!-- Detailed Analysis Tab -->
                                             {% if computational_data.detailed %}
-                                            <div class="tab-pane fade" id="detailed" role="tabpanel">
+                                            <div class="tab-pane fade" id="detailed" role="tabpanel" aria-labelledby="detailed-tab">
                                                 <h6 class="fw-bold mb-3">Layer-by-Layer Analysis</h6>
 
                                                 <!-- CNN Features -->
@@ -676,7 +973,7 @@
 
                                             <!-- My Image Trace Tab -->
                                             {% if computational_data.trace %}
-                                            <div class="tab-pane fade" id="trace" role="tabpanel">
+                                            <div class="tab-pane fade" id="trace" role="tabpanel" aria-labelledby="trace-tab">
                                                 <h6 class="fw-bold mb-3">
                                                     <i class="fas fa-route me-2"></i>
                                                     YOUR IMAGE - Step-by-Step Computation Trace
@@ -850,13 +1147,18 @@
                                                 </div>
                                                 {% endfor %}
 
-                                                <div class="alert alert-info small mt-3">
-                                                    <i class="fas fa-info-circle me-2"></i>
-                                                    <strong>What you're seeing:</strong> These are the actual numerical
-                                                    values extracted from YOUR specific uploaded image. Each step shows
-                                                    how your image data is transformed - from raw pixel values to the
-                                                    final burn severity prediction. The numbers you see are unique to
-                                                    your image!
+                                                <div class="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-4 shadow-sm mt-6">
+                                                    <div class="flex items-start gap-3">
+                                                        <i class="fas fa-info-circle text-blue-600 text-xl"></i>
+                                                        <div>
+                                                            <strong class="text-sm font-bold text-gray-800 block mb-1">What you're seeing:</strong>
+                                                            <p class="text-sm text-gray-700 mb-0">
+                                                                These are the actual numerical values extracted from YOUR specific uploaded image. 
+                                                                Each step shows how your image data is transformed - from raw pixel values to the 
+                                                                final burn severity prediction. The numbers you see are unique to your image!
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                             {% endif %}
@@ -1215,38 +1517,47 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
+        // Initialize Bootstrap Tabs
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enable all tabs
+            const triggerTabList = document.querySelectorAll('#analysisTab button[data-bs-toggle="tab"]');
+            triggerTabList.forEach(function(triggerEl) {
+                const tabTrigger = new bootstrap.Tab(triggerEl);
+                
+                triggerEl.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    tabTrigger.show();
+                });
+            });
+        });
+
         // Toggle for Attention Map (Grad-CAM)
         document.getElementById('debugToggle').addEventListener('change', function () {
             const debugInfo = document.getElementById('debugInfo');
             const gradcamSection = document.getElementById('gradcamSection');
             if (this.checked) {
-                debugInfo.style.display = '';
-                gradcamSection.style.display = '';
+                if (debugInfo) debugInfo.style.display = '';
+                if (gradcamSection) gradcamSection.style.display = '';
             } else {
-                debugInfo.style.display = 'none';
-                gradcamSection.style.display = 'none';
+                if (debugInfo) debugInfo.style.display = 'none';
+                if (gradcamSection) gradcamSection.style.display = 'none';
             }
         });
 
         // Toggle for Computational Flow
-        {
-            %
-            if computational_data %
-        }
+        {% if computational_data %}
         const computationalToggle = document.getElementById('computationalToggle');
         if (computationalToggle) {
             computationalToggle.addEventListener('change', function () {
                 const computationalSection = document.getElementById('computationalSection');
                 if (this.checked) {
-                    computationalSection.style.display = '';
+                    if (computationalSection) computationalSection.style.display = '';
                 } else {
-                    computationalSection.style.display = 'none';
+                    if (computationalSection) computationalSection.style.display = 'none';
                 }
             });
-        } {
-            %
-            endif %
         }
+        {% endif %}
     </script>
 </body>
 

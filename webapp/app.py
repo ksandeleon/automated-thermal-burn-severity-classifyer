@@ -93,7 +93,7 @@ def upload_file():
                         with_gradcam=True,
                         with_computational_flow=True,
                         detailed_analysis=True,
-                        show_concrete_math=False,
+                        show_concrete_math=True,
                         trace_image=True,
                         progress_callback=progress_callback
                     )

@@ -810,74 +810,66 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Computation Steps Accordion -->
-                                                <div class="accordion" id="flowAccordion">
+                                                <!-- Computation Steps - Always Visible -->
+                                                <div id="flowAccordion">
                                                     {% for log_entry in computational_data.flow.computation_log %}
-                                                    <div class="accordion-item mb-3 border-0 rounded-3 overflow-hidden shadow-sm">
-                                                        <h2 class="accordion-header" id="flowHeading{{ loop.index }}">
-                                                            <button class="accordion-button collapsed fw-semibold" type="button"
-                                                                data-bs-toggle="collapse"
-                                                                data-bs-target="#flow{{ loop.index }}"
-                                                                aria-expanded="false"
-                                                                aria-controls="flow{{ loop.index }}">
-                                                                <div class="d-flex align-items-center gap-3 w-100">
-                                                                    <span class="badge rounded-pill px-3 py-2" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white;">
-                                                                        Step {{ loop.index }}
-                                                                    </span>
-                                                                    <strong class="text-dark">{{ log_entry.step }}</strong>
-                                                                </div>
-                                                            </button>
-                                                        </h2>
-                                                        <div id="flow{{ loop.index }}" class="accordion-collapse collapse"
-                                                            aria-labelledby="flowHeading{{ loop.index }}"
-                                                            data-bs-parent="#flowAccordion">
-                                                            <div class="accordion-body p-4">
-                                                                <!-- Always show step name first -->
-                                                                <div class="mb-3 pb-3 operation-header">
-                                                                    <h6 class="fw-bold mb-2">
-                                                                        <i class="fas fa-cog me-2"></i>
-                                                                        Operation: {{ log_entry.step }}
-                                                                    </h6>
-                                                                </div>
+                                                    <div class="flow-step-card mb-3 border-0 rounded-3 overflow-hidden shadow-sm">
+                                                        <!-- Step Header (Not Clickable) -->
+                                                        <div class="flow-step-header">
+                                                            <div class="d-flex align-items-center gap-3 w-100 p-3">
+                                                                <span class="badge rounded-pill px-3 py-2" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white;">
+                                                                    Step {{ loop.index }}
+                                                                </span>
+                                                                <strong style="color: white;">{{ log_entry.step }}</strong>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Step Content (Always Visible) -->
+                                                        <div class="flow-step-body p-4">
+                                                            <!-- Always show step name first -->
+                                                            <div class="mb-3 pb-3 operation-header">
+                                                                <h6 class="fw-bold mb-2">
+                                                                    <i class="fas fa-cog me-2"></i>
+                                                                    Operation: {{ log_entry.step }}
+                                                                </h6>
+                                                            </div>
 
-                                                                <!-- Display details if available -->
-                                                                {% if log_entry.details and log_entry.details | length > 0 %}
-                                                                    {% if log_entry.details is mapping %}
-                                                                        <dl class="row mb-0 detail-list">
-                                                                            {% for key, value in log_entry.details.items() %}
-                                                                            <dt class="col-sm-4 col-md-3 small fw-semibold mb-2">{{ key }}</dt>
-                                                                            <dd class="col-sm-8 col-md-9 mb-3">
-                                                                                {% if value is mapping or value is sequence %}
-                                                                                <pre class="code-block small mb-0 code-pre"><code>{{ value | tojson(indent=2) }}</code></pre>
-                                                                                {% else %}
-                                                                                <code class="small px-2 py-1 rounded d-inline-block inline-code">{{ value }}</code>
-                                                                                {% endif %}
-                                                                            </dd>
-                                                                            {% endfor %}
-                                                                        </dl>
-                                                                    {% elif log_entry.details is sequence %}
-                                                                        <ul class="list-group detail-list-group">
-                                                                            {% for item in log_entry.details %}
-                                                                            <li class="list-group-item">
-                                                                                {{ item }}
-                                                                            </li>
-                                                                            {% endfor %}
-                                                                        </ul>
-                                                                    {% else %}
-                                                                        <pre class="code-block small mb-0 code-pre"><code>{{ log_entry.details | tojson(indent=2) }}</code></pre>
-                                                                    {% endif %}
+                                                            <!-- Display details if available -->
+                                                            {% if log_entry.details and log_entry.details | length > 0 %}
+                                                                {% if log_entry.details is mapping %}
+                                                                    <dl class="row mb-0 detail-list">
+                                                                        {% for key, value in log_entry.details.items() %}
+                                                                        <dt class="col-sm-4 col-md-3 small fw-semibold mb-2">{{ key }}</dt>
+                                                                        <dd class="col-sm-8 col-md-9 mb-3">
+                                                                            {% if value is mapping or value is sequence %}
+                                                                            <pre class="code-block small mb-0 code-pre"><code>{{ value | tojson(indent=2) }}</code></pre>
+                                                                            {% else %}
+                                                                            <code class="small px-2 py-1 rounded d-inline-block inline-code">{{ value }}</code>
+                                                                            {% endif %}
+                                                                        </dd>
+                                                                        {% endfor %}
+                                                                    </dl>
+                                                                {% elif log_entry.details is sequence %}
+                                                                    <ul class="list-group detail-list-group">
+                                                                        {% for item in log_entry.details %}
+                                                                        <li class="list-group-item">
+                                                                            {{ item }}
+                                                                        </li>
+                                                                        {% endfor %}
+                                                                    </ul>
                                                                 {% else %}
-                                                                    <div class="alert mb-0 success-alert">
-                                                                        <i class="fas fa-info-circle me-2"></i>
-                                                                        <span>This step was executed successfully. No additional details are stored for this operation.</span>
-                                                                    </div>
+                                                                    <pre class="code-block small mb-0 code-pre"><code>{{ log_entry.details | tojson(indent=2) }}</code></pre>
                                                                 {% endif %}
-
-                                                                <!-- Debug: Show raw data structure -->
-                                                                <div class="mt-3 p-3 rounded debug-raw-box">
-                                                                    <small class="text-muted d-block mb-2"><i class="fas fa-code me-1"></i> Raw Data:</small>
-                                                                    <pre class="mb-0 small debug-pre"><code>{{ log_entry | tojson(indent=2) }}</code></pre>
+                                                            {% else %}
+                                                                <div class="alert mb-0 success-alert">
+                                                                    <i class="fas fa-info-circle me-2"></i>
+                                                                    <span>This step was executed successfully. No additional details are stored for this operation.</span>
                                                                 </div>
+                                                            {% endif %}
+
+                                                            <!-- Debug: Show raw data structure -->
+                                                            <div class="mt-3 p-3 rounded debug-raw-box">
+                                                                <small class="text-muted d-block mb-2"><i class="fas fa-code me-1"></i> Raw Data:</small>
+                                                                <pre class="mb-0 small debug-pre"><code>{{ log_entry | tojson(indent=2) }}</code></pre>
                                                             </div>
                                                         </div>
                                                     </div>

@@ -649,7 +649,122 @@
 }
 
 /* ========================================
-   ACCORDION STYLES - FULL FLOW TAB
+   FLOW STEPS - FULL FLOW TAB (Always Visible)
+   ======================================== */
+
+/* Flow Step Card Container */
+.flow-step-card {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(165, 182, 141, 0.2) !important;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.flow-step-card:hover {
+    box-shadow: 0 8px 20px rgba(165, 182, 141, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Flow Step Header (Not Clickable) */
+.flow-step-header {
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-2)) !important;
+    color: white !important;
+}
+
+.flow-step-header strong {
+    color: white !important;
+}
+
+/* Flow Step Body (Always Visible) */
+.flow-step-body {
+    background: linear-gradient(135deg, rgba(237, 232, 220, 0.3), rgba(255, 250, 240, 0.95)) !important;
+    color: #2c3e50 !important;
+}
+
+/* Operation Header */
+.flow-step-body .operation-header {
+    border-bottom: 2px solid rgba(165, 182, 141, 0.2);
+}
+
+.flow-step-body .operation-header h6 {
+    color: var(--accent-1) !important;
+}
+
+/* Detail List (dt/dd) */
+.flow-step-body .detail-list dt {
+    color: var(--accent-1) !important;
+}
+
+.flow-step-body .detail-list dd {
+    color: #2c3e50 !important;
+}
+
+/* Code Blocks */
+.flow-step-body .code-block {
+    background: linear-gradient(135deg, #3a4a3a, #2c3b2c) !important;
+    border-radius: 8px !important;
+    padding: 1rem !important;
+    border: 1px solid rgba(165, 182, 141, 0.3) !important;
+}
+
+.flow-step-body .code-pre {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.flow-step-body .code-block code {
+    color: #a8e6a1 !important;
+    background: transparent !important;
+}
+
+/* Inline Code */
+.flow-step-body .inline-code {
+    background: rgba(165, 182, 141, 0.15) !important;
+    color: #2c3e50 !important;
+    font-weight: 600 !important;
+}
+
+/* List Group */
+.flow-step-body .detail-list-group .list-group-item {
+    background: rgba(165, 182, 141, 0.05) !important;
+    border-left: 3px solid var(--accent-1) !important;
+    color: #2c3e50 !important;
+}
+
+/* Success Alert */
+.flow-step-body .success-alert {
+    background: linear-gradient(135deg, rgba(165, 182, 141, 0.1), rgba(193, 207, 161, 0.1)) !important;
+    border-left: 4px solid var(--accent-1) !important;
+    border-radius: 0.5rem !important;
+    color: #2c3e50 !important;
+}
+
+.flow-step-body .success-alert i {
+    color: var(--accent-1) !important;
+}
+
+.flow-step-body .success-alert span {
+    color: #2c3e50 !important;
+}
+
+/* Debug Raw Box */
+.flow-step-body .debug-raw-box {
+    background: rgba(237, 232, 220, 0.4) !important;
+    border: 1px dashed var(--accent-1) !important;
+}
+
+.flow-step-body .debug-pre {
+    max-height: 150px;
+    overflow-y: auto;
+    color: #666 !important;
+}
+
+.flow-step-body .debug-raw-box code {
+    color: #666 !important;
+}
+
+/* ========================================
+   LEGACY ACCORDION STYLES (Kept for other tabs if needed)
    ======================================== */
 
 /* Accordion Container */

@@ -649,6 +649,120 @@
 }
 
 /* ========================================
+   SUMMARY TAB - COMPUTATIONAL STEPS
+   ======================================== */
+
+/* Summary Step Cards */
+.summary-step-card {
+    border: 1px solid rgba(165, 182, 141, 0.3) !important;
+}
+
+.summary-step-header {
+    background: linear-gradient(135deg, #a5b68d, #c1cfa1) !important;
+}
+
+.summary-step-body {
+    background: linear-gradient(135deg, rgba(237, 232, 220, 0.3) 0%, rgba(255, 250, 240, 0.95) 100%) !important;
+}
+
+/* Code blocks in Summary steps */
+.summary-step-body .code-block {
+    background: linear-gradient(135deg, #3a4a3a, #2c3b2c) !important;
+    border-radius: 8px !important;
+    padding: 1rem !important;
+    border: 1px solid rgba(165, 182, 141, 0.3) !important;
+}
+
+.summary-step-body .code-block code {
+    color: #a8e6a1 !important;
+    background: transparent !important;
+}
+
+/* Override Bootstrap color classes in code blocks */
+.summary-step-body .code-block .text-success {
+    color: #90ee90 !important;
+}
+
+.summary-step-body .code-block .text-warning {
+    color: #ffd700 !important;
+}
+
+.summary-step-body .code-block .text-primary {
+    color: #87ceeb !important;
+}
+
+.summary-step-body .code-block .text-danger {
+    color: #ff6b6b !important;
+}
+
+.summary-step-body .code-block .text-info {
+    color: #66d9ef !important;
+}
+
+/* Text colors in Summary steps */
+.summary-step-body .text-dark,
+.summary-step-body p,
+.summary-step-body span,
+.summary-step-body li {
+    color: #1a1a1a !important;
+}
+
+.summary-step-body .fw-semibold {
+    font-weight: 700 !important;
+    color: #1a1a1a !important;
+}
+
+/* Icons in Summary steps */
+.summary-step-body i {
+    color: #5a7a4a !important;
+}
+
+/* Override specific icon colors to match theme */
+.summary-step-body .fa-check-circle,
+.summary-step-body .fa-arrow-right,
+.summary-step-body .fa-brain,
+.summary-step-body .fa-compress,
+.summary-step-body .fa-network-wired,
+.summary-step-body .fa-chart-bar {
+    color: #5a7a4a !important;
+}
+
+/* Stat badges in Summary steps */
+.summary-step-body .stat-badge {
+    background: rgba(237, 232, 220, 0.5) !important;
+    border: 1px solid rgba(165, 182, 141, 0.2) !important;
+}
+
+.summary-step-body .stat-badge .small {
+    color: #5a7a4a !important;
+    font-weight: 700 !important;
+}
+
+.summary-step-body .stat-badge code {
+    color: #5a7a4a !important;
+}
+
+/* Special styling for Final Result card */
+.summary-final-result {
+    border: 2px solid #5a7a4a !important;
+}
+
+.summary-final-result-header {
+    background: linear-gradient(135deg, #a5b68d, #c1cfa1) !important;
+}
+
+.summary-final-result-body {
+    background: linear-gradient(135deg, rgba(237, 232, 220, 0.3) 0%, rgba(255, 250, 240, 0.95) 100%) !important;
+}
+
+.summary-final-result .code-block {
+    background: linear-gradient(135deg, #3a4a3a, #2c3b2c) !important;
+    border: 2px solid #5a7a4a !important;
+    border-radius: 8px !important;
+    padding: 1rem !important;
+}
+
+/* ========================================
    FLOW STEPS - FULL FLOW TAB (Always Visible)
    ======================================== */
 
@@ -687,16 +801,19 @@
 }
 
 .flow-step-body .operation-header h6 {
-    color: var(--accent-1) !important;
+    color: #5a7a4a !important;
+    font-weight: 700 !important;
 }
 
 /* Detail List (dt/dd) */
 .flow-step-body .detail-list dt {
-    color: var(--accent-1) !important;
+    color: #5a7a4a !important;
+    font-weight: 700 !important;
 }
 
 .flow-step-body .detail-list dd {
-    color: #2c3e50 !important;
+    color: #1a1a1a !important;
+    font-weight: 500 !important;
 }
 
 /* Code Blocks */
@@ -719,9 +836,9 @@
 
 /* Inline Code */
 .flow-step-body .inline-code {
-    background: rgba(165, 182, 141, 0.15) !important;
-    color: #2c3e50 !important;
-    font-weight: 600 !important;
+    background: rgba(165, 182, 141, 0.25) !important;
+    color: #1a1a1a !important;
+    font-weight: 700 !important;
 }
 
 /* List Group */
@@ -734,33 +851,40 @@
 /* Success Alert */
 .flow-step-body .success-alert {
     background: linear-gradient(135deg, rgba(165, 182, 141, 0.1), rgba(193, 207, 161, 0.1)) !important;
-    border-left: 4px solid var(--accent-1) !important;
+    border-left: 4px solid #5a7a4a !important;
     border-radius: 0.5rem !important;
-    color: #2c3e50 !important;
+    color: #1a1a1a !important;
 }
 
 .flow-step-body .success-alert i {
-    color: var(--accent-1) !important;
+    color: #5a7a4a !important;
 }
 
 .flow-step-body .success-alert span {
-    color: #2c3e50 !important;
+    color: #1a1a1a !important;
+    font-weight: 500 !important;
 }
 
 /* Debug Raw Box */
 .flow-step-body .debug-raw-box {
     background: rgba(237, 232, 220, 0.4) !important;
-    border: 1px dashed var(--accent-1) !important;
+    border: 1px dashed #5a7a4a !important;
 }
 
 .flow-step-body .debug-pre {
     max-height: 150px;
     overflow-y: auto;
-    color: #666 !important;
+    color: #333 !important;
 }
 
 .flow-step-body .debug-raw-box code {
-    color: #666 !important;
+    color: #333 !important;
+    font-weight: 500 !important;
+}
+
+.flow-step-body .debug-raw-box .text-muted {
+    color: #5a7a4a !important;
+    font-weight: 600 !important;
 }
 
 /* ========================================

@@ -388,17 +388,17 @@
                                                 <div class="math-flow">
 
                                                     <!-- Step 1: Input -->
-                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
-                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
                                                             <div class="d-flex align-items-center gap-3">
                                                                 <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
                                                                     <span class="fs-4">📥</span>
                                                                 </div>
-                                                                <h6 class="text-white fw-bold mb-0">Step 1: Input Image</h6>
+                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 1: Input Image</h6>
                                                             </div>
                                                         </div>
-                                                        <div class="p-4 bg-white">
+                                                        <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
                                                                 <code class="text-success">X<sub class="text-info">input</sub> = Image(224 × 224 × 3)</code>
                                                             </div>
@@ -410,17 +410,17 @@
                                                     </div>
 
                                                     <!-- Step 2: CNN Feature Extraction -->
-                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
-                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #28a745, #20c997);">
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
                                                             <div class="d-flex align-items-center gap-3">
                                                                 <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
                                                                     <span class="fs-4">🔬</span>
                                                                 </div>
-                                                                <h6 class="text-white fw-bold mb-0">Step 2: CNN Feature Extraction (ResNet50)</h6>
+                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 2: CNN Feature Extraction (ResNet50)</h6>
                                                             </div>
                                                         </div>
-                                                        <div class="p-4 bg-white">
+                                                        <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
                                                                 <div class="mb-2"><code class="text-success">F<sub class="text-info">CNN</sub> = ResNet50(X<sub class="text-info">input</sub>)</code></div>
                                                                 <div class="mb-2"><code class="text-warning">F<sub class="text-info">CNN</sub> = Conv(ReLU(BatchNorm(...Conv(X<sub class="text-info">input</sub>))))</code></div>
@@ -447,17 +447,17 @@
                                                     </div>
 
                                                     <!-- Step 3: Reshape -->
-                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
-                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #17a2b8, #0dcaf0);">
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
                                                             <div class="d-flex align-items-center gap-3">
                                                                 <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
                                                                     <span class="fs-4">🔄</span>
                                                                 </div>
-                                                                <h6 class="text-white fw-bold mb-0">Step 3: Reshape to Sequence</h6>
+                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 3: Reshape to Sequence</h6>
                                                             </div>
                                                         </div>
-                                                        <div class="p-4 bg-white">
+                                                        <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
                                                                 <div class="mb-2"><code class="text-success">T<sub class="text-info">tokens</sub> = Reshape(F<sub class="text-info">CNN</sub>)</code></div>
                                                                 <div><code class="text-warning">T<sub class="text-info">tokens</sub> = (7 × 7, 2048) → (49 tokens, 2048 features)</code></div>
@@ -483,17 +483,17 @@
                                                     </div>
 
                                                     <!-- Step 4: Transformer Attention -->
-                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
-                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #ffc107, #fd7e14);">
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
                                                             <div class="d-flex align-items-center gap-3">
                                                                 <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
                                                                     <span class="fs-4">🧠</span>
                                                                 </div>
-                                                                <h6 class="text-white fw-bold mb-0">Step 4: Transformer Multi-Head Attention</h6>
+                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 4: Transformer Multi-Head Attention</h6>
                                                             </div>
                                                         </div>
-                                                        <div class="p-4 bg-white">
+                                                        <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
                                                                 <div class="mb-2"><code class="text-success">Q = T<sub class="text-info">tokens</sub> × W<sub class="text-info">Q</sub> (Query)</code></div>
                                                                 <div class="mb-2"><code class="text-success">K = T<sub class="text-info">tokens</sub> × W<sub class="text-info">K</sub> (Key)</code></div>
@@ -526,17 +526,17 @@
                                                     </div>
 
                                                     <!-- Step 5: Global Average Pooling -->
-                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
-                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #6c757d, #495057);">
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
                                                             <div class="d-flex align-items-center gap-3">
                                                                 <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
                                                                     <span class="fs-4">📊</span>
                                                                 </div>
-                                                                <h6 class="text-white fw-bold mb-0">Step 5: Global Average Pooling</h6>
+                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 5: Global Average Pooling</h6>
                                                             </div>
                                                         </div>
-                                                        <div class="p-4 bg-white">
+                                                        <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
                                                                 <div class="mb-2"><code class="text-success">F<sub class="text-info">pooled</sub> = (1/49) × Σ<sub class="text-info">i=1...49</sub> T<sub class="text-info">attended</sub>[i]</code></div>
                                                                 <div><code class="text-primary">Shape: (2048,) — Single feature vector</code></div>
@@ -562,17 +562,17 @@
                                                     </div>
 
                                                     <!-- Step 6: Classification -->
-                                                    <div class="step-card mb-4 rounded-3 overflow-hidden shadow-lg">
-                                                        <div class="px-4 py-3" style="background: linear-gradient(135deg, #dc3545, #d63384);">
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
                                                             <div class="d-flex align-items-center gap-3">
                                                                 <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2);">
+                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
                                                                     <span class="fs-4">🎯</span>
                                                                 </div>
-                                                                <h6 class="text-white fw-bold mb-0">Step 6: Classification (Dense + Softmax)</h6>
+                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 6: Classification (Dense + Softmax)</h6>
                                                             </div>
                                                         </div>
-                                                        <div class="p-4 bg-white">
+                                                        <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
                                                                 <div class="mb-2"><code class="text-success">Logits = F<sub class="text-info">pooled</sub> × W<sub class="text-info">dense</sub> + b</code></div>
                                                                 <div class="mb-2"><code class="text-warning">Logits = (2048,) × (2048, 5) + (5,) = (5,)</code></div>
@@ -596,17 +596,17 @@
                                                                     </li>
                                                                 </ul>
                                                                 {% if computational_data.detailed and computational_data.detailed.logits %}
-                                                                <div class="rounded-3 p-3" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(253, 126, 20, 0.1) 100%); border: 1px solid rgba(255, 193, 7, 0.3);">
-                                                                    <p class="small fw-bold text-dark mb-3 d-flex align-items-center gap-2">
-                                                                        <i class="fas fa-chart-bar text-warning"></i>
+                                                                <div class="rounded-3 p-3" style="background: linear-gradient(135deg, rgba(237, 232, 220, 0.4) 0%, rgba(255, 250, 240, 0.6) 100%); border: 1px solid rgba(165, 182, 141, 0.3);">
+                                                                    <p class="small fw-bold mb-3 d-flex align-items-center gap-2" style="color: #1a1a1a;">
+                                                                        <i class="fas fa-chart-bar" style="color: #5a7a4a;"></i>
                                                                         <span>Your Image's Logits:</span>
                                                                     </p>
                                                                     <div class="row g-2">
                                                                         {% for class_name, logit_value in computational_data.detailed.logits.items() %}
                                                                         <div class="col-md-6">
                                                                             <div class="stat-badge px-3 py-2 rounded-3">
-                                                                                <span class="small fw-semibold text-dark">{{ class_name }}:</span>
-                                                                                <code class="small fw-bold ms-2" style="color: var(--accent-1);">{{ "%.4f"|format(logit_value) }}</code>
+                                                                                <span class="small fw-semibold" style="color: #1a1a1a;">{{ class_name }}:</span>
+                                                                                <code class="small fw-bold ms-2" style="color: #5a7a4a;">{{ "%.4f"|format(logit_value) }}</code>
                                                                             </div>
                                                                         </div>
                                                                         {% endfor %}
@@ -618,33 +618,33 @@
                                                     </div>
 
                                                     <!-- Final Result -->
-                                                    <div class="step-card rounded-3 overflow-hidden shadow-lg" style="border: 3px solid var(--accent-1);">
-                                                        <div class="px-4 py-4" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                    <div class="summary-final-result summary-step-card rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-final-result-header px-4 py-4">
                                                             <div class="d-flex align-items-center gap-3">
-                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2 bg-white"
-                                                                     style="width: 56px; height: 56px;">
+                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
+                                                                     style="width: 56px; height: 56px; background: rgba(255, 255, 255, 0.3);">
                                                                     <span class="fs-2">✅</span>
                                                                 </div>
-                                                                <h6 class="text-white fw-bold fs-5 mb-0">Final Result</h6>
+                                                                <h6 class="fs-5 mb-0" style="color: #1a1a1a; font-weight: 700;">Final Result</h6>
                                                             </div>
                                                         </div>
-                                                        <div class="p-4" style="background: linear-gradient(135deg, rgba(165, 182, 141, 0.05) 0%, rgba(193, 207, 161, 0.05) 100%);">
-                                                            <div class="code-block mb-3" style="border: 3px solid #28a745;">
+                                                        <div class="summary-final-result-body p-4">
+                                                            <div class="code-block mb-3">
                                                                 <div class="mb-2"><code class="text-success fw-bold fs-6">Burn Severity = {{ result.predicted_class }}</code></div>
                                                                 <div><code class="text-success">Confidence = {{ "%.2f"|format(result.confidence * 100) }}%</code></div>
                                                             </div>
                                                             <div>
-                                                                <p class="small fw-bold text-dark mb-3 d-flex align-items-center gap-2">
-                                                                    <i class="fas fa-route" style="color: var(--accent-1);"></i>
+                                                                <p class="small fw-bold mb-3 d-flex align-items-center gap-2" style="color: #1a1a1a;">
+                                                                    <i class="fas fa-route" style="color: #5a7a4a;"></i>
                                                                     <span>Complete Mathematical Flow:</span>
                                                                 </p>
-                                                                <div class="bg-white rounded-3 p-4 shadow-sm" style="border: 2px solid rgba(165, 182, 141, 0.2);">
-                                                                    <code class="small text-dark d-block mb-3" style="line-height: 1.8;">
+                                                                <div class="bg-white rounded-3 p-4 shadow-sm" style="border: 2px solid rgba(165, 182, 141, 0.3);">
+                                                                    <code class="small d-block mb-3" style="color: #1a1a1a; line-height: 1.8;">
                                                                         Image → CNN → Reshape → Transformer → Pool → Dense → Softmax → Prediction
                                                                     </code>
                                                                     <div class="pt-3" style="border-top: 1px solid rgba(165, 182, 141, 0.2);">
-                                                                        <code class="small text-dark d-block" style="word-break: break-all; line-height: 1.6;">
-                                                                            <strong style="color: var(--accent-1);">{{ result.predicted_class }}</strong> = argmax(softmax(Dense(Pool(Transformer(Reshape(CNN(Image)))))))
+                                                                        <code class="small d-block" style="color: #1a1a1a; word-break: break-all; line-height: 1.6;">
+                                                                            <strong style="color: #5a7a4a;">{{ result.predicted_class }}</strong> = argmax(softmax(Dense(Pool(Transformer(Reshape(CNN(Image)))))))
                                                                         </code>
                                                                     </div>
                                                                 </div>

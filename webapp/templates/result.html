@@ -166,7 +166,7 @@
                             style="min-width:220px;">
                             <span class="fw-semibold text-dark d-flex align-items-center gap-2"
                                 style="font-size:1.05rem;">
-                                <i class="fas fa-eye text-secondary"></i> Attention Map
+                                <i class="fas fa-eye text-muted"></i> Attention Map
                             </span>
                             <div class="form-switch d-flex align-items-center">
                                 <input type="checkbox" id="debugToggle" class="form-check-input debug-switch"
@@ -176,7 +176,7 @@
                             {% if computational_data %}
                             <span class="fw-semibold text-dark d-flex align-items-center gap-2"
                                 style="font-size:1.05rem;">
-                                <i class="fas fa-calculator text-primary"></i> Computational Flow
+                                <i class="fas fa-lightbulb" style="color: #6c757d;"></i> Deep Dive
                             </span>
                             <div class="form-switch d-flex align-items-center">
                                 <input type="checkbox" id="computationalToggle" class="form-check-input debug-switch"
@@ -278,21 +278,21 @@
                                 <!-- Card with Your Theme -->
                                 <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
                                     <!-- Header with Your Theme Colors -->
-                                    <div class="card-header text-white text-center py-4" style="background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);">
+                                    <div class="card-header text-center py-4" style="background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);">
                                         <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 px-3">
                                             <div class="text-center text-md-start">
-                                                <h5 class="mb-2 fw-bold d-flex align-items-center gap-2 justify-content-center justify-content-md-start">
-                                                    <i class="fas fa-brain"></i>
+                                                <h5 class="mb-2 fw-bold d-flex align-items-center gap-2 justify-content-center justify-content-md-start" style="color: #1a1a1a;">
+                                                    <i class="fas fa-brain" style="color: #1a1a1a;"></i>
                                                     <span>Hybrid CNN-Transformer Computational Flow</span>
                                                 </h5>
-                                                <p class="mb-0 small opacity-90">
+                                                <p class="mb-0 small" style="color: #1a1a1a; opacity: 0.85;">
                                                     Deep dive into the mathematical operations and transformations
                                                 </p>
                                             </div>
                                             <div class="d-none d-md-block">
                                                 <div class="bg-white bg-opacity-25 rounded-3 px-3 py-2" style="backdrop-filter: blur(10px);">
-                                                    <p class="mb-0 small fw-semibold text-white">AI Explainability</p>
-                                                    <p class="mb-0 small text-white opacity-75">Model Transparency</p>
+                                                    <p class="mb-0 small fw-semibold" style="color: #1a1a1a;">AI Explainability</p>
+                                                    <p class="mb-0 small" style="color: #1a1a1a; opacity: 0.75;">Model Transparency</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -307,7 +307,7 @@
                                                         id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab"
                                                         aria-controls="summary" aria-selected="true"
                                                         style="border: 2px solid transparent; transition: all 0.3s ease;">
-                                                        <i class="fas fa-chart-line" style="color: var(--accent-1);"></i>
+                                                        <i class="fas fa-chart-line"></i>
                                                         <span class="d-none d-sm-inline">Summary</span>
                                                     </button>
                                                 </li>
@@ -317,7 +317,7 @@
                                                         id="concrete-tab" data-bs-toggle="tab" data-bs-target="#concrete" type="button" role="tab"
                                                         aria-controls="concrete" aria-selected="false"
                                                         style="border: 2px solid transparent; transition: all 0.3s ease;">
-                                                        <i class="fas fa-calculator" style="color: #c798b6;"></i>
+                                                        <i class="fas fa-calculator"></i>
                                                         <span class="d-none d-sm-inline">Concrete Math</span>
                                                     </button>
                                                 </li>
@@ -328,7 +328,7 @@
                                                         id="flow-tab" data-bs-toggle="tab" data-bs-target="#flow" type="button" role="tab"
                                                         aria-controls="flow" aria-selected="false"
                                                         style="border: 2px solid transparent; transition: all 0.3s ease;">
-                                                        <i class="fas fa-project-diagram" style="color: var(--accent-2);"></i>
+                                                        <i class="fas fa-project-diagram"></i>
                                                         <span class="d-none d-sm-inline">Full Flow</span>
                                                     </button>
                                                 </li>
@@ -339,8 +339,8 @@
                                                         id="detailed-tab" data-bs-toggle="tab" data-bs-target="#detailed" type="button" role="tab"
                                                         aria-controls="detailed" aria-selected="false"
                                                         style="border: 2px solid transparent; transition: all 0.3s ease;">
-                                                        <i class="fas fa-layer-group" style="color: #d4a574;"></i>
-                                                        <span class="d-none d-sm-inline">Layer Details</span>
+                                                        <i class="fas fa-layer-group"></i>
+                                                        <span class="d-none d-sm-inline">Raw Layer Outputs</span>
                                                     </button>
                                                 </li>
                                                 {% endif %}
@@ -350,8 +350,8 @@
                                                         id="trace-tab" data-bs-toggle="tab" data-bs-target="#trace" type="button" role="tab"
                                                         aria-controls="trace" aria-selected="false"
                                                         style="border: 2px solid transparent; transition: all 0.3s ease;">
-                                                        <i class="fas fa-route" style="color: #e7bcbc;"></i>
-                                                        <span class="d-none d-sm-inline">My Image Trace</span>
+                                                        <i class="fas fa-route"></i>
+                                                        <span class="d-none d-sm-inline">Raw Image Tracing</span>
                                                     </button>
                                                 </li>
                                                 {% endif %}
@@ -390,13 +390,7 @@
                                                     <!-- Step 1: Input -->
                                                     <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
                                                         <div class="summary-step-header px-4 py-3">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
-                                                                    <span class="fs-4">📥</span>
-                                                                </div>
-                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 1: Input Image</h6>
-                                                            </div>
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 1: Input Image</h6>
                                                         </div>
                                                         <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
@@ -412,13 +406,7 @@
                                                     <!-- Step 2: CNN Feature Extraction -->
                                                     <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
                                                         <div class="summary-step-header px-4 py-3">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
-                                                                    <span class="fs-4">🔬</span>
-                                                                </div>
-                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 2: CNN Feature Extraction (ResNet50)</h6>
-                                                            </div>
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 2: CNN Feature Extraction (ResNet50)</h6>
                                                         </div>
                                                         <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
@@ -449,13 +437,7 @@
                                                     <!-- Step 3: Reshape -->
                                                     <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
                                                         <div class="summary-step-header px-4 py-3">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
-                                                                    <span class="fs-4">🔄</span>
-                                                                </div>
-                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 3: Reshape to Sequence</h6>
-                                                            </div>
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 3: Reshape to Sequence</h6>
                                                         </div>
                                                         <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
@@ -485,13 +467,7 @@
                                                     <!-- Step 4: Transformer Attention -->
                                                     <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
                                                         <div class="summary-step-header px-4 py-3">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
-                                                                    <span class="fs-4">🧠</span>
-                                                                </div>
-                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 4: Transformer Multi-Head Attention</h6>
-                                                            </div>
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 4: Transformer Multi-Head Attention</h6>
                                                         </div>
                                                         <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
@@ -528,13 +504,7 @@
                                                     <!-- Step 5: Global Average Pooling -->
                                                     <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
                                                         <div class="summary-step-header px-4 py-3">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
-                                                                    <span class="fs-4">📊</span>
-                                                                </div>
-                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 5: Global Average Pooling</h6>
-                                                            </div>
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 5: Global Average Pooling</h6>
                                                         </div>
                                                         <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
@@ -564,13 +534,7 @@
                                                     <!-- Step 6: Classification -->
                                                     <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
                                                         <div class="summary-step-header px-4 py-3">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 48px; height: 48px; background: rgba(255, 255, 255, 0.3);">
-                                                                    <span class="fs-4">🎯</span>
-                                                                </div>
-                                                                <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 6: Classification (Dense + Softmax)</h6>
-                                                            </div>
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 6: Classification (Dense + Softmax)</h6>
                                                         </div>
                                                         <div class="summary-step-body p-4">
                                                             <div class="code-block mb-3">
@@ -620,23 +584,17 @@
                                                     <!-- Final Result -->
                                                     <div class="summary-final-result summary-step-card rounded-3 overflow-hidden shadow-sm">
                                                         <div class="summary-final-result-header px-4 py-4">
-                                                            <div class="d-flex align-items-center gap-3">
-                                                                <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
-                                                                     style="width: 56px; height: 56px; background: rgba(255, 255, 255, 0.3);">
-                                                                    <span class="fs-2">✅</span>
-                                                                </div>
-                                                                <h6 class="fs-5 mb-0" style="color: #1a1a1a; font-weight: 700;">Final Result</h6>
-                                                            </div>
+                                                            <h6 class="fs-5 mb-0" style="color: #1a1a1a; font-weight: 700;">Final Result</h6>
                                                         </div>
                                                         <div class="summary-final-result-body p-4">
                                                             <div class="code-block mb-3">
-                                                                <div class="mb-2"><code class="text-success fw-bold fs-6">Burn Severity = {{ result.predicted_class }}</code></div>
-                                                                <div><code class="text-success">Confidence = {{ "%.2f"|format(result.confidence * 100) }}%</code></div>
+                                                                <div class="mb-3"><code class="fw-bold" style="font-size: 1.25rem; color: #90ee90;">Burn Severity = {{ result.predicted_class }}</code></div>
+                                                                <div><code class="fw-bold" style="font-size: 1.1rem; color: #ffd700;">Confidence = {{ "%.2f"|format(result.confidence * 100) }}%</code></div>
                                                             </div>
                                                             <div>
                                                                 <p class="small fw-bold mb-3 d-flex align-items-center gap-2" style="color: #1a1a1a;">
                                                                     <i class="fas fa-route" style="color: #5a7a4a;"></i>
-                                                                    <span>Complete Mathematical Flow:</span>
+                                                                    <span>Complete Flow:</span>
                                                                 </p>
                                                                 <div class="bg-white rounded-3 p-4 shadow-sm" style="border: 2px solid rgba(165, 182, 141, 0.3);">
                                                                     <code class="small d-block mb-3" style="color: #1a1a1a; line-height: 1.8;">
@@ -817,10 +775,10 @@
                                                         <!-- Step Header (Not Clickable) -->
                                                         <div class="flow-step-header">
                                                             <div class="d-flex align-items-center gap-3 w-100 p-3">
-                                                                <span class="badge rounded-pill px-3 py-2" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: white;">
+                                                                <span class="badge rounded-pill px-3 py-2" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #white; font-weight: 700;">
                                                                     Step {{ loop.index }}
                                                                 </span>
-                                                                <strong style="color: white;">{{ log_entry.step }}</strong>
+                                                                <strong style="color: #white;">{{ log_entry.step }}</strong>
                                                             </div>
                                                         </div>
                                                         <!-- Step Content (Always Visible) -->
@@ -881,51 +839,69 @@
                                             <!-- Detailed Analysis Tab -->
                                             {% if computational_data.detailed %}
                                             <div class="tab-pane fade" id="detailed" role="tabpanel" aria-labelledby="detailed-tab">
-                                                <h6 class="fw-bold mb-3">Layer-by-Layer Analysis</h6>
+                                                <!-- Modern Header -->
+                                                <div class="mb-5">
+                                                    <h6 class="fs-4 fw-bold text-dark mb-3 d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
+                                                             style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <i class="fas fa-layer-group text-white"></i>
+                                                        </div>
+                                                        <span>Layer-by-Layer Analysis</span>
+                                                    </h6>
+                                                    <div class="info-banner rounded-3 p-4 shadow-sm">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <i class="fas fa-info-circle mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                Detailed outputs from each layer showing activation values, attention patterns, and classification scores.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
 
                                                 <!-- CNN Features -->
                                                 {% if computational_data.detailed.cnn_features %}
-                                                <div class="mb-3">
-                                                    <strong class="text-primary">CNN Features</strong>
-                                                    <div class="p-2 bg-light rounded small">
-                                                        <p class="mb-1"><strong>Shape:</strong>
-                                                            {{ computational_data.detailed.cnn_features.shape }}</p>
-                                                        <p class="mb-1"><strong>Mean Activation:</strong>
-                                                            {{ "%.4f"|format(computational_data.detailed.cnn_features.mean_activation) }}
-                                                        </p>
-                                                        <p class="mb-0"><strong>Max Activation:</strong>
-                                                            {{ "%.4f"|format(computational_data.detailed.cnn_features.max_activation) }}
-                                                        </p>
+                                                <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                    <div class="summary-step-header px-4 py-3">
+                                                        <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">CNN Features</h6>
+                                                    </div>
+                                                    <div class="summary-step-body p-4">
+                                                        <p class="mb-2 small" style="color: #1a1a1a;"><strong>Shape:</strong> <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ computational_data.detailed.cnn_features.shape }}</code></p>
+                                                        <p class="mb-2 small" style="color: #1a1a1a;"><strong>Mean Activation:</strong> <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(computational_data.detailed.cnn_features.mean_activation) }}</span></p>
+                                                        <p class="mb-0 small" style="color: #1a1a1a;"><strong>Max Activation:</strong> <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(computational_data.detailed.cnn_features.max_activation) }}</span></p>
                                                     </div>
                                                 </div>
                                                 {% endif %}
 
                                                 <!-- Transformer Attention -->
                                                 {% if computational_data.detailed.transformer_attention %}
-                                                <div class="mb-3">
-                                                    <strong class="text-info">Transformer Attention</strong>
-                                                    {% for block in computational_data.detailed.transformer_attention %}
-                                                    <div class="p-2 bg-light rounded small mb-2">
-                                                        <p class="mb-1"><strong>Block {{ block.block }}:</strong></p>
-                                                        <p class="mb-1">Mean Attention:
-                                                            {{ "%.4f"|format(block.mean_attention) }}
-                                                        </p>
-                                                        <p class="mb-0">Attention Strength:
-                                                            {{ "%.4f"|format(block.attention_strength) }}
-                                                        </p>
+                                                <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                    <div class="summary-step-header px-4 py-3">
+                                                        <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Transformer Attention</h6>
                                                     </div>
-                                                    {% endfor %}
+                                                    <div class="summary-step-body p-4">
+                                                        {% for block in computational_data.detailed.transformer_attention %}
+                                                        <div class="p-3 rounded mb-3" style="background: rgba(237, 232, 220, 0.5); border: 1px solid rgba(165, 182, 141, 0.2);">
+                                                            <p class="mb-2 small" style="color: #1a1a1a; font-weight: 700;">Block {{ block.block }}:</p>
+                                                            <p class="mb-1 small" style="color: #1a1a1a;">Mean Attention: <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(block.mean_attention) }}</span></p>
+                                                            <p class="mb-0 small" style="color: #1a1a1a;">Attention Strength: <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(block.attention_strength) }}</span></p>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
                                                 </div>
                                                 {% endif %}
 
                                                 <!-- Logits -->
                                                 {% if computational_data.detailed.logits %}
-                                                <div class="mb-3">
-                                                    <strong class="text-danger">Classification Logits</strong>
-                                                    <div class="p-2 bg-light rounded small">
+                                                <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                    <div class="summary-step-header px-4 py-3">
+                                                        <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Classification Logits</h6>
+                                                    </div>
+                                                    <div class="summary-step-body p-4">
                                                         {% for class_name, logit_value in computational_data.detailed.logits.items() %}
-                                                        <p class="mb-1">{{ class_name }}:
-                                                            {{ "%.4f"|format(logit_value) }}</p>
+                                                        <p class="mb-2 small" style="color: #1a1a1a;">
+                                                            <strong>{{ class_name }}:</strong>
+                                                            <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(logit_value) }}</span>
+                                                        </p>
                                                         {% endfor %}
                                                     </div>
                                                 </div>
@@ -936,76 +912,71 @@
                                             <!-- My Image Trace Tab -->
                                             {% if computational_data.trace %}
                                             <div class="tab-pane fade" id="trace" role="tabpanel" aria-labelledby="trace-tab">
-                                                <h6 class="fw-bold mb-3">
-                                                    <i class="fas fa-route me-2"></i>
-                                                    YOUR IMAGE - Step-by-Step Computation Trace
-                                                </h6>
-                                                <div class="alert alert-success small mb-3">
-                                                    <i class="fas fa-camera me-2"></i>
-                                                    This shows the <strong>actual numerical values from YOUR uploaded
-                                                        image</strong> being transformed at each layer of the network.
-                                                    You can see exactly how your specific image is processed!
+                                                <!-- Modern Header -->
+                                                <div class="mb-5">
+                                                    <h6 class="fs-4 fw-bold text-dark mb-3 d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
+                                                             style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <i class="fas fa-route text-white"></i>
+                                                        </div>
+                                                        <span>YOUR IMAGE - Step-by-Step Computation Trace</span>
+                                                    </h6>
+                                                    <div class="info-banner rounded-3 p-4 shadow-sm">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <i class="fas fa-camera mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                This shows the <strong>actual numerical values from YOUR uploaded image</strong> being transformed at each layer of the network.
+                                                                You can see exactly how your specific image is processed!
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 {% for step in computational_data.trace.steps %}
-                                                <div
-                                                    class="card mb-3 {% if step.step_number == 0 %}border-primary{% elif step.step_number < 3 %}border-success{% elif step.step_number < 6 %}border-info{% elif step.step_number < 10 %}border-warning{% else %}border-danger{% endif %}">
-                                                    <div
-                                                        class="card-header {% if step.step_number == 0 %}bg-primary text-white{% elif step.step_number < 3 %}bg-success text-white{% elif step.step_number < 6 %}bg-info text-white{% elif step.step_number < 10 %}bg-warning text-dark{% else %}bg-danger text-white{% endif %}">
-                                                        <strong>
-                                                            {% if step.step_number == 0 %}📸
-                                                            {% elif step.step_number < 3 %}🔬
-                                                            {% elif step.step_number < 6 %}🔄
-                                                            {% elif step.step_number < 10 %}🧠
-                                                            {% else %}🎯
-                                                            {% endif %}
+                                                <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                    <div class="summary-step-header px-4 py-3">
+                                                        <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">
                                                             Step {{ step.step_number }}: {{ step.step_name }}
-                                                        </strong>
+                                                        </h6>
                                                     </div>
-                                                    <div class="card-body">
-                                                        <p class="small text-muted mb-2"><strong>Operation:</strong>
-                                                            {{ step.operation }}</p>
+                                                    <div class="summary-step-body p-4">
+                                                        <p class="small mb-2" style="color: #1a1a1a;"><strong>Operation:</strong> {{ step.operation }}</p>
 
                                                         {% if step.layer_name %}
-                                                        <p class="small mb-2"><strong>Layer:</strong>
-                                                            <code>{{ step.layer_name }}</code></p>
+                                                        <p class="small mb-2" style="color: #1a1a1a;"><strong>Layer:</strong> <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ step.layer_name }}</code></p>
                                                         {% endif %}
 
                                                         {% if step.input_shape and step.output_shape %}
-                                                        <p class="small mb-2">
+                                                        <p class="small mb-3" style="color: #1a1a1a;">
                                                             <strong>Shape Transform:</strong>
-                                                            <code>{{ step.input_shape }}</code> →
-                                                            <code>{{ step.output_shape }}</code>
+                                                            <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ step.input_shape }}</code> →
+                                                            <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ step.output_shape }}</code>
                                                         </p>
                                                         {% endif %}
 
                                                         <!-- Pixel Samples for Input Step -->
                                                         {% if step.samples and step.step_number == 0 %}
-                                                        <div class="mt-2">
-                                                            <strong class="small">Sample Pixel Values from YOUR
-                                                                Image:</strong>
+                                                        <div class="mt-3">
+                                                            <strong class="small" style="color: #1a1a1a;">Sample Pixel Values from YOUR Image:</strong>
                                                             <div class="table-responsive mt-2">
-                                                                <table class="table table-sm table-bordered small">
-                                                                    <thead class="table-light">
+                                                                <table class="table table-sm small" style="border: 1px solid rgba(165, 182, 141, 0.3);">
+                                                                    <thead style="background: linear-gradient(135deg, rgba(165, 182, 141, 0.2), rgba(193, 207, 161, 0.2));">
                                                                         <tr>
-                                                                            <th>Location</th>
-                                                                            <th>Position</th>
-                                                                            <th>Red</th>
-                                                                            <th>Green</th>
-                                                                            <th>Blue</th>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Location</th>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Position</th>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Red</th>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Green</th>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Blue</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         {% for sample in step.samples %}
-                                                                        <tr>
-                                                                            <td>{{ sample.location }}</td>
-                                                                            <td><code>{{ sample.position }}</code></td>
-                                                                            <td>{{ "%.1f"|format(sample.RGB_values[0]) }}
-                                                                            </td>
-                                                                            <td>{{ "%.1f"|format(sample.RGB_values[1]) }}
-                                                                            </td>
-                                                                            <td>{{ "%.1f"|format(sample.RGB_values[2]) }}
-                                                                            </td>
+                                                                        <tr style="background: rgba(255, 255, 255, 0.5);">
+                                                                            <td style="color: #1a1a1a;">{{ sample.location }}</td>
+                                                                            <td><code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ sample.position }}</code></td>
+                                                                            <td style="color: #1a1a1a;">{{ "%.1f"|format(sample.RGB_values[0]) }}</td>
+                                                                            <td style="color: #1a1a1a;">{{ "%.1f"|format(sample.RGB_values[1]) }}</td>
+                                                                            <td style="color: #1a1a1a;">{{ "%.1f"|format(sample.RGB_values[2]) }}</td>
                                                                         </tr>
                                                                         {% endfor %}
                                                                     </tbody>
@@ -1016,29 +987,29 @@
 
                                                         <!-- CNN/Transformer/Pooling Samples -->
                                                         {% if step.samples and step.step_number > 0 and step.step_number < 15 %}
-                                                        <div class="mt-2">
-                                                            <strong class="small">Sample Output Values:</strong>
-                                                            <div class="p-2 bg-light rounded mt-2">
+                                                        <div class="mt-3">
+                                                            <strong class="small" style="color: #1a1a1a;">Sample Output Values:</strong>
+                                                            <div class="p-3 rounded mt-2" style="background: rgba(237, 232, 220, 0.5); border: 1px solid rgba(165, 182, 141, 0.2);">
                                                                 {% for sample in step.samples[:3] %}
-                                                                <div class="mb-2 small">
+                                                                <div class="mb-2 small" style="color: #1a1a1a;">
                                                                     {% if sample.position %}
-                                                                    <code>{{ sample.position }}</code>:
+                                                                    <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ sample.position }}</code>:
                                                                     {% elif sample.spatial_position %}
-                                                                    <code>{{ sample.spatial_position }}</code>:
+                                                                    <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ sample.spatial_position }}</code>:
                                                                     {% elif sample.token_index is defined %}
-                                                                    Token {{ sample.token_index }}:
+                                                                    <strong>Token {{ sample.token_index }}:</strong>
                                                                     {% endif %}
 
                                                                     {% if sample.filter_outputs %}
-                                                                    [{{ sample.filter_outputs|map('round', 2)|join(', ') }}]
+                                                                    <span style="color: #1a1a1a;">[{{ sample.filter_outputs|map('round', 2)|join(', ') }}]</span>
                                                                     {% elif sample.top_5_values %}
-                                                                    Top features:
-                                                                    [{{ sample.top_5_values|map('round', 2)|join(', ') }}]
+                                                                    <strong>Top features:</strong>
+                                                                    <span style="color: #1a1a1a;">[{{ sample.top_5_values|map('round', 2)|join(', ') }}]</span>
                                                                     {% elif sample.sample_values %}
-                                                                    [{{ sample.sample_values|map('round', 4)|join(', ') }}]
+                                                                    <span style="color: #1a1a1a;">[{{ sample.sample_values|map('round', 4)|join(', ') }}]</span>
                                                                     {% elif sample.mean_attention is defined %}
-                                                                    Mean:
-                                                                    {{ "%.4f"|format(sample.mean_attention) }}
+                                                                    <strong>Mean:</strong>
+                                                                    <span style="color: #1a1a1a;">{{ "%.4f"|format(sample.mean_attention) }}</span>
                                                                     {% endif %}
                                                                 </div>
                                                                 {% endfor %}
@@ -1048,16 +1019,11 @@
 
                                                         <!-- Top Features for Pooling Step -->
                                                         {% if step.top_20_features %}
-                                                        <div class="mt-2">
-                                                            <strong class="small">Top 20 Features (highest
-                                                                values):</strong>
-                                                            <div class="p-2 bg-light rounded mt-2 small"
-                                                                style="max-height: 200px; overflow-y: auto;">
+                                                        <div class="mt-3">
+                                                            <strong class="small" style="color: #1a1a1a;">Top 20 Features (highest values):</strong>
+                                                            <div class="p-3 rounded mt-2 small" style="max-height: 200px; overflow-y: auto; background: rgba(237, 232, 220, 0.5); border: 1px solid rgba(165, 182, 141, 0.2);">
                                                                 {% for i in range(step.top_20_features['indices'][:10]|length) %}
-                                                                <div>Feature
-                                                                    {{ step.top_20_features['indices'][i] }}:
-                                                                    {{ "%.4f"|format(step.top_20_features['values'][i]) }}
-                                                                </div>
+                                                                <div style="color: #1a1a1a;">Feature {{ step.top_20_features['indices'][i] }}: <strong style="color: #5a7a4a;">{{ "%.4f"|format(step.top_20_features['values'][i]) }}</strong></div>
                                                                 {% endfor %}
                                                             </div>
                                                         </div>
@@ -1066,18 +1032,14 @@
                                                         <!-- Final Probabilities -->
                                                         {% if step.probabilities %}
                                                         <div class="mt-3">
-                                                            <strong class="small">Final Class Probabilities from YOUR
-                                                                Image:</strong>
+                                                            <strong class="small" style="color: #1a1a1a;">Final Class Probabilities from YOUR Image:</strong>
                                                             <div class="mt-2">
                                                                 {% for class_name, prob in step.probabilities.items() %}
                                                                 <div class="d-flex align-items-center mb-2">
-                                                                    <span class="small me-2"
-                                                                        style="width: 180px;">{{ class_name }}:</span>
-                                                                    <div class="progress flex-grow-1"
-                                                                        style="height: 20px;">
-                                                                        <div class="progress-bar {% if loop.index0 == result.class_id %}bg-success{% else %}bg-secondary{% endif %}"
-                                                                            style="width: {{ (prob * 100)|round(2) }}%">
-                                                                            {{ (prob * 100)|round(2) }}%
+                                                                    <span class="small me-2" style="width: 180px; color: #1a1a1a; font-weight: 600;">{{ class_name }}:</span>
+                                                                    <div class="progress flex-grow-1" style="height: 20px; background: rgba(237, 232, 220, 0.5);">
+                                                                        <div class="progress-bar" style="width: {{ (prob * 100)|round(2) }}%; background: {% if loop.index0 == result.class_id %}linear-gradient(135deg, #5a7a4a, #a5b68d){% else %}linear-gradient(135deg, #a5b68d, #c1cfa1){% endif %};">
+                                                                            <strong style="color: #1a1a1a;">{{ (prob * 100)|round(2) }}%</strong>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -1088,20 +1050,13 @@
 
                                                         <!-- Statistics -->
                                                         {% if step.statistics %}
-                                                        <div class="mt-3 p-2 bg-light rounded">
-                                                            <strong class="small">Statistics:</strong>
-                                                            <div class="small">
-                                                                Min:
-                                                                {{ "%.4f"|format(step.statistics.min) }}
-                                                                |
-                                                                Max:
-                                                                {{ "%.4f"|format(step.statistics.max) }}
-                                                                |
-                                                                Mean:
-                                                                {{ "%.4f"|format(step.statistics.mean) }}
-                                                                |
-                                                                Std:
-                                                                {{ "%.4f"|format(step.statistics.std) }}
+                                                        <div class="mt-3 p-3 rounded" style="background: rgba(237, 232, 220, 0.5); border: 1px solid rgba(165, 182, 141, 0.2);">
+                                                            <strong class="small" style="color: #1a1a1a;">Statistics:</strong>
+                                                            <div class="small" style="color: #1a1a1a;">
+                                                                <strong>Min:</strong> <span style="color: #5a7a4a;">{{ "%.4f"|format(step.statistics.min) }}</span> |
+                                                                <strong>Max:</strong> <span style="color: #5a7a4a;">{{ "%.4f"|format(step.statistics.max) }}</span> |
+                                                                <strong>Mean:</strong> <span style="color: #5a7a4a;">{{ "%.4f"|format(step.statistics.mean) }}</span> |
+                                                                <strong>Std:</strong> <span style="color: #5a7a4a;">{{ "%.4f"|format(step.statistics.std) }}</span>
                                                             </div>
                                                         </div>
                                                         {% endif %}
@@ -1109,12 +1064,12 @@
                                                 </div>
                                                 {% endfor %}
 
-                                                <div class="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-4 shadow-sm mt-6">
-                                                    <div class="flex items-start gap-3">
-                                                        <i class="fas fa-info-circle text-blue-600 text-xl"></i>
+                                                <div class="info-banner rounded-3 p-4 shadow-sm mt-4">
+                                                    <div class="d-flex align-items-start gap-3">
+                                                        <i class="fas fa-info-circle mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
                                                         <div>
-                                                            <strong class="text-sm font-bold text-gray-800 block mb-1">What you're seeing:</strong>
-                                                            <p class="text-sm text-gray-700 mb-0">
+                                                            <strong class="small d-block mb-2" style="color: #1a1a1a; font-weight: 700;">What you're seeing:</strong>
+                                                            <p class="small mb-0" style="color: #1a1a1a; line-height: 1.6;">
                                                                 These are the actual numerical values extracted from YOUR specific uploaded image.
                                                                 Each step shows how your image data is transformed - from raw pixel values to the
                                                                 final burn severity prediction. The numbers you see are unique to your image!

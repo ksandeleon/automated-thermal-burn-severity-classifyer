@@ -649,6 +649,21 @@
 }
 
 /* ========================================
+   TAB NAVIGATION - COMPUTATIONAL FLOW
+   ======================================== */
+
+/* Tab icons - green by default */
+#analysisTab .nav-link i {
+    color: var(--accent-1) !important;
+    transition: color 0.3s ease;
+}
+
+/* Tab icons - white when active */
+#analysisTab .nav-link.active i {
+    color: white !important;
+}
+
+/* ========================================
    SUMMARY TAB - COMPUTATIONAL STEPS
    ======================================== */
 

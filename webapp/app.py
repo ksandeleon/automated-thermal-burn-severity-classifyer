@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, Response, session
 import os
 from werkzeug.utils import secure_filename
-from model_utils import get_model_instance
+from webapp.model_utils import get_model_instance
 import uuid
 import json
 import threading

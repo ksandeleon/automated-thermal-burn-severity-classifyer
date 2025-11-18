@@ -98,9 +98,18 @@ def upload_file():
                         progress_callback=progress_callback
                     )
 
-                    if error:
+                    # Check for validation errors
+                    if error or (result and result.get('error') == 'INVALID_BURN_IMAGE'):
+                        error_message = error if error else result.get('message', 'Unknown error')
                         with progress_lock:
-                            progress_store[session_id] = convert_to_serializable({'step': f'Error: {error}', 'percent': 100, 'error': True})
+                            progress_store[session_id] = convert_to_serializable({
+                                'step': 'Validation failed',
+                                'percent': 100,
+                                'error': True,
+                                'error_type': 'INVALID_BURN_IMAGE',
+                                'error_message': error_message,
+                                'validation_details': result if result else None
+                            })
                         return
 
                     # Save Grad-CAM overlay

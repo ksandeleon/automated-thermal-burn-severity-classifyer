@@ -4,6 +4,7 @@ from PIL import Image
 import os
 import matplotlib.pyplot as plt
 import json
+import cv2
 
 class BurnClassifier:
     def __init__(self, model_path=None):
@@ -57,6 +58,182 @@ class BurnClassifier:
         except Exception as e:
             print(f"Error preprocessing image: {e}")
             return None
+
+    def _check_skin_color(self, image_array):
+        """
+        Check if image contains skin-like colors using HSV color space.
+
+        Args:
+            image_array: Preprocessed image array (1, 224, 224, 3) in [0, 255] range
+
+        Returns:
+            float: Percentage of pixels that are skin-colored (0.0 to 1.0)
+        """
+        try:
+            # Remove batch dimension and convert to uint8
+            img = image_array[0].astype(np.uint8)
+
+            # Convert RGB to HSV
+            hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+
+            # Define skin color range in HSV (multiple ranges for different skin tones)
+            # Range 1: Light skin tones
+            lower_skin1 = np.array([0, 20, 70], dtype=np.uint8)
+            upper_skin1 = np.array([20, 150, 255], dtype=np.uint8)
+
+            # Range 2: Darker skin tones
+            lower_skin2 = np.array([0, 15, 50], dtype=np.uint8)
+            upper_skin2 = np.array([25, 170, 255], dtype=np.uint8)
+
+            # Create masks
+            skin_mask1 = cv2.inRange(hsv, lower_skin1, upper_skin1)
+            skin_mask2 = cv2.inRange(hsv, lower_skin2, upper_skin2)
+
+            # Combine masks
+            skin_mask = cv2.bitwise_or(skin_mask1, skin_mask2)
+
+            # Calculate percentage of skin pixels
+            total_pixels = skin_mask.size
+            skin_pixels = np.sum(skin_mask > 0)
+            skin_percentage = skin_pixels / total_pixels
+
+            return skin_percentage
+
+        except Exception as e:
+            print(f"Error in skin color detection: {e}")
+            return 0.0
+
+    def _check_texture_entropy(self, image_array):
+        """
+        Analyze image texture using entropy.
+        Burns have specific texture characteristics.
+
+        Args:
+            image_array: Preprocessed image array (1, 224, 224, 3) in [0, 255] range
+
+        Returns:
+            float: Average entropy score
+        """
+        try:
+            # Remove batch dimension and convert to grayscale
+            img = image_array[0].astype(np.uint8)
+            gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+
+            # Calculate local entropy using a sliding window
+            from scipy.ndimage import generic_filter
+
+            def local_entropy(patch):
+                """Calculate entropy of a patch"""
+                patch = patch.astype(np.uint8)
+                # Create histogram
+                hist, _ = np.histogram(patch, bins=16, range=(0, 256))
+                # Normalize histogram to get probabilities
+                hist = hist / hist.sum()
+                # Remove zeros
+                hist = hist[hist > 0]
+                # Calculate entropy
+                entropy = -np.sum(hist * np.log2(hist))
+                return entropy
+
+            # Apply local entropy filter with 5x5 window
+            entropy_img = generic_filter(gray, local_entropy, size=5)
+            avg_entropy = np.mean(entropy_img)
+
+            return float(avg_entropy)
+
+        except Exception as e:
+            print(f"Error in texture entropy calculation: {e}")
+            # Return mid-range value if error occurs
+            return 4.0
+
+    def validate_burn_image(self, image_array, predictions):
+        """
+        Multi-gate validation system to detect if image is actually a burn.
+
+        Args:
+            image_array: Preprocessed image array
+            predictions: Model prediction probabilities
+
+        Returns:
+            tuple: (is_valid: bool, confidence: float, reason: str)
+        """
+        print("\n" + "="*80)
+        print("BURN IMAGE VALIDATION - Multi-Gate System")
+        print("="*80)
+
+        validation_gates = []
+
+        # GATE 1: Skin Color Detection
+        print("\nGate 1: Checking for skin-like colors...")
+        skin_percentage = self._check_skin_color(image_array)
+        print(f"  → Skin-like pixels: {skin_percentage*100:.1f}%")
+
+        if skin_percentage < 0.08:  # Less than 8% skin pixels
+            return False, 0.0, f"No skin detected ({skin_percentage*100:.1f}% skin-like pixels). Image does not appear to be a medical wound."
+        elif skin_percentage < 0.15:  # 8-15% is borderline
+            validation_gates.append(('skin_color', False, f"Low skin content ({skin_percentage*100:.1f}%)"))
+        else:
+            validation_gates.append(('skin_color', True, f"Skin detected ({skin_percentage*100:.1f}%)"))
+
+        # GATE 2: Prediction Confidence
+        print("\nGate 2: Analyzing prediction confidence...")
+        max_confidence = np.max(predictions[0])
+        print(f"  → Maximum confidence: {max_confidence*100:.1f}%")
+
+        if max_confidence < 0.50:  # Very low confidence
+            return False, max_confidence, f"Very low classification confidence ({max_confidence*100:.1f}%). Model cannot identify burn patterns in this image."
+        elif max_confidence < 0.65:  # Moderate confidence - flag as warning
+            validation_gates.append(('confidence', False, f"Moderate confidence ({max_confidence*100:.1f}%)"))
+        else:
+            validation_gates.append(('confidence', True, f"High confidence ({max_confidence*100:.1f}%)"))
+
+        # GATE 3: Prediction Distribution (Check for model confusion)
+        print("\nGate 3: Checking prediction distribution...")
+        confidence_std = np.std(predictions[0])
+        confidence_range = np.max(predictions[0]) - np.min(predictions[0])
+        print(f"  → Prediction std dev: {confidence_std:.4f}")
+        print(f"  → Prediction range: {confidence_range:.4f}")
+
+        if confidence_std < 0.03 and confidence_range < 0.15:  # All predictions very similar
+            return False, max_confidence, f"Model is uncertain - all burn classes have similar probabilities (std: {confidence_std:.4f}). Image likely not a burn."
+        elif confidence_std < 0.08:
+            validation_gates.append(('distribution', False, f"Low confidence spread (std: {confidence_std:.4f})"))
+        else:
+            validation_gates.append(('distribution', True, f"Clear prediction spread (std: {confidence_std:.4f})"))
+
+        # GATE 4: Texture Entropy
+        print("\nGate 4: Analyzing texture patterns...")
+        entropy_score = self._check_texture_entropy(image_array)
+        print(f"  → Texture entropy: {entropy_score:.2f}")
+
+        # Burns typically have entropy in range 2.5-6.5
+        if entropy_score < 1.5 or entropy_score > 7.5:
+            validation_gates.append(('texture', False, f"Unusual texture pattern (entropy: {entropy_score:.2f})"))
+        else:
+            validation_gates.append(('texture', True, f"Texture matches burn patterns (entropy: {entropy_score:.2f})"))
+
+        # FINAL DECISION: Count passed gates
+        print("\n" + "-"*80)
+        print("Validation Summary:")
+        passed_gates = sum(1 for _, passed, _ in validation_gates if passed)
+        total_gates = len(validation_gates)
+
+        for gate_name, passed, reason in validation_gates:
+            status = "✓ PASS" if passed else "✗ FAIL"
+            print(f"  {status} - {gate_name.upper()}: {reason}")
+
+        print(f"\nGates Passed: {passed_gates}/{total_gates}")
+        print("="*80 + "\n")
+
+        # Require at least 2 out of 4 gates to pass
+        if passed_gates < 2:
+            failed_reasons = [reason for _, passed, reason in validation_gates if not passed]
+            return False, max_confidence, f"Failed validation ({passed_gates}/{total_gates} gates passed). Reasons: {'; '.join(failed_reasons)}"
+
+        # Calculate overall confidence based on gates
+        validation_confidence = (passed_gates / total_gates) * max_confidence
+
+        return True, validation_confidence, f"Valid burn image ({passed_gates}/{total_gates} validation gates passed)"
 
     def gradcam(self, image_path, last_conv_layer_name='conv5_block3_out', pred_index=None, save_path=None):
         """Generate Grad-CAM heatmap and overlay for the given image."""
@@ -527,10 +704,33 @@ class BurnClassifier:
             # Make base prediction first
             report_progress("Running initial prediction...", 10)
             predictions = self.model.predict(img_array, verbose=0)
+
+            # VALIDATE IF IMAGE IS ACTUALLY A BURN
+            report_progress("Validating image type...", 12)
+            is_valid, validation_conf, validation_reason = self.validate_burn_image(img_array, predictions)
+
+            if not is_valid:
+                # Return error result for invalid images
+                return {
+                    'error': 'INVALID_BURN_IMAGE',
+                    'message': validation_reason,
+                    'is_valid_burn': False,
+                    'validation_confidence': float(validation_conf),
+                    'validation_reason': validation_reason,
+                    # Still include predictions for transparency
+                    'raw_predictions': {
+                        self.class_names[i]: float(predictions[0][i])
+                        for i in range(len(self.class_names))
+                    }
+                }, f"Invalid image: {validation_reason}"
+
+            # Image validated - proceed with normal classification
+            report_progress("Image validated - analyzing burn severity...", 15)
+
             predicted_class = np.argmax(predictions[0])
             confidence = float(predictions[0][predicted_class])
 
-            report_progress("Processing prediction results...", 15)
+            report_progress("Processing prediction results...", 20)
             result = {
                 'predicted_class': self.class_names[predicted_class],
                 'class_id': int(predicted_class),
@@ -538,7 +738,11 @@ class BurnClassifier:
                 'all_probabilities': {
                     self.class_names[i]: float(predictions[0][i])
                     for i in range(len(self.class_names))
-                }
+                },
+                # Add validation results
+                'is_valid_burn': True,
+                'validation_confidence': float(validation_conf),
+                'validation_reason': validation_reason
             }
 
             if with_gradcam:

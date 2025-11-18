@@ -930,7 +930,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (modalInstance) {
                         modalInstance.hide();
                     }
-                    showAlert(data.step || 'An error occurred during analysis', 'error');
+
+                    // Check if it's a validation error (invalid burn image)
+                    if (data.error_type === 'INVALID_BURN_IMAGE') {
+                        showValidationError(data.error_message, data.validation_details);
+                    } else {
+                        showAlert(data.step || 'An error occurred during analysis', 'error');
+                    }
 
                 } else if (percent >= 100 && data.step === 'Complete') {
                     console.log('DEBUG: Analysis complete, setting fallback redirect...');
@@ -1519,6 +1525,79 @@ class CameraManager {
         }, 5000);
     }
 }
+
+// Function to show validation error for non-burn images
+function showValidationError(message, validationDetails) {
+    console.log('DEBUG: Showing validation error:', message);
+
+    // Create a styled error alert
+    const errorHTML = `
+        <div class="alert alert-warning alert-dismissible fade show shadow-lg" role="alert" style="margin: 20px; border-left: 5px solid #dc3545;">
+            <div class="d-flex align-items-start gap-3">
+                <div style="font-size: 2.5rem; color: #dc3545;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h4 class="alert-heading mb-3">
+                        <i class="fas fa-times-circle me-2"></i>
+                        Invalid Image Detected
+                    </h4>
+                    <p class="mb-3"><strong>${message}</strong></p>
+                    <hr>
+                    <div class="mb-3">
+                        <h6 class="fw-bold">Why was this image rejected?</h6>
+                        <p class="mb-2">Our AI system uses multiple validation checks to ensure only burn wound images are analyzed:</p>
+                        <ul class="small">
+                            <li>Skin color detection (HSV analysis)</li>
+                            <li>Prediction confidence thresholds</li>
+                            <li>Texture pattern analysis</li>
+                            <li>Classification certainty checks</li>
+                        </ul>
+                    </div>
+
+                    ${validationDetails && validationDetails.raw_predictions ? `
+                    <div class="mb-3">
+                        <h6 class="fw-bold">For Transparency - Raw Model Output:</h6>
+                        <div class="small" style="font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                            ${Object.entries(validationDetails.raw_predictions).map(([className, prob]) =>
+                                `${className}: ${(prob * 100).toFixed(1)}%`
+                            ).join('<br>')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div class="alert alert-info small mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>Please upload an image of a thermal burn wound.</strong> The system is designed to classify burn severity and cannot analyze non-medical images.
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+
+    // Find the upload area and insert the error message
+    const uploadArea = document.getElementById('uploadArea');
+    if (uploadArea) {
+        // Remove any existing validation errors
+        const existingErrors = document.querySelectorAll('.alert-warning');
+        existingErrors.forEach(err => err.remove());
+
+        // Insert the new error at the top
+        uploadArea.insertAdjacentHTML('beforebegin', errorHTML);
+
+        // Scroll to the error
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Reset the upload form
+    if (typeof hidePreview === 'function') {
+        hidePreview();
+    }
+}
+
+// Expose the function globally
+window.showValidationError = showValidationError;
 
 // Initialize camera manager when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {

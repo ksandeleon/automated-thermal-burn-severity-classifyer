@@ -68,6 +68,10 @@ def upload_file():
         filename = str(uuid.uuid4()) + '.' + file.filename.rsplit('.', 1)[1].lower()
         session_id = str(uuid.uuid4())
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        
+        # Get XAI toggle state
+        xai_enabled = request.form.get('xai_enabled', 'false') == 'true'
+        print(f"DEBUG: XAI Enabled: {xai_enabled}")
 
         try:
             print("DEBUG: Received upload request")
@@ -90,11 +94,11 @@ def upload_file():
                     model = get_model_instance()
                     result, error = model.predict(
                         filepath,
-                        with_gradcam=True,
-                        with_computational_flow=True,
-                        detailed_analysis=True,
-                        show_concrete_math=True,
-                        trace_image=True,
+                        with_gradcam=xai_enabled,
+                        with_computational_flow=xai_enabled,
+                        detailed_analysis=xai_enabled,
+                        show_concrete_math=xai_enabled,
+                        trace_image=xai_enabled,
                         progress_callback=progress_callback
                     )
 
@@ -185,11 +189,19 @@ def show_result(session_id):
         flash('Results not found or analysis not complete')
         return redirect(url_for('index'))
 
+    # Check if overlay file exists
+    overlay_filename = session_data.get("overlay_filename")
+    has_overlay = False
+    if overlay_filename:
+        overlay_full_path = os.path.join(app.config['UPLOAD_FOLDER'], overlay_filename)
+        has_overlay = os.path.exists(overlay_full_path)
+
     return render_template('result.html',
                          result=session_data['result'],
                          computational_data=session_data.get('computational_data', {}),
                          image_path=url_for('static', filename=f'uploads/{session_data["image_filename"]}'),
-                         overlay_path=url_for('static', filename=f'uploads/{session_data["overlay_filename"]}'))
+                         overlay_path=url_for('static', filename=f'uploads/{overlay_filename}') if overlay_filename else None,
+                         has_overlay=has_overlay)
 
 @app.route('/api/predict', methods=['POST'])
 def api_predict():

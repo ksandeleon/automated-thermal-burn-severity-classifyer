@@ -164,6 +164,7 @@
                         <!-- Debug & Computational Analysis Toggle -->
                         <div class="mb-4 d-flex justify-content-end align-items-center gap-3 flex-wrap"
                             style="min-width:220px;">
+                            {% if has_overlay %}
                             <span class="fw-semibold text-dark d-flex align-items-center gap-2"
                                 style="font-size:1.05rem;">
                                 <i class="fas fa-eye text-muted"></i> Attention Map
@@ -172,6 +173,7 @@
                                 <input type="checkbox" id="debugToggle" class="form-check-input debug-switch"
                                     style="width:2.5em;height:1.5em;cursor:pointer;vertical-align:middle;">
                             </div>
+                            {% endif %}
 
                             {% if computational_data %}
                             <span class="fw-semibold text-dark d-flex align-items-center gap-2"
@@ -1489,17 +1491,20 @@
         });
 
         // Toggle for Attention Map (Grad-CAM)
-        document.getElementById('debugToggle').addEventListener('change', function () {
-            const debugInfo = document.getElementById('debugInfo');
-            const gradcamSection = document.getElementById('gradcamSection');
-            if (this.checked) {
-                if (debugInfo) debugInfo.style.display = '';
-                if (gradcamSection) gradcamSection.style.display = '';
-            } else {
-                if (debugInfo) debugInfo.style.display = 'none';
-                if (gradcamSection) gradcamSection.style.display = 'none';
-            }
-        });
+        const debugToggle = document.getElementById('debugToggle');
+        if (debugToggle) {
+            debugToggle.addEventListener('change', function () {
+                const debugInfo = document.getElementById('debugInfo');
+                const gradcamSection = document.getElementById('gradcamSection');
+                if (this.checked) {
+                    if (debugInfo) debugInfo.style.display = '';
+                    if (gradcamSection) gradcamSection.style.display = '';
+                } else {
+                    if (debugInfo) debugInfo.style.display = 'none';
+                    if (gradcamSection) gradcamSection.style.display = 'none';
+                }
+            });
+        }
 
         // Toggle for Computational Flow
         {% if computational_data %}

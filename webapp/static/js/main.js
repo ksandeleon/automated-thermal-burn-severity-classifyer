@@ -14,6 +14,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const galleryChoice = document.getElementById('galleryChoice');
     const closePreviewBtn = document.getElementById('closePreviewBtn');
     const retryBtn = document.getElementById('retryBtn');
+    const xaiToggle = document.getElementById('xaiToggle');
+    const xaiEnabledInput = document.getElementById('xaiEnabledInput');
+
+    // XAI Toggle Handler
+    if (xaiToggle && xaiEnabledInput) {
+        xaiToggle.addEventListener('change', function() {
+            xaiEnabledInput.value = this.checked ? 'true' : 'false';
+            console.log('DEBUG: XAI Toggle changed to:', this.checked);
+        });
+    }
 
     // Track the source of the current image ('gallery' or 'camera')
     let imageSource = null;
@@ -27,13 +37,13 @@ document.addEventListener('DOMContentLoaded', function() {
         imageDimensions: !!imageDimensions
     });
 
-    // Gallery Choice Handler - THIS IS THE KEY FEATURE
-    if (galleryChoice && galleryInput) {
-        galleryChoice.addEventListener('click', function() {
-            console.log('DEBUG: Gallery choice clicked');
-            galleryInput.click();
-        });
-    }
+    // Gallery Choice Handler - Handled by CameraManager now
+    // if (galleryChoice && galleryInput) {
+    //     galleryChoice.addEventListener('click', function() {
+    //         console.log('DEBUG: Gallery choice clicked');
+    //         galleryInput.click();
+    //     });
+    // }
 
     // Handle gallery input change
     if (galleryInput) {
@@ -1598,11 +1608,3 @@ function showValidationError(message, validationDetails) {
 
 // Expose the function globally
 window.showValidationError = showValidationError;
-
-// Initialize camera manager when DOM is ready
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize camera manager
-    window.cameraManager = new CameraManager();
-
-    // ...existing code...
-});

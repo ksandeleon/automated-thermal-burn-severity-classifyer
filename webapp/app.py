@@ -68,7 +68,7 @@ def upload_file():
         filename = str(uuid.uuid4()) + '.' + file.filename.rsplit('.', 1)[1].lower()
         session_id = str(uuid.uuid4())
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        
+
         # Get XAI toggle state
         xai_enabled = request.form.get('xai_enabled', 'false') == 'true'
         print(f"DEBUG: XAI Enabled: {xai_enabled}")

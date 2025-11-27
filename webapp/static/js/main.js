@@ -22,6 +22,12 @@ document.addEventListener('DOMContentLoaded', function() {
         xaiToggle.addEventListener('change', function() {
             xaiEnabledInput.value = this.checked ? 'true' : 'false';
             console.log('DEBUG: XAI Toggle changed to:', this.checked);
+
+            if (this.checked) {
+                showNotification('Enabled Explainable AI (Deep Dive Analysis)', 'success');
+            } else {
+                showNotification('Disabled Explainable AI', 'info');
+            }
         });
     }
 

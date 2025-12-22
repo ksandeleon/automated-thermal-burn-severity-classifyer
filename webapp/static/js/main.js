@@ -1,4 +1,39 @@
+// ============================================================================
+// Service Worker Registration (PWA Support)
+// ============================================================================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+            .then((registration) => {
+                // Check for updates periodically
+                setInterval(() => {
+                    registration.update();
+                }, 60000); // Check every minute
+
+                // Handle updates
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // New service worker available, notify user
+                            if (confirm('New version available! Reload to update?')) {
+                                window.location.reload();
+                            }
+                        }
+                    });
+                });
+            })
+            .catch((error) => {
+                console.error('Service Worker registration failed:', error);
+            });
+    });
+}
+
+
+
+// ============================================================================
 // Enhanced JavaScript for Professional Burn Classifier with Camera Support
+// ============================================================================
 document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('file');
     const galleryInput = document.getElementById('galleryInput');

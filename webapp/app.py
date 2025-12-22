@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, Response, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, Response, session, send_from_directory
 import os
 from werkzeug.utils import secure_filename
 from model_utils import get_model_instance
@@ -45,10 +45,31 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+# ============================================================================
+# PWA Routes
+# ============================================================================
+@app.route('/manifest.json')
+def serve_manifest():
+    """Serve PWA manifest with correct MIME type"""
+    return send_from_directory('static', 'manifest.json', mimetype='application/manifest+json')
+
+@app.route('/service-worker.js')
+def serve_service_worker():
+    """Serve service worker with correct MIME type"""
+    return send_from_directory('static', 'service-worker.js', mimetype='application/javascript')
+
+# ============================================================================
+# Main Routes
+# ============================================================================
 @app.route('/')
 def index():
     """Home page with upload form"""
     return render_template('index.html')
+
+@app.route('/pwa-check')
+def pwa_check():
+    """PWA status check page"""
+    return render_template('pwa-check.html')
 
 @app.route('/upload', methods=['POST'])
 def upload_file():

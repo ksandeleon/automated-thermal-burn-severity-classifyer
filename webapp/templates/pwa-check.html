@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PWA Status Check</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .status-box {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .success { color: #28a745; }
+        .warning { color: #ffc107; }
+        .error { color: #dc3545; }
+        .code {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 PWA Status Check</h1>
+
+    <div class="status-box" id="displayMode">
+        <h3>Display Mode</h3>
+        <div id="displayResult">Checking...</div>
+    </div>
+
+    <div class="status-box" id="serviceWorker">
+        <h3>Service Worker</h3>
+        <div id="swResult">Checking...</div>
+    </div>
+
+    <div class="status-box" id="manifest">
+        <h3>Manifest</h3>
+        <div id="manifestResult">Checking...</div>
+    </div>
+
+    <div class="status-box">
+        <h3>Browser Info</h3>
+        <div class="code" id="browserInfo"></div>
+    </div>
+
+    <div class="status-box">
+        <h3>Installation Instructions</h3>
+        <p id="instructions"></p>
+    </div>
+
+    <script>
+        // Check display mode
+        function checkDisplayMode() {
+            const standalone = window.matchMedia('(display-mode: standalone)').matches;
+            const fullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
+            const iosStandalone = window.navigator.standalone === true;
+
+            const isPWA = standalone || fullscreen || iosStandalone;
+
+            const result = document.getElementById('displayResult');
+            if (isPWA) {
+                result.innerHTML = '<span class="success">✅ Running as PWA!</span><br>Display mode: standalone';
+            } else {
+                result.innerHTML = '<span class="warning">⚠️ Running in browser</span><br>Not installed as PWA yet';
+            }
+        }
+
+        // Check service worker
+        function checkServiceWorker() {
+            const result = document.getElementById('swResult');
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(reg => {
+                    if (reg) {
+                        result.innerHTML = '<span class="success">✅ Service Worker registered</span><br>Scope: ' + reg.scope;
+                    } else {
+                        result.innerHTML = '<span class="warning">⚠️ Service Worker not registered</span><br>May need page reload';
+                    }
+                }).catch(err => {
+                    result.innerHTML = '<span class="error">❌ Error: ' + err.message + '</span>';
+                });
+            } else {
+                result.innerHTML = '<span class="error">❌ Service Workers not supported</span>';
+            }
+        }
+
+        // Check manifest
+        function checkManifest() {
+            const result = document.getElementById('manifestResult');
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+
+            if (manifestLink) {
+                fetch(manifestLink.href)
+                    .then(res => res.json())
+                    .then(manifest => {
+                        result.innerHTML = '<span class="success">✅ Manifest loaded</span><br>' +
+                            'Name: ' + manifest.name + '<br>' +
+                            'Display: ' + manifest.display;
+                    })
+                    .catch(err => {
+                        result.innerHTML = '<span class="error">❌ Manifest error: ' + err.message + '</span>';
+                    });
+            } else {
+                result.innerHTML = '<span class="error">❌ No manifest link found</span>';
+            }
+        }
+
+        // Browser info
+        function showBrowserInfo() {
+            const info = document.getElementById('browserInfo');
+            const ua = navigator.userAgent;
+            const isAndroid = /Android/.test(ua);
+            const isIOS = /iPhone|iPad|iPod/.test(ua);
+            const isChrome = /Chrome/.test(ua) && !/Edge/.test(ua);
+            const isSafari = /Safari/.test(ua) && !/Chrome/.test(ua);
+
+            info.innerHTML =
+                'User Agent: ' + ua + '<br><br>' +
+                'Platform: ' + navigator.platform + '<br>' +
+                'Android: ' + isAndroid + '<br>' +
+                'iOS: ' + isIOS + '<br>' +
+                'Chrome: ' + isChrome + '<br>' +
+                'Safari: ' + isSafari;
+        }
+
+        // Instructions
+        function showInstructions() {
+            const instDiv = document.getElementById('instructions');
+            const ua = navigator.userAgent;
+            const isAndroid = /Android/.test(ua);
+            const isIOS = /iPhone|iPad|iPod/.test(ua);
+            const isChrome = /Chrome/.test(ua) && !/Edge/.test(ua);
+
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+                instDiv.innerHTML = '<span class="success">✅ Already installed as PWA!</span>';
+            } else if (isAndroid && isChrome) {
+                instDiv.innerHTML =
+                    '<strong>Android Chrome:</strong><br>' +
+                    '1. Look for install icon (⊕) in address bar<br>' +
+                    '2. OR wait for install banner<br>' +
+                    '3. Tap "Install"<br>' +
+                    '4. Open from home screen';
+            } else if (isIOS) {
+                instDiv.innerHTML =
+                    '<strong>iOS Safari:</strong><br>' +
+                    '1. Tap Share button (□↑)<br>' +
+                    '2. Scroll down<br>' +
+                    '3. Tap "Add to Home Screen"<br>' +
+                    '4. Tap "Add"<br>' +
+                    '<em>Note: iOS will show minimal UI (normal)</em>';
+            } else {
+                instDiv.innerHTML =
+                    '<strong>Desktop Chrome:</strong><br>' +
+                    '1. Look for install icon in address bar<br>' +
+                    '2. Click to install<br>' +
+                    '<br><strong>Other browsers:</strong><br>' +
+                    'Use Chrome for best PWA support';
+            }
+        }
+
+        // Run all checks
+        window.addEventListener('load', () => {
+            checkDisplayMode();
+            checkServiceWorker();
+            checkManifest();
+            showBrowserInfo();
+            showInstructions();
+        });
+    </script>
+</body>
+</html>

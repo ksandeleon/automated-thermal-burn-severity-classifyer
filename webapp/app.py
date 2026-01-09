@@ -135,14 +135,24 @@ def upload_file():
                             })
                         return
 
-                    # Save Grad-CAM overlay
-                    gradcam_overlay = result.get('gradcam_overlay')
+                    # Save segmentation visualizations (3 versions)
+                    import cv2
+
+                    # 1. Overlay (mask + original + boxes)
+                    overlay_img = result.get('segmentation_overlay')
                     overlay_filename = 'overlay_' + filename
                     overlay_path = os.path.join(app.config['UPLOAD_FOLDER'], overlay_filename)
+                    if overlay_img is not None:
+                        cv2.imwrite(overlay_path, overlay_img)
 
-                    if gradcam_overlay is not None:
-                        import cv2
-                        cv2.imwrite(overlay_path, gradcam_overlay)
+                    # 2. Mask only (colored masks on black background)
+                    mask_only_img = result.get('segmentation_mask_only')
+                    mask_only_filename = 'mask_only_' + filename
+                    mask_only_path = os.path.join(app.config['UPLOAD_FOLDER'], mask_only_filename)
+                    if mask_only_img is not None:
+                        cv2.imwrite(mask_only_path, mask_only_img)
+
+                    # 3. Original is already saved as 'filename'
 
                     # Store result in session
                     template_result = convert_to_serializable({
@@ -171,6 +181,7 @@ def upload_file():
                             'computational_data': computational_data,
                             'image_filename': filename,
                             'overlay_filename': overlay_filename,
+                            'mask_only_filename': mask_only_filename,
                             'session_id': session_id  # Store session_id so frontend can build URL
                         })
 
@@ -208,19 +219,28 @@ def show_result(session_id):
         flash('Results not found or analysis not complete')
         return redirect(url_for('index'))
 
-    # Check if overlay file exists
+    # Check if overlay and mask files exist
     overlay_filename = session_data.get("overlay_filename")
+    mask_only_filename = session_data.get("mask_only_filename")
     has_overlay = False
+    has_mask_only = False
+
     if overlay_filename:
         overlay_full_path = os.path.join(app.config['UPLOAD_FOLDER'], overlay_filename)
         has_overlay = os.path.exists(overlay_full_path)
+
+    if mask_only_filename:
+        mask_only_full_path = os.path.join(app.config['UPLOAD_FOLDER'], mask_only_filename)
+        has_mask_only = os.path.exists(mask_only_full_path)
 
     return render_template('result.html',
                          result=session_data['result'],
                          computational_data=session_data.get('computational_data', {}),
                          image_path=url_for('static', filename=f'uploads/{session_data["image_filename"]}'),
                          overlay_path=url_for('static', filename=f'uploads/{overlay_filename}') if overlay_filename else None,
-                         has_overlay=has_overlay)
+                         mask_only_path=url_for('static', filename=f'uploads/{mask_only_filename}') if mask_only_filename else None,
+                         has_overlay=has_overlay,
+                         has_mask_only=has_mask_only)
 
 @app.route('/api/predict', methods=['POST'])
 def api_predict():

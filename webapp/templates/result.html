@@ -164,10 +164,10 @@
             <div class="shape shape-4"></div>
         </div>
     </div>
-    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-3 py-md-5 px-2 px-sm-3">
-        <div class="row w-100 justify-content-center">
-            <div class="col-xl-8 col-lg-10 col-md-11 col-12">
-                <div class="main-card shadow-lg">
+    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-3 py-md-5 px-0 px-sm-3">
+        <div class="row w-100 justify-content-center m-0">
+            <div class="col-xl-8 col-lg-10 col-md-11 col-12 px-0 px-sm-2">
+                <div class="main-card shadow-lg border-0-mobile">
                     <!-- Header Section -->
                     <div class="card-header-custom text-center">
                         <div class="header-icon mb-3">
@@ -205,19 +205,67 @@
                             {% endif %}
                         </div>
                         <div class="row g-4">
-                            <!-- Image Display -->
+                            <!-- Image Display with Toggle -->
                             <div class="col-md-6">
-                                <h5 class="section-title mb-3">
-                                    <i class="fas fa-image me-2"></i>Analyzed Image
-                                </h5>
-                                <div class="preview-container mx-auto" style="max-width:400px;">
-                                    <img src="{{ image_path }}" alt="Uploaded burn image" class="preview-image">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h5 class="section-title mb-0">
+                                        <i class="fas fa-image me-2"></i><span id="imageViewLabel">Original Image</span>
+                                    </h5>
+
+                                    {% if has_overlay and has_mask_only %}
+                                    <div class="btn-group btn-group-sm" role="group" aria-label="Image view toggle">
+                                        <button type="button" class="btn btn-outline-secondary active" id="btnOriginal" onclick="switchView('original')">
+                                            <i class="fas fa-image me-1"></i>Original
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" id="btnMask" onclick="switchView('mask')">
+                                            <i class="fas fa-layer-group me-1"></i>Mask Only
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary" id="btnOverlay" onclick="switchView('overlay')">
+                                            <i class="fas fa-object-group me-1"></i>Overlay
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="preview-container mx-auto position-relative" style="max-width:400px;">
+                                    <!-- Original Image -->
+                                    <img src="{{ image_path }}"
+                                         alt="Original burn image"
+                                         class="preview-image"
+                                         id="imgOriginal"
+                                         style="display: block;">
+
+                                    <!-- Mask Only View -->
+                                    {% if has_mask_only %}
+                                    <img src="{{ mask_only_path }}"
+                                         alt="Segmentation mask only"
+                                         class="preview-image"
+                                         id="imgMask"
+                                         style="display: none;">
+                                    {% endif %}
+
+                                    <!-- Overlay View -->
+                                    {% if has_overlay %}
+                                    <img src="{{ overlay_path }}"
+                                         alt="Segmentation overlay"
+                                         class="preview-image"
+                                         id="imgOverlay"
+                                         style="display: none;">
+                                    {% endif %}
+
+                                    <!-- View description -->
+                                    <div class="mt-2 text-center">
+                                        <small class="text-muted" id="viewDescription">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            <span id="viewDescText">Uploaded image without processing</span>
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Results -->
                             <div class="col-md-6">
                                 <h5 class="section-title mb-3">
-                                    <i class="fas fa-brain me-2"></i>Classification Result
+                                    Classification Result
                                 </h5>
                                 <div class="result-card card mb-4 p-3 border-0 shadow-sm">
                                     <div class="text-center mb-3">
@@ -1594,6 +1642,67 @@
                     attributeFilter: ['style']
                 });
             });
+        });
+
+        // Image view toggle functionality
+        function switchView(view) {
+            // Get all image elements
+            const imgOriginal = document.getElementById('imgOriginal');
+            const imgMask = document.getElementById('imgMask');
+            const imgOverlay = document.getElementById('imgOverlay');
+
+            // Get all buttons
+            const btnOriginal = document.getElementById('btnOriginal');
+            const btnMask = document.getElementById('btnMask');
+            const btnOverlay = document.getElementById('btnOverlay');
+
+            // Get labels
+            const viewLabel = document.getElementById('imageViewLabel');
+            const viewDescText = document.getElementById('viewDescText');
+
+            // Hide all images
+            if (imgOriginal) imgOriginal.style.display = 'none';
+            if (imgMask) imgMask.style.display = 'none';
+            if (imgOverlay) imgOverlay.style.display = 'none';
+
+            // Remove active class from all buttons
+            if (btnOriginal) btnOriginal.classList.remove('active');
+            if (btnMask) btnMask.classList.remove('active');
+            if (btnOverlay) btnOverlay.classList.remove('active');
+
+            // Show selected view
+            switch(view) {
+                case 'original':
+                    if (imgOriginal) imgOriginal.style.display = 'block';
+                    if (btnOriginal) btnOriginal.classList.add('active');
+                    if (viewLabel) viewLabel.textContent = 'Original Image';
+                    if (viewDescText) viewDescText.textContent = 'Uploaded image without processing';
+                    break;
+
+                case 'mask':
+                    if (imgMask) imgMask.style.display = 'block';
+                    if (btnMask) btnMask.classList.add('active');
+                    if (viewLabel) viewLabel.textContent = 'Mask Only';
+                    if (viewDescText) viewDescText.textContent = 'Pure segmentation mask showing burn regions';
+                    break;
+
+                case 'overlay':
+                    if (imgOverlay) imgOverlay.style.display = 'block';
+                    if (btnOverlay) btnOverlay.classList.add('active');
+                    if (viewLabel) viewLabel.textContent = 'Overlay View';
+                    if (viewDescText) viewDescText.textContent = 'Segmentation mask overlaid on original image';
+                    break;
+            }
+        }
+
+        // Keyboard navigation for accessibility
+        document.addEventListener('keydown', function(event) {
+            const hasToggle = document.getElementById('btnOriginal');
+            if (!hasToggle) return;
+
+            if (event.key === '1') switchView('original');
+            else if (event.key === '2') switchView('mask');
+            else if (event.key === '3') switchView('overlay');
         });
     </script>
 </body>

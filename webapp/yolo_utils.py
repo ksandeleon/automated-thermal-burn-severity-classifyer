@@ -216,10 +216,16 @@ class YOLOBurnClassifier:
                 else:
                     result_dict['masks'].append(None)
 
-            # Generate segmentation overlay (replaces Grad-CAM)
+            # Generate segmentation visualizations (3 versions) - ALWAYS generate for toggle feature
+            # Generate all three visualizations
+            overlay_img, mask_only_img = self._generate_segmentation_visualizations(image, result)
+            result_dict['segmentation_overlay'] = overlay_img
+            result_dict['segmentation_mask_only'] = mask_only_img
+            result_dict['segmentation_original'] = image.copy()
+
+            # Keep backward compatibility
             if with_gradcam:
-                overlay = self._generate_segmentation_overlay(image, result)
-                result_dict['gradcam_overlay'] = overlay
+                result_dict['gradcam_overlay'] = overlay_img
 
             # Add computational flow (if requested)
             if with_computational_flow:
@@ -249,18 +255,24 @@ class YOLOBurnClassifier:
             traceback.print_exc()
             return None, f"Prediction error: {str(e)}"
 
-    def _generate_segmentation_overlay(self, image, result):
+    def _generate_segmentation_visualizations(self, image, result):
         """
-        Generate segmentation mask overlay visualization
-        Similar to Grad-CAM but shows actual segmentation masks
+        Generate segmentation visualizations:
+        1. Overlay: masks blended with original image + boxes + labels
+        2. Mask Only: colored masks on black background
+
+        Returns:
+            tuple: (overlay_image, mask_only_image)
         """
         overlay = image.copy()
+        mask_only = np.zeros_like(image)  # Black background for mask-only view
 
-        # Color map for each burn class
+        # Color map for each burn class (BGR format for OpenCV)
         colors = {
-            0: (255, 200, 100),  # Light blue-ish for First Degree
-            1: (100, 200, 255),  # Orange for Second Degree
-            2: (100, 100, 255)   # Red for Third Degree
+            0: (100, 200, 255),  # Light orange for First Degree
+            1: (50, 150, 255),   # Orange for Second Degree
+            2: (50, 50, 255),    # Red for Third Degree
+            3: (0, 0, 139)       # Dark red for Fourth Degree
         }
 
         # Draw segmentation masks
@@ -274,29 +286,60 @@ class YOLOBurnClassifier:
 
                 # Resize mask to image size
                 mask_resized = cv2.resize(mask, (image.shape[1], image.shape[0]))
+                mask_binary = mask_resized > 0.5
 
                 # Create colored mask
                 colored_mask = np.zeros_like(image)
-                colored_mask[mask_resized > 0.5] = color
+                colored_mask[mask_binary] = color
 
-                # Blend with original image
+                # Blend with original image for overlay
                 overlay = cv2.addWeighted(overlay, 0.7, colored_mask, 0.3, 0)
 
-        # Draw bounding boxes
+                # Add to mask-only view with full opacity
+                mask_only[mask_binary] = color
+
+        # Draw bounding boxes and labels on overlay
         for box in result.boxes:
             class_id = int(box.cls[0])
             conf = float(box.conf[0])
             x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
 
             color = colors.get(class_id, (255, 255, 255))
+
+            # Draw box on overlay
             cv2.rectangle(overlay, (x1, y1), (x2, y2), color, 2)
 
-            # Add label
+            # Add label on overlay
             label = f"{self.class_names[class_id]}: {conf:.2f}"
-            cv2.putText(overlay, label, (x1, y1 - 10),
-                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-        return overlay
+            # Get text size for background rectangle
+            (text_width, text_height), baseline = cv2.getTextSize(
+                label, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 2
+            )
+
+            # Draw label background
+            cv2.rectangle(
+                overlay,
+                (x1, y1 - text_height - 10),
+                (x1 + text_width + 10, y1),
+                color,
+                -1
+            )
+
+            # Draw label text
+            cv2.putText(
+                overlay, label,
+                (x1 + 5, y1 - 5),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.6,
+                (255, 255, 255),  # White text
+                2
+            )
+
+            # Draw box on mask-only (thinner, for reference)
+            cv2.rectangle(mask_only, (x1, y1), (x2, y2), color, 1)
+
+        return overlay, mask_only
 
     def _generate_computational_flow(self, result_dict):
         """Generate computational flow information"""

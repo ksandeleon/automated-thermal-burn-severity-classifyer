@@ -22,8 +22,8 @@ class RealtimeSegmentation {
 
         // Brightness detection
         this.frameCount = 0;
-        this.brightnessCheckInterval = 8; // Check every 8 frames (~4 FPS at 2 FPS processing)
-        this.brightnessThreshold = 50; // Below this = too dark (0-255 scale)
+        this.brightnessCheckInterval = 8;
+        this.brightnessThreshold = 50; 
         this.brightnessWarningShown = false;
 
         // Guidance text fade timer
@@ -79,7 +79,7 @@ class RealtimeSegmentation {
 
                 <!-- Brightness Warning Toast -->
                 <div class="brightness-warning d-none" id="brightnessWarning">
-                    <span>Lighting too low! Pleasemove to a brighter area</span>
+                    <span>Lighting too low! Please move to a brighter area</span>
                 </div>
 
                 <div class="realtime-stats">

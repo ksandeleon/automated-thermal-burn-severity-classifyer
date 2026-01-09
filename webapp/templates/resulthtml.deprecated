@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#a5b68d">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='icons/icon-152x152.png') }}">
+    <link rel="apple-touch-icon" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+    <link rel="apple-touch-icon" sizes="512x512" href="{{ url_for('static', filename='icons/icon-512x512.png') }}">
+
+    <!-- Apple Web App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Burn Classifier">
+
+    <!-- Standard Favicon -->
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192x192.png') }}">
+
+    <title>Classification Result - Skin Burn Classifier</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/result-style.css') }}">
+    <style>
+        .equation-box {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            border-left: 4px solid var(--accent-1);
+        }
+
+        .equation-box code {
+            color: #0f5132;
+            background: transparent;
+            padding: 0;
+        }
+
+        .math-flow .card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .math-flow .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Custom Tab Styling with Your Theme */
+        #analysisTab .nav-link {
+            color: var(--text-dark);
+            background: transparent;
+        }
+
+        #analysisTab .nav-link:hover {
+            background: rgba(165, 182, 141, 0.1);
+            border-color: var(--accent-1) !important;
+        }
+
+        #analysisTab .nav-link.active {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            color: white !important;
+            border-color: var(--accent-1) !important;
+        }
+
+        #analysisTab .nav-link i {
+            transition: transform 0.3s ease;
+        }
+
+        #analysisTab .nav-link:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Step Cards with Your Theme */
+        .step-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid rgba(165, 182, 141, 0.2);
+        }
+
+        .step-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(165, 182, 141, 0.2);
+            border-color: var(--accent-1);
+        }
+
+        /* Code Blocks with Your Theme */
+        .code-block {
+            background: linear-gradient(135deg, #3a4a3a 0%, #2c3b2c 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Stat Badges with Your Theme */
+        .stat-badge {
+            background: linear-gradient(135deg, rgba(237, 232, 220, 0.5) 0%, rgba(255, 255, 255, 0.5) 100%);
+            border: 1px solid rgba(165, 182, 141, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-badge:hover {
+            background: linear-gradient(135deg, rgba(165, 182, 141, 0.2) 0%, rgba(193, 207, 161, 0.2) 100%);
+            transform: scale(1.02);
+            border-color: var(--accent-1);
+        }
+
+        /* Slide-in Animation */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-in {
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        /* Info Banners with Your Theme */
+        .info-banner {
+            background: linear-gradient(135deg, rgba(165, 182, 141, 0.1) 0%, rgba(193, 207, 161, 0.1) 100%);
+            border-left: 4px solid var(--accent-1);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        /* Header Gradients matching your theme */
+        .header-gradient-green {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+        }
+
+        .header-gradient-pink {
+            background: linear-gradient(135deg, #e7bcbc, #d8a8a8);
+        }
+
+        .header-gradient-beige {
+            background: linear-gradient(135deg, #ede8dc, #d4c4b0);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Background with animated gradient -->
+    <div class="main-bg">
+        <div class="gradient-overlay"></div>
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+        </div>
+    </div>
+    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-3 py-md-5 px-2 px-sm-3">
+        <div class="row w-100 justify-content-center">
+            <div class="col-xl-8 col-lg-10 col-md-11 col-12">
+                <div class="main-card shadow-lg">
+                    <!-- Header Section -->
+                    <div class="card-header-custom text-center">
+                        <div class="header-icon mb-3">
+                            <i class="fas fa-fire-flame-curved"></i>
+                        </div>
+                        <h1 class="display-4 fw-bold mb-2">Classification Results</h1>
+                        <p class="lead mb-0">AI-Powered Skin Burn Severity Analysis</p>
+                        <div class="header-underline"></div>
+                    </div>
+                    <!-- Body Section -->
+                    <div class="card-body-custom">
+                        <!-- Debug & Computational Analysis Toggle -->
+                        <div class="mb-4 d-flex justify-content-end align-items-center gap-3 flex-wrap"
+                            style="min-width:220px;">
+                            {% if has_overlay %}
+                            <span class="fw-semibold text-dark d-flex align-items-center gap-2"
+                                style="font-size:1.05rem;">
+                                <i class="fas fa-eye text-muted"></i> Attention Map
+                            </span>
+                            <div class="form-switch d-flex align-items-center">
+                                <input type="checkbox" id="debugToggle" class="form-check-input debug-switch"
+                                    style="width:2.5em;height:1.5em;cursor:pointer;vertical-align:middle;">
+                            </div>
+                            {% endif %}
+
+                            {% if computational_data %}
+                            <span class="fw-semibold text-dark d-flex align-items-center gap-2"
+                                style="font-size:1.05rem;">
+                                <i class="fas fa-lightbulb" style="color: #6c757d;"></i> Deep Dive
+                            </span>
+                            <div class="form-switch d-flex align-items-center">
+                                <input type="checkbox" id="computationalToggle" class="form-check-input debug-switch"
+                                    style="width:2.5em;height:1.5em;cursor:pointer;vertical-align:middle;">
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="row g-4">
+                            <!-- Image Display -->
+                            <div class="col-md-6">
+                                <h5 class="section-title mb-3">
+                                    <i class="fas fa-image me-2"></i>Analyzed Image
+                                </h5>
+                                <div class="preview-container mx-auto" style="max-width:400px;">
+                                    <img src="{{ image_path }}" alt="Uploaded burn image" class="preview-image">
+                                </div>
+                            </div>
+                            <!-- Results -->
+                            <div class="col-md-6">
+                                <h5 class="section-title mb-3">
+                                    <i class="fas fa-brain me-2"></i>Classification Result
+                                </h5>
+                                <div class="result-card card mb-4 p-3 border-0 shadow-sm">
+                                    <div class="text-center mb-3">
+                                        <!-- Large Animated Icon -->
+                                        <div class="mb-3">
+                                            <i class="{% if result.class_id == 4 %}fas fa-thumbs-up text-success
+                                            {% elif result.class_id == 0 %}fas fa-leaf text-success
+                                            {% elif result.class_id == 1 %}fas fa-fire text-warning
+                                            {% elif result.class_id == 2 %}fas fa-exclamation-triangle text-danger
+                                            {% else %}fas fa-skull-crossbones text-danger
+                                            {% endif %} result-icon-animated"></i>
+                                        </div>
+                                        <h2
+                                            class="fw-bold mb-2 result-title {% if result.class_id == 4 %}text-success{% elif result.class_id == 0 %}text-success{% elif result.class_id == 1 %}text-warning{% else %}text-danger{% endif %}">
+                                            {{ result.predicted_class }}
+                                        </h2>
+                                        <div class="confidence-box mx-auto mb-2 p-2 rounded-3 bg-light border">
+                                            <span class="fw-semibold text-dark">Confidence:</span>
+                                            <span
+                                                class="fs-5 fw-bold ms-2">{{ "%.2f"|format(result.confidence * 100) }}%</span>
+                                        </div>
+                                    </div>
+                                    <h6 class="mb-2">Detailed Probabilities:</h6>
+                                    <div class="mb-3">
+                                        {% for class_name, probability in result.all_probabilities.items() %}
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="fw-semibold">
+                                                    {% if loop.index == 1 %}<i
+                                                        class="fas fa-leaf text-success me-1"></i>
+                                                    {% elif loop.index == 2 %}<i
+                                                        class="fas fa-fire text-warning me-1"></i>
+                                                    {% elif loop.index == 3 %}<i
+                                                        class="fas fa-exclamation-triangle text-danger me-1"></i>
+                                                    {% elif loop.index == 4 %}<i
+                                                        class="fas fa-skull-crossbones text-danger me-1"></i>
+                                                    {% else %}<i class="fas fa-thumbs-up text-success me-1"></i>
+                                                    {% endif %}
+                                                    {{ class_name }}:
+                                                </span>
+                                                <span
+                                                    class="fw-bold">{{ "%.2f"|format(probability * 100) }}%</span>
+                                            </div>
+                                            <div class="progress custom-progress"
+                                                style="height: 12px; background: #f3f3f3; border-radius: 8px;">
+                                                <div class="progress-bar
+                                                    {% if loop.index == 1 %}bg-success
+                                                    {% elif loop.index == 2 %}bg-warning
+                                                    {% elif loop.index == 5 %}bg-success
+                                                    {% else %}bg-danger
+                                                    {% endif %}" role="progressbar"
+                                                    style="width: {{ probability * 100 }}%; border-radius: 8px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1);">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Low Confidence Caution Banner -->
+                        {% if result.confidence < 0.70 %}
+                        <div class="row mb-4 animate-slide-in">
+                            <div class="col-12">
+                                <div class="alert alert-warning border-0 rounded-4 shadow-lg" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 152, 0, 0.1) 100%); border-left: 5px solid #ffc107 !important;">
+                                    <div class="d-flex align-items-start gap-3">
+                                        <div class="flex-shrink-0">
+                                            <i class="fas fa-exclamation-triangle fs-1 text-warning" style="filter: drop-shadow(0 2px 4px rgba(255, 193, 7, 0.3));"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="alert-heading fw-bold mb-2" style="color: #856404;">
+                                                <i class="fas fa-shield-alt me-2"></i>Clinical Advisory Notice
+                                            </h5>
+                                            <p class="mb-3 fw-semibold" style="color: #664d03; font-size: 1rem;">
+                                                The model's confidence score for this analysis is <strong>{{ "%.2f"|format(result.confidence * 100) }}%</strong>, which falls below the recommended clinical reliability threshold.
+                                            </p>
+                                            <div class="bg-white bg-opacity-50 rounded-3 p-3 mb-3" style="border-left: 3px solid #ffc107;">
+                                                <p class="mb-2" style="color: #664d03; font-size: 0.95rem;">
+                                                    <i class="fas fa-info-circle me-2 text-warning"></i>
+                                                    <strong>What this means:</strong>
+                                                </p>
+                                                <ul class="mb-0 ps-4" style="color: #664d03; font-size: 0.9rem;">
+                                                    <li class="mb-2">The classification result should be interpreted with caution and considered as preliminary guidance only.</li>
+                                                    <li class="mb-2">Image quality, lighting conditions, or wound presentation may be affecting model certainty.</li>
+                                                    <li class="mb-2">This automated assessment should <strong>not</strong> replace professional medical evaluation.</li>
+                                                </ul>
+                                            </div>
+                                            <div class="d-flex align-items-center gap-2 p-3 rounded-3" style="background: rgba(255, 193, 7, 0.1);">
+                                                <i class="fas fa-user-md text-warning fs-4"></i>
+                                                <p class="mb-0 fw-semibold" style="color: #664d03; font-size: 0.95rem;">
+                                                    <strong>Recommendation:</strong> Please consult with a qualified healthcare professional for accurate diagnosis and appropriate treatment planning.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Grad-CAM Overlay (hidden by default) -->
+                        <div class="row mb-4" id="gradcamSection" style="display:none;">
+                            <div class="col-md-6">
+                                <h5 class="section-title mb-3">
+                                    <i class="fas fa-layer-group me-2"></i>Grad-CAM Overlay
+                                </h5>
+                                <div class="preview-container mx-auto" style="max-width:400px;">
+                                    <img src="{{ overlay_path }}" alt="Grad-CAM overlay" class="preview-image">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Computational Flow Analysis (hidden by default) -->
+                        {% if computational_data %}
+                        <div class="row mb-4 animate-slide-in" id="computationalSection" style="display:none;">
+                            <div class="col-12">
+                                <!-- Card with Your Theme -->
+                                <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                                    <!-- Header with Your Theme Colors -->
+                                    <div class="card-header text-center py-4" style="background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);">
+                                        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 px-3">
+                                            <div class="text-center text-md-start">
+                                                <h5 class="mb-2 fw-bold d-flex align-items-center gap-2 justify-content-center justify-content-md-start" style="color: #1a1a1a;">
+                                                    <i class="fas fa-brain" style="color: #1a1a1a;"></i>
+                                                    <span>Hybrid CNN-Transformer Computational Flow</span>
+                                                </h5>
+                                                <p class="mb-0 small" style="color: #1a1a1a; opacity: 0.85;">
+                                                    Deep dive into the mathematical operations and transformations
+                                                </p>
+                                            </div>
+                                            <div class="d-none d-md-block">
+                                                <div class="bg-white bg-opacity-25 rounded-3 px-3 py-2" style="backdrop-filter: blur(10px);">
+                                                    <p class="mb-0 small fw-semibold" style="color: #1a1a1a;">AI Explainability</p>
+                                                    <p class="mb-0 small" style="color: #1a1a1a; opacity: 0.75;">Model Transparency</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="p-4 p-md-5" style="background: linear-gradient(135deg, rgba(237, 232, 220, 0.3) 0%, rgba(255, 255, 255, 0.5) 100%);">
+                                        <!-- Modern Tab Navigation with Your Theme -->
+                                        <div class="mb-4">
+                                            <ul class="nav nav-pills d-flex flex-wrap gap-2 p-3 rounded-3 shadow-sm" style="background: rgba(255, 255, 255, 0.9);" id="analysisTab" role="tablist">
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link active d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all"
+                                                        id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab"
+                                                        aria-controls="summary" aria-selected="true"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-chart-line"></i>
+                                                        <span class="d-none d-sm-inline">Summary</span>
+                                                    </button>
+                                                </li>
+                                                {% if computational_data.concrete %}
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all"
+                                                        id="concrete-tab" data-bs-toggle="tab" data-bs-target="#concrete" type="button" role="tab"
+                                                        aria-controls="concrete" aria-selected="false"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-calculator"></i>
+                                                        <span class="d-none d-sm-inline">Concrete Math</span>
+                                                    </button>
+                                                </li>
+                                                {% endif %}
+                                                {% if computational_data.flow %}
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all"
+                                                        id="flow-tab" data-bs-toggle="tab" data-bs-target="#flow" type="button" role="tab"
+                                                        aria-controls="flow" aria-selected="false"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-project-diagram"></i>
+                                                        <span class="d-none d-sm-inline">Full Flow</span>
+                                                    </button>
+                                                </li>
+                                                {% endif %}
+                                                {% if computational_data.detailed %}
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all"
+                                                        id="detailed-tab" data-bs-toggle="tab" data-bs-target="#detailed" type="button" role="tab"
+                                                        aria-controls="detailed" aria-selected="false"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-layer-group"></i>
+                                                        <span class="d-none d-sm-inline">Raw Layer Outputs</span>
+                                                    </button>
+                                                </li>
+                                                {% endif %}
+                                                {% if computational_data.trace %}
+                                                <li class="nav-item" role="presentation">
+                                                    <button class="nav-link d-flex align-items-center gap-2 px-3 px-md-4 py-2 rounded-2 fw-semibold transition-all"
+                                                        id="trace-tab" data-bs-toggle="tab" data-bs-target="#trace" type="button" role="tab"
+                                                        aria-controls="trace" aria-selected="false"
+                                                        style="border: 2px solid transparent; transition: all 0.3s ease;">
+                                                        <i class="fas fa-route"></i>
+                                                        <span class="d-none d-sm-inline">Raw Image Tracing</span>
+                                                    </button>
+                                                </li>
+                                                {% endif %}
+                                            </ul>
+                                        </div>
+
+                                        <!-- Tab Content with Your Theme -->
+                                        <div class="tab-content" id="analysisTabContent">
+
+                                            <!-- Summary Tab -->
+                                            <div class="tab-pane fade show active" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+                                                <!-- Modern Header -->
+                                                <div class="mb-5">
+                                                    <h6 class="fs-4 fw-bold text-dark mb-3 d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
+                                                             style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <i class="fas fa-equals text-white"></i>
+                                                        </div>
+                                                        <span>Mathematical Computation Flow</span>
+                                                    </h6>
+                                                    <div class="info-banner rounded-3 p-4 shadow-sm">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <i class="fas fa-lightbulb mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                This shows the actual mathematical equations and transformations
+                                                                that convert your input image into a burn severity prediction.
+                                                                Each step represents a fundamental operation in the neural network.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Step-by-step mathematical flow -->
+                                                <div class="math-flow">
+
+                                                    <!-- Step 1: Input -->
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 1: Input Image</h6>
+                                                        </div>
+                                                        <div class="summary-step-body p-4">
+                                                            <div class="code-block mb-3">
+                                                                <code class="text-success">X<sub class="text-info">input</sub> = Image(224 × 224 × 3)</code>
+                                                            </div>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                Your uploaded image is represented as a 3D tensor with height, width, and RGB color channels.
+                                                                This standardized format allows the neural network to process the image consistently.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 2: CNN Feature Extraction -->
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 2: CNN Feature Extraction (ResNet50)</h6>
+                                                        </div>
+                                                        <div class="summary-step-body p-4">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">F<sub class="text-info">CNN</sub> = ResNet50(X<sub class="text-info">input</sub>)</code></div>
+                                                                <div class="mb-2"><code class="text-warning">F<sub class="text-info">CNN</sub> = Conv(ReLU(BatchNorm(...Conv(X<sub class="text-info">input</sub>))))</code></div>
+                                                                <div><code class="text-primary">Shape: (7 × 7 × 2048)</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What CNN does:</p>
+                                                                <ul class="list-unstyled small text-dark">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-check-circle text-success mt-1"></i>
+                                                                        <span><strong>Convolution:</strong> Applies 50 layers of filters to detect burn patterns, edges, textures</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-check-circle text-success mt-1"></i>
+                                                                        <span><strong>Formula:</strong> Output[i,j,k] = Σ(Input * Kernel) + Bias</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-check-circle text-success mt-1"></i>
+                                                                        <span><strong>Result:</strong> 7×7 grid with 2048 features per location = spatial feature map</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 3: Reshape -->
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 3: Reshape to Sequence</h6>
+                                                        </div>
+                                                        <div class="summary-step-body p-4">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">T<sub class="text-info">tokens</sub> = Reshape(F<sub class="text-info">CNN</sub>)</code></div>
+                                                                <div><code class="text-warning">T<sub class="text-info">tokens</sub> = (7 × 7, 2048) → (49 tokens, 2048 features)</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What Reshape does:</p>
+                                                                <ul class="list-unstyled small text-dark">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-arrow-right text-info mt-1"></i>
+                                                                        <span>Flattens the spatial 7×7 grid into a sequence of 49 tokens</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-arrow-right text-info mt-1"></i>
+                                                                        <span>Each token represents one spatial location with 2048 features</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-arrow-right text-info mt-1"></i>
+                                                                        <span>Prepares data for transformer processing</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 4: Transformer Attention -->
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 4: Transformer Multi-Head Attention</h6>
+                                                        </div>
+                                                        <div class="summary-step-body p-4">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">Q = T<sub class="text-info">tokens</sub> × W<sub class="text-info">Q</sub> (Query)</code></div>
+                                                                <div class="mb-2"><code class="text-success">K = T<sub class="text-info">tokens</sub> × W<sub class="text-info">K</sub> (Key)</code></div>
+                                                                <div class="mb-2"><code class="text-success">V = T<sub class="text-info">tokens</sub> × W<sub class="text-info">V</sub> (Value)</code></div>
+                                                                <div class="mb-2"><code class="text-warning">Attention(Q,K,V) = softmax(Q × K<sup class="text-primary">T</sup> / √d<sub class="text-info">k</sub>) × V</code></div>
+                                                                <div><code class="text-primary">T<sub class="text-info">attended</sub> = MultiHead(T<sub class="text-info">tokens</sub>) + T<sub class="text-info">tokens</sub> (Residual)</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What Transformer does:</p>
+                                                                <ul class="list-unstyled small text-dark">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-brain text-warning mt-1"></i>
+                                                                        <span><strong>Self-Attention:</strong> Learns which burn regions relate to each other</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-brain text-warning mt-1"></i>
+                                                                        <span><strong>Multi-Head:</strong> Uses 4 parallel attention mechanisms (4 heads)</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-brain text-warning mt-1"></i>
+                                                                        <span><strong>2 Blocks:</strong> Applies attention twice for deeper relationships</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-brain text-warning mt-1"></i>
+                                                                        <span><strong>Result:</strong> Tokens with contextual understanding of the entire burn area</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 5: Global Average Pooling -->
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 5: Global Average Pooling</h6>
+                                                        </div>
+                                                        <div class="summary-step-body p-4">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">F<sub class="text-info">pooled</sub> = (1/49) × Σ<sub class="text-info">i=1...49</sub> T<sub class="text-info">attended</sub>[i]</code></div>
+                                                                <div><code class="text-primary">Shape: (2048,) — Single feature vector</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What Pooling does:</p>
+                                                                <ul class="list-unstyled small text-dark">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-compress text-secondary mt-1"></i>
+                                                                        <span>Averages all 49 token representations into one vector</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-compress text-secondary mt-1"></i>
+                                                                        <span>Creates a global representation of the entire burn</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-compress text-secondary mt-1"></i>
+                                                                        <span>Reduces (49 × 2048) → (2048) dimensional vector</span>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Step 6: Classification -->
+                                                    <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-step-header px-4 py-3">
+                                                            <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Step 6: Classification (Dense + Softmax)</h6>
+                                                        </div>
+                                                        <div class="summary-step-body p-4">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-2"><code class="text-success">Logits = F<sub class="text-info">pooled</sub> × W<sub class="text-info">dense</sub> + b</code></div>
+                                                                <div class="mb-2"><code class="text-warning">Logits = (2048,) × (2048, 5) + (5,) = (5,)</code></div>
+                                                                <div class="mb-2"><code class="text-primary">P(class<sub class="text-info">i</sub>) = exp(logit<sub class="text-info">i</sub>) / Σ<sub class="text-info">j=1...5</sub> exp(logit<sub class="text-info">j</sub>)</code></div>
+                                                                <div><code class="text-danger">Prediction = argmax(P)</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-semibold text-dark mb-2">What Classification does:</p>
+                                                                <ul class="list-unstyled small text-dark mb-3">
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-network-wired text-danger mt-1"></i>
+                                                                        <span><strong>Dense Layer:</strong> Linear transformation to 5 class scores (logits)</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2 mb-2">
+                                                                        <i class="fas fa-network-wired text-danger mt-1"></i>
+                                                                        <span><strong>Softmax:</strong> Converts logits to probabilities that sum to 1</span>
+                                                                    </li>
+                                                                    <li class="d-flex align-items-start gap-2">
+                                                                        <i class="fas fa-network-wired text-danger mt-1"></i>
+                                                                        <span><strong>ArgMax:</strong> Selects the class with highest probability</span>
+                                                                    </li>
+                                                                </ul>
+                                                                {% if computational_data.detailed and computational_data.detailed.logits %}
+                                                                <div class="rounded-3 p-3" style="background: linear-gradient(135deg, rgba(237, 232, 220, 0.4) 0%, rgba(255, 250, 240, 0.6) 100%); border: 1px solid rgba(165, 182, 141, 0.3);">
+                                                                    <p class="small fw-bold mb-3 d-flex align-items-center gap-2" style="color: #1a1a1a;">
+                                                                        <i class="fas fa-chart-bar" style="color: #5a7a4a;"></i>
+                                                                        <span>Your Image's Logits:</span>
+                                                                    </p>
+                                                                    <div class="row g-2">
+                                                                        {% for class_name, logit_value in computational_data.detailed.logits.items() %}
+                                                                        <div class="col-md-6">
+                                                                            <div class="stat-badge px-3 py-2 rounded-3">
+                                                                                <span class="small fw-semibold" style="color: #1a1a1a;">{{ class_name }}:</span>
+                                                                                <code class="small fw-bold ms-2" style="color: #5a7a4a;">{{ "%.4f"|format(logit_value) }}</code>
+                                                                            </div>
+                                                                        </div>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Final Result -->
+                                                    <div class="summary-final-result summary-step-card rounded-3 overflow-hidden shadow-sm">
+                                                        <div class="summary-final-result-header px-4 py-4">
+                                                            <h6 class="fs-5 mb-0" style="color: #1a1a1a; font-weight: 700;">Final Result</h6>
+                                                        </div>
+                                                        <div class="summary-final-result-body p-4">
+                                                            <div class="code-block mb-3">
+                                                                <div class="mb-3"><code class="fw-bold" style="font-size: 1.25rem; color: #90ee90;">Burn Severity = {{ result.predicted_class }}</code></div>
+                                                                <div><code class="fw-bold" style="font-size: 1.1rem; color: #ffd700;">Confidence = {{ "%.2f"|format(result.confidence * 100) }}%</code></div>
+                                                            </div>
+                                                            <div>
+                                                                <p class="small fw-bold mb-3 d-flex align-items-center gap-2" style="color: #1a1a1a;">
+                                                                    <i class="fas fa-route" style="color: #5a7a4a;"></i>
+                                                                    <span>Complete Flow:</span>
+                                                                </p>
+                                                                <div class="bg-white rounded-3 p-4 shadow-sm" style="border: 2px solid rgba(165, 182, 141, 0.3);">
+                                                                    <code class="small d-block mb-3" style="color: #1a1a1a; line-height: 1.8;">
+                                                                        Image → CNN → Reshape → Transformer → Pool → Dense → Softmax → Prediction
+                                                                    </code>
+                                                                    <div class="pt-3" style="border-top: 1px solid rgba(165, 182, 141, 0.2);">
+                                                                        <code class="small d-block" style="color: #1a1a1a; word-break: break-all; line-height: 1.6;">
+                                                                            <strong style="color: #5a7a4a;">{{ result.predicted_class }}</strong> = argmax(softmax(Dense(Pool(Transformer(Reshape(CNN(Image)))))))
+                                                                        </code>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <!-- Concrete Math Tab -->
+                                            {% if computational_data.concrete %}
+                                            <div class="tab-pane fade" id="concrete" role="tabpanel" aria-labelledby="concrete-tab">
+                                                <!-- Modern Header -->
+                                                <div class="mb-6">
+                                                    <h6 class="text-2xl font-bold text-gray-800 mb-3 flex items-center gap-3">
+                                                        <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
+                                                            <i class="fas fa-calculator text-white"></i>
+                                                        </div>
+                                                        <span>Actual Numerical Computations with Real Weights</span>
+                                                    </h6>
+                                                    <div class="bg-purple-50 border-l-4 border-purple-500 rounded-r-xl p-4 shadow-sm">
+                                                        <div class="flex items-start gap-3">
+                                                            <i class="fas fa-info-circle text-purple-600 text-xl mt-1"></i>
+                                                            <p class="text-sm text-gray-700 mb-0">
+                                                                This shows actual mathematical operations with real model weights
+                                                                and values at each computation step. See the exact numbers your model uses!
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="space-y-5">
+                                                    {% for step in computational_data.concrete %}
+                                                    <div class="step-card rounded-2xl overflow-hidden border-l-4 border-purple-500 shadow-lg hover:shadow-xl bg-white">
+                                                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 px-6 py-4 border-b border-purple-100">
+                                                            <strong class="text-purple-700 text-lg font-bold flex items-center gap-2">
+                                                                <i class="fas fa-calculator text-purple-500"></i>
+                                                                {{ step.step }}
+                                                            </strong>
+                                                        </div>
+                                                        <div class="p-6">
+                                                            {% if step.operation %}
+                                                            <div class="mb-4">
+                                                                <p class="text-sm font-semibold text-gray-700 mb-2">Operation:</p>
+                                                                <div class="code-block">
+                                                                    <code class="text-yellow-400 text-sm">{{ step.operation }}</code>
+                                                                </div>
+                                                            </div>
+                                                            {% endif %}
+
+                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                                {% if step.input_shape %}
+                                                                <div class="stat-badge px-4 py-3 rounded-lg">
+                                                                    <p class="text-xs font-semibold text-gray-600 mb-1">Input Shape:</p>
+                                                                    <code class="text-sm font-bold text-blue-600">{{ step.input_shape }}</code>
+                                                                </div>
+                                                                {% endif %}
+
+                                                                {% if step.output_shape %}
+                                                                <div class="stat-badge px-4 py-3 rounded-lg">
+                                                                    <p class="text-xs font-semibold text-gray-600 mb-1">Output Shape:</p>
+                                                                    <code class="text-sm font-bold text-green-600">{{ step.output_shape }}</code>
+                                                                </div>
+                                                                {% endif %}
+                                                            </div>
+
+                                                            {% if step.sample_weights %}
+                                                            <div class="mb-4">
+                                                                <strong class="text-sm font-semibold text-gray-700 block mb-2">Sample Weights:</strong>
+                                                                <pre class="code-block text-xs overflow-y-auto" style="max-height: 150px;"><code class="text-green-300">{{ step.sample_weights }}</code></pre>
+                                                            </div>
+                                                            {% endif %}
+
+                                                            {% if step.computation_example %}
+                                                            <div class="mb-4">
+                                                                <strong class="text-sm font-semibold text-gray-700 block mb-2">Computation Example:</strong>
+                                                                <pre class="code-block text-xs overflow-y-auto" style="max-height: 150px;"><code class="text-yellow-300">{{ step.computation_example }}</code></pre>
+                                                            </div>
+                                                            {% endif %}
+
+                                                            {% if step.sample_output %}
+                                                            <div class="mb-4">
+                                                                <strong class="text-sm font-semibold text-gray-700 block mb-2">Sample Output Values:</strong>
+                                                                <pre class="code-block text-xs overflow-y-auto" style="max-height: 100px;"><code class="text-blue-300">{{ step.sample_output }}</code></pre>
+                                                            </div>
+                                                            {% endif %}
+
+                                                            {% if step.statistics %}
+                                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
+                                                                {% for stat_name, stat_value in step.statistics.items() %}
+                                                                <div class="stat-badge px-4 py-2 rounded-lg">
+                                                                    <p class="text-xs font-semibold text-gray-600 mb-1">{{ stat_name }}:</p>
+                                                                    <strong class="text-sm text-purple-600">{{ "%.4f"|format(stat_value) if stat_value is number else stat_value }}</strong>
+                                                                </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                            {% endif %}
+
+                                                            <!-- If none of the structured fields exist, show raw JSON -->
+                                                            {% if not step.operation and not step.input_shape and not step.output_shape %}
+                                                            <pre class="code-block text-xs overflow-y-auto" style="max-height: 200px;"><code class="text-gray-300">{{ step | tojson(indent=2) }}</code></pre>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Full Flow Tab -->
+                                            {% if computational_data.flow %}
+                                            <div class="tab-pane fade" id="flow" role="tabpanel" aria-labelledby="flow-tab">
+                                                <!-- Modern Header -->
+                                                <div class="mb-5">
+                                                    <h6 class="fs-4 fw-bold text-dark mb-3 d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
+                                                             style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <i class="fas fa-project-diagram text-white"></i>
+                                                        </div>
+                                                        <span>Complete Computational Flow</span>
+                                                    </h6>
+                                                    <div class="info-banner rounded-3 p-4 shadow-sm">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <i class="fas fa-info-circle mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                This shows every computational step the model takes to process your image,
+                                                                including detailed layer operations, transformations, and intermediate outputs.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Summary Card -->
+                                                <div class="card mb-4 border-0 shadow-sm rounded-3 overflow-hidden">
+                                                    <div class="card-header text-white py-3" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                        <strong class="d-flex align-items-center gap-2">
+                                                            <i class="fas fa-chart-bar"></i>
+                                                            <span>Flow Summary</span>
+                                                        </strong>
+                                                    </div>
+                                                    <div class="card-body p-4">
+                                                        <div class="row g-3">
+                                                            <div class="col-md-4">
+                                                                <div class="stat-badge p-3 rounded-3 text-center">
+                                                                    <small class="text-muted d-block mb-1">Total Steps</small>
+                                                                    <strong class="fs-4 d-block" style="color: var(--accent-1);">{{ computational_data.flow.summary.total_steps }}</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="stat-badge p-3 rounded-3 text-center">
+                                                                    <small class="text-muted d-block mb-1">Prediction</small>
+                                                                    <strong class="d-block" style="color: var(--accent-1);">{{ computational_data.flow.summary.predicted_class }}</strong>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="stat-badge p-3 rounded-3 text-center">
+                                                                    <small class="text-muted d-block mb-1">Confidence</small>
+                                                                    <strong class="fs-4 text-success d-block">{{ "%.2f"|format(computational_data.flow.summary.confidence * 100) }}%</strong>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Computation Steps - Always Visible -->
+                                                <div id="flowAccordion">
+                                                    {% for log_entry in computational_data.flow.computation_log %}
+                                                    <div class="flow-step-card mb-3 border-0 rounded-3 overflow-hidden shadow-sm">
+                                                        <!-- Step Header (Not Clickable) -->
+                                                        <div class="flow-step-header">
+                                                            <div class="d-flex align-items-center gap-3 w-100 p-3">
+                                                                <span class="badge rounded-pill px-3 py-2" style="background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); color: #white; font-weight: 700;">
+                                                                    Step {{ loop.index }}
+                                                                </span>
+                                                                <strong style="color: #white;">{{ log_entry.step }}</strong>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Step Content (Always Visible) -->
+                                                        <div class="flow-step-body p-4">
+                                                            <!-- Always show step name first -->
+                                                            <div class="mb-3 pb-3 operation-header">
+                                                                <h6 class="fw-bold mb-2">
+                                                                    <i class="fas fa-cog me-2"></i>
+                                                                    Operation: {{ log_entry.step }}
+                                                                </h6>
+                                                            </div>
+
+                                                            <!-- Display details if available -->
+                                                            {% if log_entry.details and log_entry.details | length > 0 %}
+                                                                {% if log_entry.details is mapping %}
+                                                                    <dl class="row mb-0 detail-list">
+                                                                        {% for key, value in log_entry.details.items() %}
+                                                                        <dt class="col-sm-4 col-md-3 small fw-semibold mb-2">{{ key }}</dt>
+                                                                        <dd class="col-sm-8 col-md-9 mb-3">
+                                                                            {% if value is mapping or value is sequence %}
+                                                                            <pre class="code-block small mb-0 code-pre"><code>{{ value | tojson(indent=2) }}</code></pre>
+                                                                            {% else %}
+                                                                            <code class="small px-2 py-1 rounded d-inline-block inline-code">{{ value }}</code>
+                                                                            {% endif %}
+                                                                        </dd>
+                                                                        {% endfor %}
+                                                                    </dl>
+                                                                {% elif log_entry.details is sequence %}
+                                                                    <ul class="list-group detail-list-group">
+                                                                        {% for item in log_entry.details %}
+                                                                        <li class="list-group-item">
+                                                                            {{ item }}
+                                                                        </li>
+                                                                        {% endfor %}
+                                                                    </ul>
+                                                                {% else %}
+                                                                    <pre class="code-block small mb-0 code-pre"><code>{{ log_entry.details | tojson(indent=2) }}</code></pre>
+                                                                {% endif %}
+                                                            {% else %}
+                                                                <div class="alert mb-0 success-alert">
+                                                                    <i class="fas fa-info-circle me-2"></i>
+                                                                    <span>This step was executed successfully. No additional details are stored for this operation.</span>
+                                                                </div>
+                                                            {% endif %}
+
+                                                            <!-- Debug: Show raw data structure -->
+                                                            <div class="mt-3 p-3 rounded debug-raw-box">
+                                                                <small class="text-muted d-block mb-2"><i class="fas fa-code me-1"></i> Raw Data:</small>
+                                                                <pre class="mb-0 small debug-pre"><code>{{ log_entry | tojson(indent=2) }}</code></pre>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- Detailed Analysis Tab -->
+                                            {% if computational_data.detailed %}
+                                            <div class="tab-pane fade" id="detailed" role="tabpanel" aria-labelledby="detailed-tab">
+                                                <!-- Modern Header -->
+                                                <div class="mb-5">
+                                                    <h6 class="fs-4 fw-bold text-dark mb-3 d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
+                                                             style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <i class="fas fa-layer-group text-white"></i>
+                                                        </div>
+                                                        <span>Layer-by-Layer Analysis</span>
+                                                    </h6>
+                                                    <div class="info-banner rounded-3 p-4 shadow-sm">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <i class="fas fa-info-circle mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                Detailed outputs from each layer showing activation values, attention patterns, and classification scores.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- CNN Features -->
+                                                {% if computational_data.detailed.cnn_features %}
+                                                <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                    <div class="summary-step-header px-4 py-3">
+                                                        <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">CNN Features</h6>
+                                                    </div>
+                                                    <div class="summary-step-body p-4">
+                                                        <p class="mb-2 small" style="color: #1a1a1a;"><strong>Shape:</strong> <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ computational_data.detailed.cnn_features.shape }}</code></p>
+                                                        <p class="mb-2 small" style="color: #1a1a1a;"><strong>Mean Activation:</strong> <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(computational_data.detailed.cnn_features.mean_activation) }}</span></p>
+                                                        <p class="mb-0 small" style="color: #1a1a1a;"><strong>Max Activation:</strong> <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(computational_data.detailed.cnn_features.max_activation) }}</span></p>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+
+                                                <!-- Transformer Attention -->
+                                                {% if computational_data.detailed.transformer_attention %}
+                                                <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                    <div class="summary-step-header px-4 py-3">
+                                                        <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Transformer Attention</h6>
+                                                    </div>
+                                                    <div class="summary-step-body p-4">
+                                                        {% for block in computational_data.detailed.transformer_attention %}
+                                                        <div class="p-3 rounded mb-3" style="background: rgba(237, 232, 220, 0.5); border: 1px solid rgba(165, 182, 141, 0.2);">
+                                                            <p class="mb-2 small" style="color: #1a1a1a; font-weight: 700;">Block {{ block.block }}:</p>
+                                                            <p class="mb-1 small" style="color: #1a1a1a;">Mean Attention: <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(block.mean_attention) }}</span></p>
+                                                            <p class="mb-0 small" style="color: #1a1a1a;">Attention Strength: <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(block.attention_strength) }}</span></p>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+
+                                                <!-- Logits -->
+                                                {% if computational_data.detailed.logits %}
+                                                <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                    <div class="summary-step-header px-4 py-3">
+                                                        <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">Classification Logits</h6>
+                                                    </div>
+                                                    <div class="summary-step-body p-4">
+                                                        {% for class_name, logit_value in computational_data.detailed.logits.items() %}
+                                                        <p class="mb-2 small" style="color: #1a1a1a;">
+                                                            <strong>{{ class_name }}:</strong>
+                                                            <span style="color: #5a7a4a; font-weight: 600;">{{ "%.4f"|format(logit_value) }}</span>
+                                                        </p>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+
+                                            <!-- My Image Trace Tab -->
+                                            {% if computational_data.trace %}
+                                            <div class="tab-pane fade" id="trace" role="tabpanel" aria-labelledby="trace-tab">
+                                                <!-- Modern Header -->
+                                                <div class="mb-5">
+                                                    <h6 class="fs-4 fw-bold text-dark mb-3 d-flex align-items-center gap-3">
+                                                        <div class="d-flex align-items-center justify-content-center rounded-3 p-2"
+                                                             style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-1), var(--accent-2));">
+                                                            <i class="fas fa-route text-white"></i>
+                                                        </div>
+                                                        <span>YOUR IMAGE - Step-by-Step Computation Trace</span>
+                                                    </h6>
+                                                    <div class="info-banner rounded-3 p-4 shadow-sm">
+                                                        <div class="d-flex align-items-start gap-3">
+                                                            <i class="fas fa-camera mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
+                                                            <p class="small text-dark mb-0" style="line-height: 1.6;">
+                                                                This shows the <strong>actual numerical values from YOUR uploaded image</strong> being transformed at each layer of the network.
+                                                                You can see exactly how your specific image is processed!
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {% for step in computational_data.trace.steps %}
+                                                <div class="summary-step-card mb-4 rounded-3 overflow-hidden shadow-sm">
+                                                    <div class="summary-step-header px-4 py-3">
+                                                        <h6 class="mb-0" style="color: #1a1a1a; font-weight: 700;">
+                                                            Step {{ step.step_number }}: {{ step.step_name }}
+                                                        </h6>
+                                                    </div>
+                                                    <div class="summary-step-body p-4">
+                                                        <p class="small mb-2" style="color: #1a1a1a;"><strong>Operation:</strong> {{ step.operation }}</p>
+
+                                                        {% if step.layer_name %}
+                                                        <p class="small mb-2" style="color: #1a1a1a;"><strong>Layer:</strong> <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ step.layer_name }}</code></p>
+                                                        {% endif %}
+
+                                                        {% if step.input_shape and step.output_shape %}
+                                                        <p class="small mb-3" style="color: #1a1a1a;">
+                                                            <strong>Shape Transform:</strong>
+                                                            <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ step.input_shape }}</code> →
+                                                            <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ step.output_shape }}</code>
+                                                        </p>
+                                                        {% endif %}
+
+                                                        <!-- Pixel Samples for Input Step -->
+                                                        {% if step.samples and step.step_number == 0 %}
+                                                        <div class="mt-3">
+                                                            <strong class="small" style="color: #1a1a1a;">Sample Pixel Values from YOUR Image:</strong>
+                                                            <div class="table-responsive mt-2">
+                                                                <table class="table table-sm small" style="border: 1px solid rgba(165, 182, 141, 0.3);">
+                                                                    <thead style="background: linear-gradient(135deg, rgba(165, 182, 141, 0.2), rgba(193, 207, 161, 0.2));">
+                                                                        <tr>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Location</th>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Position</th>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Red</th>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Green</th>
+                                                                            <th style="color: #1a1a1a; font-weight: 700;">Blue</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        {% for sample in step.samples %}
+                                                                        <tr style="background: rgba(255, 255, 255, 0.5);">
+                                                                            <td style="color: #1a1a1a;">{{ sample.location }}</td>
+                                                                            <td><code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ sample.position }}</code></td>
+                                                                            <td style="color: #1a1a1a;">{{ "%.1f"|format(sample.RGB_values[0]) }}</td>
+                                                                            <td style="color: #1a1a1a;">{{ "%.1f"|format(sample.RGB_values[1]) }}</td>
+                                                                            <td style="color: #1a1a1a;">{{ "%.1f"|format(sample.RGB_values[2]) }}</td>
+                                                                        </tr>
+                                                                        {% endfor %}
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        <!-- CNN/Transformer/Pooling Samples -->
+                                                        {% if step.samples and step.step_number > 0 and step.step_number < 15 %}
+                                                        <div class="mt-3">
+                                                            <strong class="small" style="color: #1a1a1a;">Sample Output Values:</strong>
+                                                            <div class="p-3 rounded mt-2" style="background: rgba(237, 232, 220, 0.5); border: 1px solid rgba(165, 182, 141, 0.2);">
+                                                                {% for sample in step.samples[:3] %}
+                                                                <div class="mb-2 small" style="color: #1a1a1a;">
+                                                                    {% if sample.position %}
+                                                                    <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ sample.position }}</code>:
+                                                                    {% elif sample.spatial_position %}
+                                                                    <code style="color: #5a7a4a; background: rgba(165, 182, 141, 0.15); padding: 2px 6px; border-radius: 4px;">{{ sample.spatial_position }}</code>:
+                                                                    {% elif sample.token_index is defined %}
+                                                                    <strong>Token {{ sample.token_index }}:</strong>
+                                                                    {% endif %}
+
+                                                                    {% if sample.filter_outputs %}
+                                                                    <span style="color: #1a1a1a;">[{{ sample.filter_outputs|map('round', 2)|join(', ') }}]</span>
+                                                                    {% elif sample.top_5_values %}
+                                                                    <strong>Top features:</strong>
+                                                                    <span style="color: #1a1a1a;">[{{ sample.top_5_values|map('round', 2)|join(', ') }}]</span>
+                                                                    {% elif sample.sample_values %}
+                                                                    <span style="color: #1a1a1a;">[{{ sample.sample_values|map('round', 4)|join(', ') }}]</span>
+                                                                    {% elif sample.mean_attention is defined %}
+                                                                    <strong>Mean:</strong>
+                                                                    <span style="color: #1a1a1a;">{{ "%.4f"|format(sample.mean_attention) }}</span>
+                                                                    {% endif %}
+                                                                </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        <!-- Top Features for Pooling Step -->
+                                                        {% if step.top_20_features %}
+                                                        <div class="mt-3">
+                                                            <strong class="small" style="color: #1a1a1a;">Top 20 Features (highest values):</strong>
+                                                            <div class="p-3 rounded mt-2 small" style="max-height: 200px; overflow-y: auto; background: rgba(237, 232, 220, 0.5); border: 1px solid rgba(165, 182, 141, 0.2);">
+                                                                {% for i in range(step.top_20_features['indices'][:10]|length) %}
+                                                                <div style="color: #1a1a1a;">Feature {{ step.top_20_features['indices'][i] }}: <strong style="color: #5a7a4a;">{{ "%.4f"|format(step.top_20_features['values'][i]) }}</strong></div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        <!-- Final Probabilities -->
+                                                        {% if step.probabilities %}
+                                                        <div class="mt-3">
+                                                            <strong class="small" style="color: #1a1a1a;">Final Class Probabilities from YOUR Image:</strong>
+                                                            <div class="mt-2">
+                                                                {% for class_name, prob in step.probabilities.items() %}
+                                                                <div class="d-flex align-items-center mb-2">
+                                                                    <span class="small me-2" style="width: 180px; color: #1a1a1a; font-weight: 600;">{{ class_name }}:</span>
+                                                                    <div class="progress flex-grow-1" style="height: 20px; background: rgba(237, 232, 220, 0.5);">
+                                                                        <div class="progress-bar" style="width: {{ (prob * 100)|round(2) }}%; background: {% if loop.index0 == result.class_id %}linear-gradient(135deg, #5a7a4a, #a5b68d){% else %}linear-gradient(135deg, #a5b68d, #c1cfa1){% endif %};">
+                                                                            <strong style="color: #1a1a1a;">{{ (prob * 100)|round(2) }}%</strong>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+
+                                                        <!-- Statistics -->
+                                                        {% if step.statistics %}
+                                                        <div class="mt-3 p-3 rounded" style="background: rgba(237, 232, 220, 0.5); border: 1px solid rgba(165, 182, 141, 0.2);">
+                                                            <strong class="small" style="color: #1a1a1a;">Statistics:</strong>
+                                                            <div class="small" style="color: #1a1a1a;">
+                                                                <strong>Min:</strong> <span style="color: #5a7a4a;">{{ "%.4f"|format(step.statistics.min) }}</span> |
+                                                                <strong>Max:</strong> <span style="color: #5a7a4a;">{{ "%.4f"|format(step.statistics.max) }}</span> |
+                                                                <strong>Mean:</strong> <span style="color: #5a7a4a;">{{ "%.4f"|format(step.statistics.mean) }}</span> |
+                                                                <strong>Std:</strong> <span style="color: #5a7a4a;">{{ "%.4f"|format(step.statistics.std) }}</span>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% endfor %}
+
+                                                <div class="info-banner rounded-3 p-4 shadow-sm mt-4">
+                                                    <div class="d-flex align-items-start gap-3">
+                                                        <i class="fas fa-info-circle mt-1" style="color: var(--accent-1); font-size: 1.25rem;"></i>
+                                                        <div>
+                                                            <strong class="small d-block mb-2" style="color: #1a1a1a; font-weight: 700;">What you're seeing:</strong>
+                                                            <p class="small mb-0" style="color: #1a1a1a; line-height: 1.6;">
+                                                                These are the actual numerical values extracted from YOUR specific uploaded image.
+                                                                Each step shows how your image data is transformed - from raw pixel values to the
+                                                                final burn severity prediction. The numbers you see are unique to your image!
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Debug Info (hidden by default) -->
+                        <div class="alert alert-secondary mt-3" id="debugInfo" style="display:none;" role="alert">
+                            <strong>DEBUG:</strong><br>
+                            image_path: {{ image_path }}<br>
+                            overlay_path: {{ overlay_path }}<br>
+                            Model Prediction: {{ result.predicted_class }}<br>
+                            Confidence: {{ "%.2f"|format(result.confidence * 100) }}%<br>
+                            Probabilities: {{ result.all_probabilities }}<br>
+                        </div>
+
+                        <!-- Primary Classification Results Section -->
+                        <section class="clinical-assessment mt-5">
+                            <!-- Compact Header -->
+                            <div class="assessment-header">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="severity-indicator-compact
+                                        {% if result.class_id == 4 %}severity-normal
+                                        {% elif result.class_id == 0 %}severity-first
+                                        {% elif result.class_id == 1 %}severity-second
+                                        {% elif result.class_id == 2 %}severity-third
+                                        {% else %}severity-fourth
+                                        {% endif %}">
+                                        {% if result.class_id == 4 %}
+                                        <i class="fas fa-thumbs-up"></i>
+                                        {% elif result.class_id == 0 %}
+                                        <i class="fas fa-leaf"></i>
+                                        {% elif result.class_id == 1 %}
+                                        <i class="fas fa-fire"></i>
+                                        {% elif result.class_id == 2 %}
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        {% else %}
+                                        <i class="fas fa-skull-crossbones"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h3 class="assessment-title">Clinical Assessment</h3>
+                                        <p class="assessment-subtitle">Professional medical analysis and care
+                                            recommendations</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Main Content Grid -->
+                            <div class="clinical-grid">
+
+                                <!-- Diagnosis Card - Full Width, Prominent -->
+                                <div class="diagnosis-card">
+                                    <div class="diagnosis-header">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <div class="diagnosis-icon">
+                                                    {% if result.class_id == 4 %}
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                    {% elif result.class_id == 0 %}
+                                                    <i class="fas fa-leaf"></i>
+                                                    {% elif result.class_id == 1 %}
+                                                    <i class="fas fa-fire"></i>
+                                                    {% elif result.class_id == 2 %}
+                                                    <i class="fas fa-exclamation-triangle"></i>
+                                                    {% else %}
+                                                    <i class="fas fa-skull-crossbones"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div>
+                                                    <h4 class="diagnosis-title-main">
+                                                        {% if result.class_id == 4 %}Normal Skin / No Burn Detected
+                                                        {% elif result.class_id == 0 %}First-Degree Burn (Superficial)
+                                                        {% elif result.class_id == 1 %}Second-Degree Burn (Partial
+                                                        Thickness)
+                                                        {% elif result.class_id == 2 %}Third-Degree Burn (Full
+                                                        Thickness)
+                                                        {% else %}Fourth-Degree Burn (Deep Full Thickness)
+                                                        {% endif %}
+                                                    </h4>
+                                                    <p class="diagnosis-classification">Burn Severity Classification</p>
+                                                </div>
+                                            </div>
+                                            <div class="urgency-indicator
+                                                {% if result.class_id == 4 %}urgency-none
+                                                {% elif result.class_id == 0 %}urgency-low
+                                                {% elif result.class_id == 1 %}urgency-moderate
+                                                {% elif result.class_id == 2 %}urgency-high
+                                                {% else %}urgency-critical
+                                                {% endif %}">
+                                                <span class="urgency-text">
+                                                    {% if result.class_id == 4 %}No Urgency
+                                                    {% elif result.class_id == 0 %}Low Urgency
+                                                    {% elif result.class_id == 1 %}Moderate Urgency
+                                                    {% elif result.class_id == 2 %}High Urgency
+                                                    {% else %}Critical Emergency
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="diagnosis-content">
+                                        <p class="diagnosis-description">
+                                            {% if result.class_id == 4 %}No signs of thermal injury identified. Skin
+                                            appears healthy and intact with normal color and texture.
+                                            {% elif result.class_id == 0 %}Affects only the epidermis (outer skin
+                                            layer). Characterized by redness, mild pain, and dry skin. Typically heals
+                                            within 3-7 days without scarring.
+                                            {% elif result.class_id == 1 %}Involves both epidermis and dermis layers.
+                                            May present with blistering, severe pain, and swelling. Requires careful
+                                            monitoring for infection and proper wound care.
+                                            {% elif result.class_id == 2 %}Destroys all layers of skin and may affect
+                                            deeper tissues. Appears white, charred, or leathery. Requires immediate
+                                            medical intervention and surgical treatment.
+                                            {% else %}Life-threatening injury extending through skin into muscle, bone,
+                                            and internal structures. Requires immediate emergency surgery and intensive
+                                            care management.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- Treatment Protocol Grid -->
+                                <div class="treatment-grid">
+
+                                    <!-- Immediate Care Card -->
+                                    <div class="treatment-card immediate-care">
+                                        <div class="treatment-card-header">
+                                            <div class="treatment-icon success">
+                                                <i class="fas fa-hand-holding-medical"></i>
+                                            </div>
+                                            <h5 class="treatment-card-title">Immediate Care</h5>
+                                        </div>
+                                        <ul class="treatment-steps">
+                                            {% if result.class_id == 4 %}
+                                            <li class="treatment-step">Continue normal skin care routine</li>
+                                            <li class="treatment-step">Monitor for any changes or irritation</li>
+                                            <li class="treatment-step">Maintain proper skin hydration</li>
+                                            <li class="treatment-step">Apply sunscreen if exposed to UV</li>
+                                            {% elif result.class_id == 0 %}
+                                            <li class="treatment-step">Cool with running water for 10-15 minutes</li>
+                                            <li class="treatment-step">Apply aloe vera gel or cool compress</li>
+                                            <li class="treatment-step">Take over-the-counter pain relief if needed</li>
+                                            <li class="treatment-step">Keep the area clean and moisturized</li>
+                                            {% elif result.class_id == 1 %}
+                                            <li class="treatment-step">Cool with water for 15-20 minutes</li>
+                                            <li class="treatment-step">Apply sterile, non-adherent dressing</li>
+                                            <li class="treatment-step">Elevate affected area if possible</li>
+                                            <li class="treatment-step">Monitor for signs of infection</li>
+                                            {% elif result.class_id == 2 %}
+                                            <li class="treatment-step">Cover with clean, dry cloth</li>
+                                            <li class="treatment-step">Call emergency services immediately</li>
+                                            <li class="treatment-step">Monitor vital signs and breathing</li>
+                                            <li class="treatment-step">Prepare for emergency transport</li>
+                                            {% else %}
+                                            <li class="treatment-step">Call 911 / emergency services now</li>
+                                            <li class="treatment-step">Cover loosely with sterile cloth</li>
+                                            <li class="treatment-step">Monitor breathing and circulation</li>
+                                            <li class="treatment-step">Prepare for immediate transport</li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+
+                                    <!-- Avoid Actions Card -->
+                                    <div class="treatment-card avoid-actions">
+                                        <div class="treatment-card-header">
+                                            <div class="treatment-icon danger">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </div>
+                                            <h5 class="treatment-card-title">Avoid These Actions</h5>
+                                        </div>
+                                        <ul class="treatment-steps">
+                                            {% if result.class_id == 4 %}
+                                            <li class="treatment-step">No specific restrictions needed</li>
+                                            <li class="treatment-step">Avoid harsh or irritating products</li>
+                                            <li class="treatment-step">Don't over-treat normal skin</li>
+                                            <li class="treatment-step">Avoid excessive scrubbing or friction</li>
+                                            {% elif result.class_id == 0 %}
+                                            <li class="treatment-step">Don't apply ice directly to skin</li>
+                                            <li class="treatment-step">Avoid breaking any blisters that form</li>
+                                            <li class="treatment-step">Don't use butter, oils, or home remedies</li>
+                                            <li class="treatment-step">Avoid petroleum-based products</li>
+                                            {% elif result.class_id == 1 %}
+                                            <li class="treatment-step">Never pop or drain blisters</li>
+                                            <li class="treatment-step">Avoid ice or very cold water</li>
+                                            <li class="treatment-step">Don't use adhesive bandages on burn</li>
+                                            <li class="treatment-step">Avoid cotton or fluffy materials</li>
+                                            {% elif result.class_id == 2 %}
+                                            <li class="treatment-step">Don't remove stuck clothing/debris</li>
+                                            <li class="treatment-step">Avoid ice, ointments, or creams</li>
+                                            <li class="treatment-step">Don't immerse in water</li>
+                                            <li class="treatment-step">Never attempt home treatment</li>
+                                            {% else %}
+                                            <li class="treatment-step">Don't attempt any home treatment</li>
+                                            <li class="treatment-step">Never remove embedded materials</li>
+                                            <li class="treatment-step">Avoid any topical treatments</li>
+                                            <li class="treatment-step">Don't delay emergency care</li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+
+                                    <!-- Medical Decision Card -->
+                                    <div class="treatment-card medical-decision">
+                                        <div class="treatment-card-header">
+                                            <div class="treatment-icon info">
+                                                <i class="fas fa-user-md"></i>
+                                            </div>
+                                            <h5 class="treatment-card-title">When to Seek Medical Care</h5>
+                                        </div>
+                                        <div class="medical-recommendation">
+                                            {% if result.class_id == 4 %}
+                                            <div class="recommendation-level level-none">
+                                                <h6 class="recommendation-title">No Medical Intervention Required</h6>
+                                                <p class="recommendation-text">No emergent actions needed. Continue
+                                                    routine skin care. Consult a
+                                                    dermatologist if you notice any unusual changes, persistent
+                                                    irritation, or new lesions that don't heal normally.</p>
+                                            </div>
+                                            {% elif result.class_id == 0 %}
+                                            <div class="recommendation-level level-monitor">
+                                                <h6 class="recommendation-title">Self-Care with Monitoring</h6>
+                                                <p class="recommendation-text">Most first-degree burns heal on their
+                                                    own. <strong>Seek medical care if:</strong> pain increases
+                                                    significantly, burn covers area larger than your palm, signs of
+                                                    infection appear, or healing doesn't progress after 3-5 days.</p>
+                                            </div>
+                                            {% elif result.class_id == 1 %}
+                                            <div class="recommendation-level level-caution">
+                                                <h6 class="recommendation-title">Medical Evaluation Recommended</h6>
+                                                <p class="recommendation-text"><strong>See a healthcare provider
+                                                        if:</strong> burn is larger than 3 inches, located on
+                                                    face/hands/feet/genitals, shows signs of infection (increased pain,
+                                                    pus, red streaking), or if you have diabetes/immune compromise.</p>
+                                            </div>
+                                            {% elif result.class_id == 2 %}
+                                            <div class="recommendation-level level-urgent">
+                                                <h6 class="recommendation-title">Emergency Medical Care Required</h6>
+                                                <p class="recommendation-text"><strong>Go to emergency room
+                                                        immediately.</strong> Third-degree burns always require
+                                                    professional medical treatment, wound debridement, and may need skin
+                                                    grafting. Do not delay seeking care.</p>
+                                            </div>
+                                            {% else %}
+                                            <div class="recommendation-level level-critical">
+                                                <h6 class="recommendation-title">Call Emergency Services Now</h6>
+                                                <p class="recommendation-text"><strong>This is a life-threatening
+                                                        emergency.</strong> Fourth-degree burns require immediate
+                                                    surgical intervention and intensive care. Call 911 or emergency
+                                                    services immediately and prepare for emergency transport.</p>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </section>
+                        <!-- Emergency and Medical Guidance Section -->
+                        <section class="mb-4 mt-4">
+                            <div class="info-card p-4 rounded-4 shadow-sm"
+                                style="background: linear-gradient(135deg, #fffbe6 0%, #ffeaea 100%);">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="info-icon me-3"><i
+                                            class="fas fa-ambulance text-danger fa-lg"></i></span>
+                                    <h5 class="fw-bold mb-0 text-dark">Emergency & Medical Guidance (Philippines)</h5>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Essential Emergency Contacts:</strong>
+                                    <ul class="mb-2">
+                                        <li><strong>National Emergency Hotline:</strong> <span
+                                                class="text-danger">911</span>
+                                        </li>
+                                        <li><strong>Philippine Red Cross:</strong> <span class="text-primary">143</span>
+                                            or
+                                            local chapter</li>
+                                        <li><strong>Department of Health (DOH):</strong> <span class="text-primary">(02)
+                                                8651-7800</span></li>
+                                    </ul>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>Emergency Assessment Indicators:</strong>
+                                    <ul class="mb-2">
+                                        <li>Burns covering large areas or critical locations (face, hands, feet,
+                                            genitals).</li>
+                                        <li>Signs of shock (pale, clammy skin, rapid pulse).</li>
+                                        <li>Difficulty breathing, burns to airway, or unconsciousness.</li>
+                                    </ul>
+                                </div>
+                                <div class="mb-2">
+                                    <strong>First Aid Instructions:</strong>
+                                    <ul class="mb-2">
+                                        <li>Call <strong>911</strong> immediately for severe burns or emergencies.</li>
+                                        <li>Remove the person from the source of the burn.</li>
+                                        <li>Cool the burn with clean running water (not ice) for 10-20 minutes.</li>
+                                        <li>Cover with a clean, non-stick bandage or cloth.</li>
+                                        <li>Do <strong>not</strong> apply ointments, butter, or home remedies.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <strong>When to See a Healthcare Provider:</strong>
+                                    <ul>
+                                        <li>If the burn is deep, large, or on sensitive areas.</li>
+                                        <li>If there are signs of infection (pus, increased pain, redness, fever).</li>
+                                        <li>If healing does not progress or if in doubt, seek medical advice at the
+                                            nearest
+                                            hospital or clinic.</li>
+                                    </ul>
+                                </div>
+                                <div class="mt-3">
+                                    <strong>Tip:</strong> For emergencies, stay calm and provide clear information when
+                                    calling for help. Know your location and follow instructions from responders.
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Action Buttons -->
+                        <div class="row mt-4">
+                            <div class="col-12 d-flex justify-content-center">
+                                <a href="{{ url_for('index') }}"
+                                    class="btn-custom btn-primary d-flex flex-row align-items-center justify-content-center"
+                                    style="width: 50%; max-width: 320px; min-width: 180px;">
+                                    <span class="btn-icon me-1"><i class="fas fa-check-circle"></i></span>
+                                    <span class="btn-text text-center w-100">Finish</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Disclaimer -->
+                        <section class="disclaimer-section mt-5">
+                            <div class="disclaimer-card">
+                                <div class="disclaimer-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="disclaimer-content">
+                                    <h6 class="disclaimer-title">Medical Disclaimer</h6>
+                                    <p class="disclaimer-text">
+                                        This AI tool is designed for educational and research purposes only. It should
+                                        not be used as a substitute for professional medical diagnosis or treatment.
+                                        Always consult qualified healthcare professionals for medical assessment and
+                                        care.
+                                    </p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Initialize Bootstrap Tabs
+        document.addEventListener('DOMContentLoaded', function() {
+            // Enable all tabs
+            const triggerTabList = document.querySelectorAll('#analysisTab button[data-bs-toggle="tab"]');
+            triggerTabList.forEach(function(triggerEl) {
+                const tabTrigger = new bootstrap.Tab(triggerEl);
+
+                triggerEl.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    tabTrigger.show();
+                });
+            });
+        });
+
+        // Toggle for Attention Map (Grad-CAM)
+        const debugToggle = document.getElementById('debugToggle');
+        if (debugToggle) {
+            debugToggle.addEventListener('change', function () {
+                const debugInfo = document.getElementById('debugInfo');
+                const gradcamSection = document.getElementById('gradcamSection');
+                if (this.checked) {
+                    if (debugInfo) debugInfo.style.display = '';
+                    if (gradcamSection) gradcamSection.style.display = '';
+                } else {
+                    if (debugInfo) debugInfo.style.display = 'none';
+                    if (gradcamSection) gradcamSection.style.display = 'none';
+                }
+            });
+        }
+
+        // Toggle for Computational Flow
+        {% if computational_data %}
+        const computationalToggle = document.getElementById('computationalToggle');
+        if (computationalToggle) {
+            computationalToggle.addEventListener('change', function () {
+                const computationalSection = document.getElementById('computationalSection');
+                if (this.checked) {
+                    if (computationalSection) computationalSection.style.display = '';
+                } else {
+                    if (computationalSection) computationalSection.style.display = 'none';
+                }
+            });
+        }
+        {% endif %}
+
+        // FIX: Force accordion body backgrounds after Bootstrap animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const accordionItems = document.querySelectorAll('#flowAccordion .accordion-collapse');
+
+            // Function to force background
+            function forceBackground(collapse) {
+                const body = collapse.querySelector('.accordion-body');
+                if (body) {
+                    body.style.setProperty('background', 'linear-gradient(135deg, rgba(237, 232, 220, 0.3), rgba(255, 250, 240, 0.95))', 'important');
+                    body.style.setProperty('color', '#2c3e50', 'important');
+                }
+                // Also set on the collapse wrapper
+                collapse.style.setProperty('background', 'linear-gradient(135deg, rgba(237, 232, 220, 0.3), rgba(255, 250, 240, 0.95))', 'important');
+            }
+
+            accordionItems.forEach(function(collapse) {
+                // When accordion is being shown (start of animation)
+                collapse.addEventListener('show.bs.collapse', function () {
+                    console.log('Accordion SHOW event - applying background');
+                    forceBackground(this);
+                });
+
+                // When accordion is shown (animation complete)
+                collapse.addEventListener('shown.bs.collapse', function () {
+                    console.log('Accordion SHOWN event - re-applying background');
+                    forceBackground(this);
+                    // Force again after a tiny delay to override any Bootstrap cleanup
+                    setTimeout(() => {
+                        forceBackground(this);
+                        console.log('Background re-applied after delay');
+                    }, 50);
+                });
+
+                // Watch for any style changes (last resort)
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            const body = collapse.querySelector('.accordion-body');
+                            if (body && collapse.classList.contains('show')) {
+                                // Only re-apply if accordion is open
+                                const currentBg = body.style.background;
+                                if (!currentBg || !currentBg.includes('237, 232, 220')) {
+                                    console.log('Style mutation detected - fixing background');
+                                    forceBackground(collapse);
+                                }
+                            }
+                        }
+                    });
+                });
+
+                observer.observe(collapse, {
+                    attributes: true,
+                    attributeFilter: ['style']
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

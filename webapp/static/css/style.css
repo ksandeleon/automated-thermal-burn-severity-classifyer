@@ -164,17 +164,37 @@ body {
     margin: 0 auto;
     backdrop-filter: blur(10px);
     border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.header-icon.analyzing {
+    animation: pulseShake 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseShake {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    10% {
+        transform: scale(1.15) rotate(-5deg);
+    }
+    20% {
+        transform: scale(1.15) rotate(5deg);
+    }
+    30% {
+        transform: scale(1.15) rotate(-5deg);
+    }
+    40% {
+        transform: scale(1.15) rotate(0deg);
+    }
+    50% {
+        transform: scale(1) rotate(0deg);
+    }
 }
 
 .header-icon i {
     font-size: 2.5rem;
     color: var(--white);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
 }
 
 .card-header-custom h1 {
@@ -370,6 +390,16 @@ body {
 
 .btn-icon {
     font-size: 1.2rem;
+}
+
+/* Button Loading State */
+.btn-custom.loading {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.btn-custom {
+    position: relative;
 }
 
 /* Button outline variant */
@@ -1098,6 +1128,16 @@ body {
         height: 70px;
         font-size: 1.3rem;
     }
+
+    .btn-custom {
+        font-size: 0.95rem;
+        padding: 0.8rem 1.5rem;
+    }
+
+    .btn-custom.btn-lg {
+        font-size: 1rem;
+        padding: 1rem 2rem;
+    }
 }
 
 @media (max-width: 576px) {
@@ -1115,6 +1155,16 @@ body {
 
     .camera-container {
         border-radius: 8px;
+    }
+
+    .btn-custom {
+        font-size: 0.875rem;
+        padding: 0.75rem 1.25rem;
+    }
+
+    .btn-custom.btn-lg {
+        font-size: 0.95rem;
+        padding: 0.9rem 1.75rem;
     }
 }
 

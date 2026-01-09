@@ -1,6 +1,9 @@
 // ============================================================================
-// Service Worker Registration (PWA Support)
+// Service Worker Registration (PWA Support) - DISABLED FOR DEVELOPMENT
 // ============================================================================
+// Service worker temporarily disabled to prevent caching during development
+// Uncomment to re-enable PWA features in production
+/*
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
@@ -26,6 +29,17 @@ if ('serviceWorker' in navigator) {
             .catch((error) => {
                 console.error('Service Worker registration failed:', error);
             });
+    });
+}
+*/
+
+// Unregister any existing service workers for clean slate
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+            registration.unregister();
+            console.log('Service Worker unregistered for development');
+        }
     });
 }
 
@@ -164,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     btnText.textContent = 'Retake Photo';
                     console.log('DEBUG: Text changed to "Retake Photo"');
                 }
+
                 console.log('DEBUG: Retry button updated for camera recapture');
             } else {
                 if (btnIcon) {
@@ -598,26 +613,26 @@ document.addEventListener('DOMContentLoaded', function() {
     function showLoadingStateForButton(button) {
         if (button) {
             button.classList.add('loading');
-            const btnText = button.querySelector('.btn-text');
-            const btnLoading = button.querySelector('.btn-loading');
-
-            if (btnText) btnText.style.opacity = '0';
-            if (btnLoading) btnLoading.classList.remove('d-none');
-
             button.disabled = true;
+
+            // Animate header icon
+            const headerIcon = document.querySelector('.header-icon');
+            if (headerIcon) {
+                headerIcon.classList.add('analyzing');
+            }
         }
     }
 
     function showLoadingState() {
         if (uploadBtn) {
             uploadBtn.classList.add('loading');
-            const btnText = uploadBtn.querySelector('.btn-text');
-            const btnLoading = uploadBtn.querySelector('.btn-loading');
-
-            if (btnText) btnText.style.opacity = '0';
-            if (btnLoading) btnLoading.classList.remove('d-none');
-
             uploadBtn.disabled = true;
+
+            // Animate header icon
+            const headerIcon = document.querySelector('.header-icon');
+            if (headerIcon) {
+                headerIcon.classList.add('analyzing');
+            }
         }
     }
 

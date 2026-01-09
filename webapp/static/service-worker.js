@@ -1,5 +1,5 @@
 // Service Worker for Burn Classifier PWA
-const CACHE_NAME = 'burn-classifier-v1';
+const CACHE_NAME = 'burn-classifier-v2';
 const urlsToCache = [
   '/',
   '/static/css/style.css',

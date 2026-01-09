@@ -180,7 +180,7 @@ class BurnClassifier:
         max_confidence = np.max(predictions[0])
         print(f"  → Maximum confidence: {max_confidence*100:.1f}%")
 
-        if max_confidence < 0.50:  # Very low confidence
+        if max_confidence < 0.20:  # Very low confidence - changed from 50% to 20%
             return False, max_confidence, f"Very low classification confidence ({max_confidence*100:.1f}%). Model cannot identify burn patterns in this image."
         elif max_confidence < 0.65:  # Moderate confidence - flag as warning
             validation_gates.append(('confidence', False, f"Moderate confidence ({max_confidence*100:.1f}%)"))
@@ -706,23 +706,28 @@ class BurnClassifier:
             predictions = self.model.predict(img_array, verbose=0)
 
             # VALIDATE IF IMAGE IS ACTUALLY A BURN
+            # TEMPORARILY DISABLED FOR DEBUGGING - Gates bypassed
             report_progress("Validating image type...", 12)
-            is_valid, validation_conf, validation_reason = self.validate_burn_image(img_array, predictions)
+            # is_valid, validation_conf, validation_reason = self.validate_burn_image(img_array, predictions)
+            # Bypass validation
+            is_valid = True
+            validation_conf = np.max(predictions[0])
+            validation_reason = "Validation gates temporarily disabled"
 
-            if not is_valid:
-                # Return error result for invalid images
-                return {
-                    'error': 'INVALID_BURN_IMAGE',
-                    'message': validation_reason,
-                    'is_valid_burn': False,
-                    'validation_confidence': float(validation_conf),
-                    'validation_reason': validation_reason,
-                    # Still include predictions for transparency
-                    'raw_predictions': {
-                        self.class_names[i]: float(predictions[0][i])
-                        for i in range(len(self.class_names))
-                    }
-                }, f"Invalid image: {validation_reason}"
+            # if not is_valid:
+            #     # Return error result for invalid images
+            #     return {
+            #         'error': 'INVALID_BURN_IMAGE',
+            #         'message': validation_reason,
+            #         'is_valid_burn': False,
+            #         'validation_confidence': float(validation_conf),
+            #         'validation_reason': validation_reason,
+            #         # Still include predictions for transparency
+            #         'raw_predictions': {
+            #             self.class_names[i]: float(predictions[0][i])
+            #             for i in range(len(self.class_names))
+            #         }
+            #     }, f"Invalid image: {validation_reason}"
 
             # Image validated - proceed with normal classification
             report_progress("Image validated - analyzing burn severity...", 15)

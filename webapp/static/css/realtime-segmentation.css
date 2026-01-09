@@ -1,0 +1,347 @@
+/* Real-Time Segmentation Styles */
+.realtime-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.3s ease;
+}
+
+.realtime-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.realtime-title {
+    color: white;
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.realtime-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 0.75rem;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.realtime-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.realtime-video-container {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    background: #000;
+}
+
+#realtimeVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#realtimeCanvas,
+#realtimeOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#realtimeCanvas {
+    display: none; /* Hidden, only used for processing */
+}
+
+#realtimeOverlay {
+    pointer-events: none;
+}
+
+/* Guidance Overlay (QR code scanner style) */
+.guidance-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 50%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.guidance-overlay svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.6));
+}
+
+.guidance-text {
+    position: absolute;
+    bottom: -2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    background: rgba(76, 175, 80, 0.9);
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 0.9;
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(-50%) scale(1.05);
+    }
+}
+
+/* Brightness Warning Toast */
+.brightness-warning {
+    position: absolute;
+    top: 5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 152, 0, 0.95);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 11;
+    animation: slideDown 0.3s ease, wobble 0.5s ease 0.3s;
+    backdrop-filter: blur(10px);
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateX(-50%) translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes wobble {
+    0%, 100% {
+        transform: translateX(-50%) translateY(0);
+    }
+    25% {
+        transform: translateX(-50%) translateY(-5px);
+    }
+    75% {
+        transform: translateX(-50%) translateY(5px);
+    }
+}
+
+.realtime-stats {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-item {
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 0.4rem 0.75rem;
+    border-radius: 20px;
+    color: white;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.stat-item i {
+    color: #4CAF50;
+    font-size: 0.875rem;
+}
+
+.realtime-results {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.no-detection {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.no-detection i {
+    font-size: 1rem;
+    color: #4CAF50;
+}
+
+.no-detection p {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.detection-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 0.75rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    animation: slideInRight 0.3s ease;
+}
+
+.detection-severity {
+    font-weight: 600;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.875rem;
+}
+
+.detection-confidence {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.875rem;
+}
+
+.realtime-controls {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.realtime-controls .btn-custom {
+    flex: 1;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .realtime-header {
+        padding: 0.75rem;
+    }
+
+    .realtime-title {
+        font-size: 1rem;
+    }
+
+    .realtime-btn {
+        width: 40px;
+        height: 40px;
+        padding: 0.5rem;
+    }
+
+    .realtime-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .stat-item {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.75rem;
+    }
+
+    .realtime-results {
+        max-height: 120px;
+    }
+
+    .realtime-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* Mobile adjustments for guidance overlay */
+    .guidance-overlay {
+        width: 85%;
+        height: 60%;
+    }
+
+    .guidance-text {
+        font-size: 0.75rem;
+        padding: 0.4rem 1rem;
+        bottom: -2rem;
+    }
+
+    /* Mobile adjustments for brightness warning */
+    .brightness-warning {
+        font-size: 0.75rem;
+        padding: 0.6rem 1.2rem;
+        top: 4rem;
+    }
+
+    .brightness-warning i {
+        font-size: 1rem;
+    }
+}

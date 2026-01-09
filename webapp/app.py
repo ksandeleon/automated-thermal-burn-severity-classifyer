@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, Response, session, send_from_directory
 import os
 from werkzeug.utils import secure_filename
-from model_utils import get_model_instance
+# from model_utils import get_model_instance  # Old CNN model
+from yolo_utils import get_yolo_instance as get_model_instance  # New YOLO model
 import uuid
 import json
 import threading
@@ -66,10 +67,7 @@ def index():
     """Home page with upload form"""
     return render_template('index.html')
 
-@app.route('/pwa-check')
-def pwa_check():
-    """PWA status check page"""
-    return render_template('pwa-check.html')
+
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -258,6 +256,65 @@ def api_predict():
         if os.path.exists(filepath):
             os.remove(filepath)
         return jsonify({'error': str(e)}), 500
+
+@app.route('/api/realtime_detect', methods=['POST'])
+def realtime_detect():
+    """Real-time detection endpoint for video frames"""
+    if 'frame' not in request.files:
+        return jsonify({'error': 'No frame provided'}), 400
+
+    frame = request.files['frame']
+
+    # Generate temporary filename
+    filename = 'temp_' + str(uuid.uuid4()) + '.jpg'
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+    try:
+        frame.save(filepath)
+
+        # Make prediction with low confidence threshold for real-time
+        model = get_model_instance()
+        result, error = model.predict(
+            filepath,
+            with_gradcam=False,
+            with_computational_flow=False,
+            detailed_analysis=False
+        )
+
+        # Clean up temporary file
+        os.remove(filepath)
+
+        if error:
+            return jsonify({'detections': []})
+
+        # Format response for real-time display
+        detections = []
+
+        # Check if result has detection data
+        if result and 'boxes' in result and result['boxes'] is not None:
+            boxes = result['boxes']
+            masks = result.get('masks', [])
+            confidences = result.get('confidences', [])
+            class_ids = result.get('class_ids', [])
+
+            for i in range(len(boxes)):
+                detection = {
+                    'box': boxes[i],
+                    'confidence': float(confidences[i]) if i < len(confidences) else 0.0,
+                    'class_id': int(class_ids[i]) if i < len(class_ids) else 0,
+                    'mask': masks[i] if i < len(masks) else None
+                }
+                detections.append(detection)
+
+        return jsonify({
+            'detections': detections,
+            'timestamp': time.time()
+        })
+
+    except Exception as e:
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        return jsonify({'detections': [], 'error': str(e)})
 
 @app.route('/debug/files')
 def debug_files():

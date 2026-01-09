@@ -40,6 +40,8 @@
         href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet"
         href="{{ url_for('static', filename='css/index-style.css') }}">
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/realtime-segmentation.css') }}">
 </head>
 
 <body>
@@ -96,8 +98,8 @@
 
                                 <!-- Camera Choice Interface -->
                                 <div class="camera-choice-container" id="cameraChoiceContainer">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
+                                    <div class="row g-3 justify-content-center">
+                                        <div class="col-md-5">
                                             <div class="choice-card" id="galleryChoice">
                                                 <div class="choice-icon">
                                                     <i class="fas fa-images"></i>
@@ -111,14 +113,14 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="choice-card" id="cameraChoice">
-                                                <div class="choice-icon camera-icon">
-                                                    <i class="fas fa-camera"></i>
+                                        <div class="col-md-5">
+                                            <div class="choice-card" id="realtimeChoice" style="border: 2px solid #4CAF50;">
+                                                <div class="choice-icon" style="background: linear-gradient(135deg, #4CAF50, #45a049);">
+                                                    <i class="fas fa-video"></i>
                                                 </div>
                                                 <div class="choice-content">
-                                                    <h6 class="choice-title">Take Photo</h6>
-                                                    <p class="choice-desc">Use camera to capture</p>
+                                                    <h6 class="choice-title">Capture with Camera</h6>
+                                                    <p class="choice-desc">With real-time detection</p>
                                                 </div>
                                                 <div class="choice-indicator">
                                                     <i class="fas fa-chevron-right"></i>
@@ -196,17 +198,10 @@
 
                                 <!-- Preview Card -->
                                 <div class="preview-card">
-                                    <div class="preview-header d-flex justify-content-between align-items-center">
+                                    <div class="preview-header text-center">
                                         <div class="preview-title">
                                             <i class="fas fa-image"></i>
                                             <span>Selected Image</span>
-                                        </div>
-                                        <div class="form-check form-switch custom-switch-container d-flex align-items-center m-0">
-                                            <input class="form-check-input custom-switch-input" type="checkbox" id="xaiToggle" style="margin-right: 10px;">
-
-                                            <label class="form-check-label fw-bold small text-white" for="xaiToggle" title="Enable Explainable AI (Deep Dive Analysis)">
-                                                <i class="fas fa-magic me-1"></i>XAI
-                                            </label>
                                         </div>
                                     </div>
 
@@ -282,9 +277,6 @@
                                                 <i class="fas fa-brain"></i>
                                             </span>
                                             <span class="btn-text">Analyze Burn Severity</span>
-                                            <div class="btn-loading d-none">
-                                                <i class="fas fa-spinner fa-spin"></i>
-                                            </div>
                                         </button>
                                     </div>
 
@@ -296,9 +288,6 @@
                                                 <i class="fas fa-brain"></i>
                                             </span>
                                             <span class="btn-text">Analyze Burn Severity</span>
-                                            <div class="btn-loading d-none">
-                                                <i class="fas fa-spinner fa-spin"></i>
-                                            </div>
                                         </button>
                                     </div>
                                 </form>
@@ -418,8 +407,8 @@
                 </div>
                 <div class="modal-body text-center py-4">
                     <div class="progress-animation mb-4">
-                        <div class="spinner-border text-primary" role="status" style="width: 4rem; height: 4rem;">
-                            <span class="visually-hidden">Loading...</span>
+                        <div class="text-primary" style="font-size: 4rem;">
+                            <i class="fas fa-brain"></i>
                         </div>
                     </div>
 
@@ -444,9 +433,71 @@
         </div>
     </div>
 
+    <!-- Camera Permission Modal -->
+    <div class="modal fade" id="privacyConsentModal" tabindex="-1" aria-labelledby="privacyConsentLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content" style="border-radius: 20px; border: none; overflow: hidden;">
+                <div class="modal-body text-center" style="padding: 2.5rem 2rem;">
+                    <div class="mb-3">
+                        <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #a5b68d 0%, #4CAF50 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);">
+                            <i class="fas fa-camera" style="font-size: 2rem; color: white;"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold mb-3" style="color: #2d3436;">Camera Access</h5>
+                    <p class="text-muted mb-4" style="font-size: 0.95rem; line-height: 1.6;">
+                        Your camera will open for real-time burn detection. Images are processed locally and not saved.
+                    </p>
+                    <div style="background: rgba(165, 182, 141, 0.1); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1.5rem;">
+                        <small style="color: #4CAF50; font-weight: 500;">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Frame the burn area within the green guide for best results
+                        </small>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light flex-fill" data-bs-dismiss="modal" style="border-radius: 12px; padding: 0.75rem; font-weight: 500; border: 2px solid #e0e0e0;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn flex-fill" id="acceptPrivacyBtn" style="background: linear-gradient(135deg, #a5b68d 0%, #4CAF50 100%); color: white; border: none; border-radius: 12px; padding: 0.75rem; font-weight: 600; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);">
+                            Open Camera
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/realtime-segmentation.js') }}"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <!-- Initialize real-time button with privacy consent -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const realtimeChoice = document.getElementById('realtimeChoice');
+            const privacyModal = new bootstrap.Modal(document.getElementById('privacyConsentModal'));
+            const acceptBtn = document.getElementById('acceptPrivacyBtn');
+
+            if (realtimeChoice) {
+                realtimeChoice.addEventListener('click', function() {
+                    console.log('Showing privacy consent...');
+                    privacyModal.show();
+                });
+            }
+
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', function() {
+                    privacyModal.hide();
+                    console.log('Starting real-time segmentation...');
+                    if (window.startRealtimeSegmentation) {
+                        window.startRealtimeSegmentation();
+                    } else {
+                        alert('Real-time segmentation not available');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

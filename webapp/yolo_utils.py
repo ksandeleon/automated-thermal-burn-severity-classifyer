@@ -219,9 +219,14 @@ class YOLOBurnClassifier:
             # Generate segmentation visualizations (3 versions) - ALWAYS generate for toggle feature
             # Generate all three visualizations
             overlay_img, mask_only_img = self._generate_segmentation_visualizations(image, result)
+            confidence_heatmap = self._generate_confidence_heatmap(image, result)
+            pixel_intensity_analysis = self._analyze_pixel_intensity(image, result)
+
             result_dict['segmentation_overlay'] = overlay_img
             result_dict['segmentation_mask_only'] = mask_only_img
             result_dict['segmentation_original'] = image.copy()
+            result_dict['confidence_heatmap'] = confidence_heatmap
+            result_dict['pixel_intensity_analysis'] = pixel_intensity_analysis
 
             # Keep backward compatibility
             if with_gradcam:
@@ -340,6 +345,202 @@ class YOLOBurnClassifier:
             cv2.rectangle(mask_only, (x1, y1), (x2, y2), color, 1)
 
         return overlay, mask_only
+
+    def _generate_confidence_heatmap(self, image, result):
+        """
+        Generate a per-pixel confidence heatmap visualization.
+        Maps mask confidence values to a color gradient (cool to warm).
+
+        Returns:
+            numpy.ndarray: Confidence heatmap image with colorbar
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib import cm
+
+        # Create confidence map (start with zeros)
+        confidence_map = np.zeros((image.shape[0], image.shape[1]), dtype=np.float32)
+
+        if result.masks is not None:
+            masks = result.masks.data.cpu().numpy()
+            boxes = result.boxes
+
+            for i, (mask, box) in enumerate(zip(masks, boxes)):
+                conf = float(box.conf[0])  # Detection confidence
+
+                # Resize mask to image size
+                mask_resized = cv2.resize(mask, (image.shape[1], image.shape[0]))
+
+                # For each pixel in the mask, use: mask_probability * detection_confidence
+                # This gives per-pixel confidence considering both mask certainty and detection confidence
+                pixel_confidence = mask_resized * conf
+
+                # Take maximum confidence where masks overlap
+                confidence_map = np.maximum(confidence_map, pixel_confidence)
+
+        # Apply colormap (jet: blue=low, red=high confidence)
+        # Normalize to 0-1 range
+        confidence_normalized = confidence_map
+
+        # Convert to colormap
+        colormap = cm.get_cmap('jet')
+        heatmap_colored = colormap(confidence_normalized)
+
+        # Convert from 0-1 float to 0-255 uint8
+        heatmap_colored = (heatmap_colored[:, :, :3] * 255).astype(np.uint8)
+
+        # Convert RGB to BGR for OpenCV
+        heatmap_bgr = cv2.cvtColor(heatmap_colored, cv2.COLOR_RGB2BGR)
+
+        # Create figure with colorbar
+        fig, ax = plt.subplots(figsize=(10, 8))
+        ax.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        im = ax.imshow(confidence_map, cmap='jet', alpha=0.6, vmin=0, vmax=1)
+        ax.axis('off')
+
+        # Add colorbar
+        cbar = plt.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+        cbar.set_label('Confidence', rotation=270, labelpad=20, fontsize=12)
+
+        # Convert matplotlib figure to image using buffer
+        fig.canvas.draw()
+
+        # Get the RGBA buffer from the figure
+        width, height = fig.canvas.get_width_height()
+        buf = np.frombuffer(fig.canvas.buffer_rgba(), dtype=np.uint8)
+        buf = buf.reshape(height, width, 4)
+
+        # Convert RGBA to RGB then to BGR for OpenCV
+        heatmap_with_colorbar = cv2.cvtColor(buf[:, :, :3], cv2.COLOR_RGB2BGR)
+
+        plt.close(fig)
+
+        return heatmap_with_colorbar
+
+    def _analyze_pixel_intensity(self, image, result):
+        """
+        Analyze RGB pixel intensity values within segmented burn regions.
+
+        Returns:
+            dict: Statistical analysis with RGB histogram data
+        """
+        analysis = {
+            'per_class': {},
+            'overall': {},
+            'histogram_data': {
+                'red': [],
+                'green': [],
+                'blue': []
+            }
+        }
+
+        if result.masks is None:
+            return analysis
+
+        masks = result.masks.data.cpu().numpy()
+        boxes = result.boxes
+
+        # Collect RGB pixel values from all burn regions
+        all_red = []
+        all_green = []
+        all_blue = []
+        all_confidences = []
+
+        for i, (mask, box) in enumerate(zip(masks, boxes)):
+            class_id = int(box.cls[0])
+            class_name = self.class_names[class_id]
+            conf = float(box.conf[0])
+
+            # Resize mask to image size
+            mask_resized = cv2.resize(mask, (image.shape[1], image.shape[0]))
+            mask_binary = mask_resized > 0.5
+
+            # Extract RGB pixels within the mask (BGR format in OpenCV)
+            masked_pixels = image[mask_binary]
+
+            if len(masked_pixels) > 0:
+                # Separate BGR channels (OpenCV format)
+                blue_channel = masked_pixels[:, 0]
+                green_channel = masked_pixels[:, 1]
+                red_channel = masked_pixels[:, 2]
+
+                # Calculate statistics using grayscale equivalent for overall metrics
+                gray_equivalent = (0.299 * red_channel + 0.587 * green_channel + 0.114 * blue_channel)
+
+                stats = {
+                    'class_name': class_name,
+                    'detection_confidence': float(conf),
+                    'pixel_count': int(np.sum(mask_binary)),
+                    'mean_intensity': float(np.mean(gray_equivalent)),
+                    'std_intensity': float(np.std(gray_equivalent)),
+                    'min_intensity': float(np.min(gray_equivalent)),
+                    'max_intensity': float(np.max(gray_equivalent)),
+                    'median_intensity': float(np.median(gray_equivalent)),
+                    'percentile_25': float(np.percentile(gray_equivalent, 25)),
+                    'percentile_75': float(np.percentile(gray_equivalent, 75))
+                }
+
+                # Group by class
+                if class_name not in analysis['per_class']:
+                    analysis['per_class'][class_name] = []
+                analysis['per_class'][class_name].append(stats)
+
+                # Collect RGB values for histogram
+                all_red.extend(red_channel.tolist())
+                all_green.extend(green_channel.tolist())
+                all_blue.extend(blue_channel.tolist())
+                all_confidences.extend([conf] * len(masked_pixels))
+
+        # Overall statistics
+        if len(all_red) > 0:
+            # Calculate grayscale equivalent for overall stats
+            all_gray = [0.299 * r + 0.587 * g + 0.114 * b
+                       for r, g, b in zip(all_red, all_green, all_blue)]
+
+            analysis['overall'] = {
+                'total_burn_pixels': len(all_red),
+                'mean_intensity': float(np.mean(all_gray)),
+                'std_intensity': float(np.std(all_gray)),
+                'min_intensity': float(np.min(all_gray)),
+                'max_intensity': float(np.max(all_gray)),
+                'median_intensity': float(np.median(all_gray)),
+                'mean_confidence': float(np.mean(all_confidences))
+            }
+
+            # Create RGB histogram data (15 bins for better visualization)
+            bins = 15
+            hist_r, bin_edges_r = np.histogram(all_red, bins=bins, range=(0, 255))
+            hist_g, bin_edges_g = np.histogram(all_green, bins=bins, range=(0, 255))
+            hist_b, bin_edges_b = np.histogram(all_blue, bins=bins, range=(0, 255))
+
+            # Store histogram data for each channel
+            analysis['histogram_data']['red'] = [
+                {
+                    'bin_start': float(bin_edges_r[i]),
+                    'bin_end': float(bin_edges_r[i+1]),
+                    'count': int(hist_r[i])
+                }
+                for i in range(len(hist_r))
+            ]
+
+            analysis['histogram_data']['green'] = [
+                {
+                    'bin_start': float(bin_edges_g[i]),
+                    'bin_end': float(bin_edges_g[i+1]),
+                    'count': int(hist_g[i])
+                }
+                for i in range(len(hist_g))
+            ]
+
+            analysis['histogram_data']['blue'] = [
+                {
+                    'bin_start': float(bin_edges_b[i]),
+                    'bin_end': float(bin_edges_b[i+1]),
+                    'count': int(hist_b[i])
+                }
+                for i in range(len(hist_b))
+            ]
+
+        return analysis
 
     def _generate_computational_flow(self, result_dict):
         """Generate computational flow information"""

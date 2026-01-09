@@ -152,14 +152,22 @@ def upload_file():
                     if mask_only_img is not None:
                         cv2.imwrite(mask_only_path, mask_only_img)
 
-                    # 3. Original is already saved as 'filename'
+                    # 3. Confidence heatmap (per-pixel confidence visualization)
+                    confidence_heatmap = result.get('confidence_heatmap')
+                    heatmap_filename = 'heatmap_' + filename
+                    heatmap_path = os.path.join(app.config['UPLOAD_FOLDER'], heatmap_filename)
+                    if confidence_heatmap is not None:
+                        cv2.imwrite(heatmap_path, confidence_heatmap)
+
+                    # 4. Original is already saved as 'filename'
 
                     # Store result in session
                     template_result = convert_to_serializable({
                         'predicted_class': result['predicted_class'],
                         'class_id': result['class_id'],
                         'confidence': result['confidence'],
-                        'all_probabilities': result['all_probabilities']
+                        'all_probabilities': result['all_probabilities'],
+                        'pixel_intensity_analysis': result.get('pixel_intensity_analysis', {})
                     })
 
                     computational_data = {}
@@ -182,6 +190,7 @@ def upload_file():
                             'image_filename': filename,
                             'overlay_filename': overlay_filename,
                             'mask_only_filename': mask_only_filename,
+                            'heatmap_filename': heatmap_filename,
                             'session_id': session_id  # Store session_id so frontend can build URL
                         })
 
@@ -222,8 +231,10 @@ def show_result(session_id):
     # Check if overlay and mask files exist
     overlay_filename = session_data.get("overlay_filename")
     mask_only_filename = session_data.get("mask_only_filename")
+    heatmap_filename = session_data.get("heatmap_filename")
     has_overlay = False
     has_mask_only = False
+    has_heatmap = False
 
     if overlay_filename:
         overlay_full_path = os.path.join(app.config['UPLOAD_FOLDER'], overlay_filename)
@@ -233,14 +244,20 @@ def show_result(session_id):
         mask_only_full_path = os.path.join(app.config['UPLOAD_FOLDER'], mask_only_filename)
         has_mask_only = os.path.exists(mask_only_full_path)
 
+    if heatmap_filename:
+        heatmap_full_path = os.path.join(app.config['UPLOAD_FOLDER'], heatmap_filename)
+        has_heatmap = os.path.exists(heatmap_full_path)
+
     return render_template('result.html',
                          result=session_data['result'],
                          computational_data=session_data.get('computational_data', {}),
                          image_path=url_for('static', filename=f'uploads/{session_data["image_filename"]}'),
                          overlay_path=url_for('static', filename=f'uploads/{overlay_filename}') if overlay_filename else None,
                          mask_only_path=url_for('static', filename=f'uploads/{mask_only_filename}') if mask_only_filename else None,
+                         heatmap_path=url_for('static', filename=f'uploads/{heatmap_filename}') if heatmap_filename else None,
                          has_overlay=has_overlay,
-                         has_mask_only=has_mask_only)
+                         has_mask_only=has_mask_only,
+                         has_heatmap=has_heatmap)
 
 @app.route('/api/predict', methods=['POST'])
 def api_predict():

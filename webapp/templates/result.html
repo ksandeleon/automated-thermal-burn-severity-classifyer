@@ -182,14 +182,15 @@
                         <!-- Debug & Computational Analysis Toggle -->
                         <div class="mb-4 d-flex justify-content-end align-items-center gap-3 flex-wrap"
                             style="min-width:220px;">
-                            {% if has_overlay %}
+                            {% if has_overlay and has_mask_only %}
                             <span class="fw-semibold text-dark d-flex align-items-center gap-2"
                                 style="font-size:1.05rem;">
-                                <i class="fas fa-eye text-muted"></i> Attention Map
+                                <i class="fas fa-eye text-muted" id="attentionIcon"></i> <span id="attentionLabel">Attention Map</span>
                             </span>
-                            <div class="form-switch d-flex align-items-center">
-                                <input type="checkbox" id="debugToggle" class="form-check-input debug-switch"
-                                    style="width:2.5em;height:1.5em;cursor:pointer;vertical-align:middle;">
+                            <div class="tri-state-toggle" onclick="cycleView()" style="cursor:pointer;">
+                                <div class="toggle-track">
+                                    <div class="toggle-indicator" id="toggleIndicator"></div>
+                                </div>
                             </div>
                             {% endif %}
 
@@ -209,22 +210,8 @@
                             <div class="col-md-6">
                                 <div class="d-flex align-items-center justify-content-between mb-3">
                                     <h5 class="section-title mb-0">
-                                        <i class="fas fa-image me-2"></i><span id="imageViewLabel">Original Image</span>
+                                        <span id="imageViewLabel">Original Image</span>
                                     </h5>
-
-                                    {% if has_overlay and has_mask_only %}
-                                    <div class="btn-group btn-group-sm" role="group" aria-label="Image view toggle">
-                                        <button type="button" class="btn btn-outline-secondary active" id="btnOriginal" onclick="switchView('original')">
-                                            <i class="fas fa-image me-1"></i>Original
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary" id="btnMask" onclick="switchView('mask')">
-                                            <i class="fas fa-layer-group me-1"></i>Mask Only
-                                        </button>
-                                        <button type="button" class="btn btn-outline-secondary" id="btnOverlay" onclick="switchView('overlay')">
-                                            <i class="fas fa-object-group me-1"></i>Overlay
-                                        </button>
-                                    </div>
-                                    {% endif %}
                                 </div>
 
                                 <div class="preview-container mx-auto position-relative" style="max-width:400px;">
@@ -250,6 +237,15 @@
                                          alt="Segmentation overlay"
                                          class="preview-image"
                                          id="imgOverlay"
+                                         style="display: none;">
+                                    {% endif %}
+
+                                    <!-- Confidence Heatmap View -->
+                                    {% if has_heatmap %}
+                                    <img src="{{ heatmap_path }}"
+                                         alt="Confidence heatmap"
+                                         class="preview-image"
+                                         id="imgHeatmap"
                                          style="display: none;">
                                     {% endif %}
 
@@ -361,6 +357,83 @@
                                                 </p>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- Pixel Intensity Analysis (shown only when heatmap view is active) -->
+                        {% if result.pixel_intensity_analysis and result.pixel_intensity_analysis.overall %}
+                        <div class="row mb-4 animate-slide-in" id="pixelIntensitySection" style="display:none;">
+                            <div class="col-12">
+                                <div class="card shadow-sm border-0 rounded-4">
+                                    <div class="card-header text-center py-3" style="background: linear-gradient(135deg, var(--accent-1) 0%, var(--accent-2) 100%);">
+                                        <h5 class="mb-0 fw-bold d-flex align-items-center justify-content-center gap-2" style="color: #1a1a1a;">
+                                            <i class="fas fa-chart-bar"></i>
+                                            <span>Pixel Value Intensity Analysis</span>
+                                        </h5>
+                                    </div>
+                                    <div class="card-body p-4" style="background: linear-gradient(135deg, rgba(237, 232, 220, 0.2) 0%, rgba(255, 255, 255, 0.5) 100%);">
+
+                                        <!-- Overall Statistics -->
+                                        <div class="mb-4">
+                                            <h6 class="fw-bold mb-3" style="color: var(--accent-1);">
+                                                <i class="fas fa-chart-line me-2"></i>Overall Burn Region Statistics
+                                            </h6>
+                                            <div class="d-flex gap-2 flex-nowrap overflow-auto">
+                                                <div class="flex-fill" style="min-width: 150px;">
+                                                    <div class="p-3 rounded-3 h-100" style="background: rgba(255, 255, 255, 0.7);">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <span class="text-muted small">Total Pixels</span>
+                                                            <i class="fas fa-th text-muted"></i>
+                                                        </div>
+                                                        <div class="fs-5 fw-bold mt-2 text-dark">
+                                                            {{ "{:,}".format(result.pixel_intensity_analysis.overall.total_burn_pixels) }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-fill" style="min-width: 150px;">
+                                                    <div class="p-3 rounded-3 h-100" style="background: rgba(255, 255, 255, 0.7);">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <span class="text-muted small">Mean Intensity</span>
+                                                            <i class="fas fa-adjust text-muted"></i>
+                                                        </div>
+                                                        <div class="fs-5 fw-bold mt-2 text-dark">
+                                                            {{ "%.2f"|format(result.pixel_intensity_analysis.overall.mean_intensity) }}
+                                                        </div>
+                                                        <small class="text-muted">± {{ "%.2f"|format(result.pixel_intensity_analysis.overall.std_intensity) }}</small>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-fill" style="min-width: 150px;">
+                                                    <div class="p-3 rounded-3 h-100" style="background: rgba(255, 255, 255, 0.7);">
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <span class="text-muted small">Intensity Range</span>
+                                                            <i class="fas fa-arrows-alt-h text-muted"></i>
+                                                        </div>
+                                                        <div class="fs-5 fw-bold mt-2 text-dark">
+                                                            {{ "%.0f"|format(result.pixel_intensity_analysis.overall.min_intensity) }} - {{ "%.0f"|format(result.pixel_intensity_analysis.overall.max_intensity) }}
+                                                        </div>
+                                                        <small class="text-muted">Median: {{ "%.2f"|format(result.pixel_intensity_analysis.overall.median_intensity) }}</small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Intensity Distribution -->
+                                        {% if result.pixel_intensity_analysis.histogram_data %}
+                                        <div>
+                                            <h6 class="fw-bold mb-3" style="color: var(--accent-1);">
+                                                <i class="fas fa-chart-area me-2"></i>Intensity Distribution
+                                            </h6>
+                                            <div class="p-3 rounded-3" style="background: rgba(255, 255, 255, 0.7);">
+                                                <div style="position: relative; width: 100%; height: 250px;">
+                                                    <canvas id="intensityHistogram"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
                                     </div>
                                 </div>
                             </div>
@@ -1556,20 +1629,67 @@
             });
         });
 
-        // Toggle for Attention Map (Grad-CAM)
-        const debugToggle = document.getElementById('debugToggle');
-        if (debugToggle) {
-            debugToggle.addEventListener('change', function () {
-                const debugInfo = document.getElementById('debugInfo');
-                const gradcamSection = document.getElementById('gradcamSection');
-                if (this.checked) {
-                    if (debugInfo) debugInfo.style.display = '';
-                    if (gradcamSection) gradcamSection.style.display = '';
-                } else {
-                    if (debugInfo) debugInfo.style.display = 'none';
-                    if (gradcamSection) gradcamSection.style.display = 'none';
+        // Quad-state Attention Map toggle (cycles through: original → mask → overlay → heatmap)
+        let currentView = 'original'; // Track current state
+
+        function cycleView() {
+            // Check if heatmap exists
+            const imgHeatmap = document.getElementById('imgHeatmap');
+            const hasHeatmap = imgHeatmap !== null;
+
+            // Cycle through states: original → mask → overlay → heatmap → original (if heatmap exists)
+            if (currentView === 'original') {
+                switchView('mask');
+                currentView = 'mask';
+            } else if (currentView === 'mask') {
+                switchView('overlay');
+                currentView = 'overlay';
+            } else if (currentView === 'overlay' && hasHeatmap) {
+                switchView('heatmap');
+                currentView = 'heatmap';
+            } else {
+                switchView('original');
+                currentView = 'original';
+            }
+
+            // Update toggle indicator position and label
+            const attentionLabel = document.getElementById('attentionLabel');
+            const toggleIndicator = document.getElementById('toggleIndicator');
+
+            if (attentionLabel && toggleIndicator) {
+                if (currentView === 'original') {
+                    attentionLabel.textContent = 'Attention Map';
+                    toggleIndicator.style.left = '2px'; // Left position
+                    toggleIndicator.style.background = 'linear-gradient(135deg, #6c757d, #495057)';
+                } else if (currentView === 'mask') {
+                    attentionLabel.textContent = 'Mask View';
+                    toggleIndicator.style.left = hasHeatmap ? 'calc(25% - 10px)' : 'calc(33.33% - 10px)'; // Position based on states
+                    toggleIndicator.style.background = 'linear-gradient(135deg, var(--accent-1), var(--accent-2))';
+                } else if (currentView === 'overlay') {
+                    attentionLabel.textContent = 'Overlay View';
+                    toggleIndicator.style.left = hasHeatmap ? 'calc(50% - 10px)' : 'calc(66.66% - 10px)'; // Position based on states
+                    toggleIndicator.style.background = 'linear-gradient(135deg, var(--accent-1), var(--accent-2))';
+                } else if (currentView === 'heatmap') {
+                    attentionLabel.textContent = 'Confidence Heatmap';
+                    toggleIndicator.style.left = 'calc(75% - 10px)'; // Far right for 4-state
+                    toggleIndicator.style.background = 'linear-gradient(135deg, #ff6b6b, #ee5a6f)';
                 }
-            });
+            }
+
+            // Show/hide pixel intensity analysis section based on view
+            const pixelIntensitySection = document.getElementById('pixelIntensitySection');
+            if (pixelIntensitySection) {
+                if (currentView === 'heatmap') {
+                    pixelIntensitySection.style.display = '';
+                    // Initialize histogram chart if not already done
+                    if (!window.intensityChartInitialized) {
+                        initializeIntensityHistogram();
+                        window.intensityChartInitialized = true;
+                    }
+                } else {
+                    pixelIntensitySection.style.display = 'none';
+                }
+            }
         }
 
         // Toggle for Computational Flow
@@ -1644,17 +1764,13 @@
             });
         });
 
-        // Image view toggle functionality
+// Image view switching functionality (used by cycleView)
         function switchView(view) {
             // Get all image elements
             const imgOriginal = document.getElementById('imgOriginal');
             const imgMask = document.getElementById('imgMask');
             const imgOverlay = document.getElementById('imgOverlay');
-
-            // Get all buttons
-            const btnOriginal = document.getElementById('btnOriginal');
-            const btnMask = document.getElementById('btnMask');
-            const btnOverlay = document.getElementById('btnOverlay');
+            const imgHeatmap = document.getElementById('imgHeatmap');
 
             // Get labels
             const viewLabel = document.getElementById('imageViewLabel');
@@ -1664,47 +1780,167 @@
             if (imgOriginal) imgOriginal.style.display = 'none';
             if (imgMask) imgMask.style.display = 'none';
             if (imgOverlay) imgOverlay.style.display = 'none';
-
-            // Remove active class from all buttons
-            if (btnOriginal) btnOriginal.classList.remove('active');
-            if (btnMask) btnMask.classList.remove('active');
-            if (btnOverlay) btnOverlay.classList.remove('active');
+            if (imgHeatmap) imgHeatmap.style.display = 'none';
 
             // Show selected view
             switch(view) {
                 case 'original':
                     if (imgOriginal) imgOriginal.style.display = 'block';
-                    if (btnOriginal) btnOriginal.classList.add('active');
                     if (viewLabel) viewLabel.textContent = 'Original Image';
                     if (viewDescText) viewDescText.textContent = 'Uploaded image without processing';
                     break;
 
                 case 'mask':
                     if (imgMask) imgMask.style.display = 'block';
-                    if (btnMask) btnMask.classList.add('active');
-                    if (viewLabel) viewLabel.textContent = 'Mask Only';
+                    if (viewLabel) viewLabel.textContent = 'Segmentation Mask';
                     if (viewDescText) viewDescText.textContent = 'Pure segmentation mask showing burn regions';
                     break;
 
                 case 'overlay':
                     if (imgOverlay) imgOverlay.style.display = 'block';
-                    if (btnOverlay) btnOverlay.classList.add('active');
-                    if (viewLabel) viewLabel.textContent = 'Overlay View';
+                    if (viewLabel) viewLabel.textContent = 'Segmentation Overlay';
                     if (viewDescText) viewDescText.textContent = 'Segmentation mask overlaid on original image';
+                    break;
+
+                case 'heatmap':
+                    if (imgHeatmap) imgHeatmap.style.display = 'block';
+                    if (viewLabel) viewLabel.textContent = 'Confidence Heatmap';
+                    if (viewDescText) viewDescText.textContent = 'Per-pixel confidence visualization with color gradient';
                     break;
             }
         }
 
-        // Keyboard navigation for accessibility
+        // Keyboard navigation for accessibility (Space to cycle views)
         document.addEventListener('keydown', function(event) {
-            const hasToggle = document.getElementById('btnOriginal');
-            if (!hasToggle) return;
+            const toggleIndicator = document.getElementById('toggleIndicator');
+            if (!toggleIndicator) return;
 
-            if (event.key === '1') switchView('original');
-            else if (event.key === '2') switchView('mask');
-            else if (event.key === '3') switchView('overlay');
+            if (event.key === ' ' || event.key === 'Spacebar') {
+                event.preventDefault();
+                cycleView();
+            }
         });
+
+        // Initialize intensity histogram chart
+        function initializeIntensityHistogram() {
+            const canvas = document.getElementById('intensityHistogram');
+            if (!canvas) return;
+
+            {% if result.pixel_intensity_analysis and result.pixel_intensity_analysis.histogram_data %}
+            const histogramData = {{ result.pixel_intensity_analysis.histogram_data | tojson }};
+
+            // Extract data for each RGB channel
+            const redData = histogramData.red;
+            const greenData = histogramData.green;
+            const blueData = histogramData.blue;
+
+            const labels = redData.map(bin => `${bin.bin_start.toFixed(0)}-${bin.bin_end.toFixed(0)}`);
+            const redCounts = redData.map(bin => bin.count);
+            const greenCounts = greenData.map(bin => bin.count);
+            const blueCounts = blueData.map(bin => bin.count);
+
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Red Channel',
+                            data: redCounts,
+                            backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1,
+                            order: 3
+                        },
+                        {
+                            label: 'Green Channel',
+                            data: greenCounts,
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1,
+                            order: 2
+                        },
+                        {
+                            label: 'Blue Channel',
+                            data: blueCounts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: window.innerWidth < 768 ? 'bottom' : 'top',
+                            labels: {
+                                font: {
+                                    size: window.innerWidth < 768 ? 10 : 12
+                                },
+                                boxWidth: 15,
+                                padding: window.innerWidth < 768 ? 8 : 10
+                            }
+                        },
+                        title: {
+                            display: false
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            stacked: false,
+                            ticks: {
+                                font: {
+                                    size: window.innerWidth < 768 ? 10 : 12
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Number of Pixels',
+                                font: {
+                                    size: window.innerWidth < 768 ? 11 : 13
+                                }
+                            }
+                        },
+                        x: {
+                            stacked: false,
+                            ticks: {
+                                font: {
+                                    size: window.innerWidth < 768 ? 9 : 11
+                                },
+                                maxRotation: 45,
+                                minRotation: 45
+                            },
+                            title: {
+                                display: true,
+                                text: 'Intensity Value Range (0-255)',
+                                font: {
+                                    size: window.innerWidth < 768 ? 11 : 13
+                                }
+                            }
+                        }
+                    },
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'x',
+                        intersect: false
+                    }
+                }
+            });
+            {% endif %}
+        }
     </script>
+    <!-- Chart.js for histogram -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </body>
 
 </html>

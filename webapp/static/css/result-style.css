@@ -1083,3 +1083,54 @@
 .preview-container img {
     transition: opacity 0.2s ease-in-out;
 }
+/* Tri-state sliding toggle */
+.tri-state-toggle {
+    display: inline-block;
+    width: 60px;
+    height: 24px;
+    position: relative;
+}
+
+.toggle-track {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(237, 232, 220, 0.4), rgba(237, 232, 220, 0.6));
+    border: 2px solid var(--accent-1);
+    border-radius: 12px;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-indicator {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 16px;
+    background: linear-gradient(135deg, #6c757d, #495057);
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.tri-state-toggle:hover .toggle-indicator {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
+}
+
+.tri-state-toggle:active .toggle-indicator {
+    transform: scale(0.95);
+}
+
+/* Mobile responsive toggle */
+@media (max-width: 576px) {
+    .tri-state-toggle {
+        width: 50px;
+        height: 20px;
+    }
+
+    .toggle-indicator {
+        width: 16px;
+        height: 14px;
+    }
+}

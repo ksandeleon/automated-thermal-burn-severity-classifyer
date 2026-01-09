@@ -1,14 +1,12 @@
-"""
-YOLO11-seg Model Utilities for Thermal Burn Classification
-Provides segmentation-based burn severity classification
-"""
-
 import os
 import cv2
 import numpy as np
 from pathlib import Path
 from ultralytics import YOLO
 import torch
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend for Flask
+import matplotlib.pyplot as plt
 
 class YOLOBurnClassifier:
     """
@@ -25,7 +23,7 @@ class YOLOBurnClassifier:
         """
         if model_path is None:
             # Default path to your trained model (YOLO11m with Fourth Degree support)
-            model_path = r"C:\Users\ksan\Documents\thesis\automated-thermal-burn-severity-classifyer\runs\segment\train25\weights\last.pt"
+            model_path = r"C:\Users\ksan\Documents\thesis\automated-thermal-burn-severity-classifyer\runs\segment\train29\weights\best.pt"
 
         self.model_path = Path(model_path)
         if not self.model_path.exists():
@@ -76,17 +74,45 @@ class YOLOBurnClassifier:
                 return None, "Failed to load image"
 
             if progress_callback:
+                progress_callback("Preprocessing image with CLAHE...", 20)
+
+            # Apply CLAHE preprocessing (LAB color space)
+            # Convert to LAB color space
+            lab = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+            l_channel, a_channel, b_channel = cv2.split(lab)
+
+            # Apply CLAHE to L channel (lightness)
+            clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+            l_channel_clahe = clahe.apply(l_channel)
+
+            # Merge channels back
+            lab_clahe = cv2.merge([l_channel_clahe, a_channel, b_channel])
+
+            # Convert back to BGR
+            image_preprocessed = cv2.cvtColor(lab_clahe, cv2.COLOR_LAB2BGR)
+
+            # Save preprocessed image temporarily for YOLO inference
+            temp_path = str(Path(image_path).parent / f"temp_clahe_{Path(image_path).name}")
+            cv2.imwrite(temp_path, image_preprocessed)
+
+            if progress_callback:
                 progress_callback("Running YOLO segmentation...", 30)
 
-            # Run YOLO inference
+            # Run YOLO inference on preprocessed image
             results = self.model.predict(
-                source=image_path,
+                source=temp_path,
                 imgsz=640,
                 conf=conf_threshold,
                 iou=0.6,
                 device=self.device,
                 verbose=False
             )
+
+            # Clean up temporary file
+            try:
+                os.remove(temp_path)
+            except:
+                pass
 
             if progress_callback:
                 progress_callback("Processing results...", 60)
@@ -354,7 +380,6 @@ class YOLOBurnClassifier:
         Returns:
             numpy.ndarray: Confidence heatmap image with colorbar
         """
-        import matplotlib.pyplot as plt
         from matplotlib import cm
 
         # Create confidence map (start with zeros)

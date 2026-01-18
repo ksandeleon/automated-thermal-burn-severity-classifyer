@@ -1,5 +1,7 @@
 A developmental research on automated thermal burn severity classification using a hybrid CNN-Transformer system architecture. Benchmarked feature extraction performance across ResNet, DenseNet, and VGG, and implemented a real-time prototype application utilizing YOLOv11m-seg for precise and real time image-based burn assessment.
 
+## Proof of Concept
+
 <img width="284" height="482" alt="image" src="https://github.com/user-attachments/assets/d686f7b7-73f7-494b-800f-9bcd8149822d" />
 <br> <br/>
 <br> <br/>
